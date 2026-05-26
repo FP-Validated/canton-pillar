@@ -1,0 +1,10 @@
+suite: blue green service exists
+templates:
+  - templates/api/blue.yaml
+tests:
+  - it: renders Service
+    asserts:
+      - containsDocument:
+          kind: Service
+          apiVersion: v1
+          name: RELEASE-NAME-pillar-api-blue

@@ -1,0 +1,8 @@
+suite: default deny networkpolicy
+templates:
+  - templates/networkpolicy.yaml
+tests:
+  - it: renders NetworkPolicy
+    asserts:
+      - isKind:
+          of: NetworkPolicy

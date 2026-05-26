@@ -1,0 +1,16 @@
+{{- if .Values.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "pillar.fullname" . }}
+  labels:
+{{ include "pillar.labels" . | indent 4 }}
+    app.kubernetes.io/component: servicemonitor
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "pillar.name" . }}
+  endpoints:
+    - port: http
+      path: /metrics
+{{- end }}

@@ -1,0 +1,16 @@
+name: helm
+on: [push, pull_request]
+jobs:
+  helm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v4
+      - run: helm plugin install https://github.com/helm-unittest/helm-unittest || true
+      - run: helm lint infra/helm/pillar
+      - run: helm template pillar infra/helm/pillar -f infra/helm/pillar/values-dev.yaml
+      - run: helm template pillar infra/helm/pillar -f infra/helm/pillar/values-testnet.yaml
+      - run: helm template pillar infra/helm/pillar -f infra/helm/pillar/values-mainnet.yaml
+      - run: helm unittest infra/helm/pillar
+      - run: npx --yes ajv-cli@5 validate -s infra/helm/pillar/values.schema.json -d infra/helm/pillar/values-dev.yaml -d infra/helm/pillar/values-testnet.yaml -d infra/helm/pillar/values-mainnet.yaml
+      - run: helm package infra/helm/pillar

@@ -1,10 +1,11 @@
-# syntax=docker/dockerfile:1.7
-# Pillar migrator stub image. Replaced in Phase 3.
-
-ARG NODE_VERSION=20.18.0
-
-FROM node:${NODE_VERSION}-bookworm-slim AS runtime
-ENV NODE_ENV=production
+FROM node:20-alpine AS build
+WORKDIR /repo
+COPY . .
+RUN corepack enable && pnpm install --frozen-lockfile && pnpm --filter @pillar/migrator build
+FROM node:20-alpine
+LABEL org.opencontainers.image.source="https://github.com/FP-Validated/canton-pillar" org.opencontainers.image.revision="$VCS_REF" org.opencontainers.image.version="$VERSION" org.opencontainers.image.licenses="MIT" pillar.canton.service="migrator" pillar.canton.sbom="true"
+RUN addgroup -S pillar && adduser -S -G pillar pillar
 WORKDIR /app
-USER node
-CMD ["node", "-e", "console.log('migrator stub — no migrations in P0. See docs/Dev/Phase_03_DB_Idempotency.md.');"]
+COPY --from=build /repo/tools/migrator ./tools/migrator
+USER pillar
+CMD ["node", "tools/migrator/dist/cli.js", "verify"]

@@ -1,0 +1,286 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "pillar.fullname" . }}-api
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "api") | indent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps", "secrets"]
+    resourceNames: [{{ include "pillar.fullname" . }}-config, {{ include "pillar.fullname" . }}-runtime]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "pillar.fullname" . }}-api
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "api") | indent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "pillar.fullname" . }}-api
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "pillar.fullname" . }}-api
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "pillar.fullname" . }}-ledger-command
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "ledger-command") | indent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps", "secrets"]
+    resourceNames: [{{ include "pillar.fullname" . }}-config, {{ include "pillar.fullname" . }}-runtime]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "pillar.fullname" . }}-ledger-command
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "ledger-command") | indent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "pillar.fullname" . }}-ledger-command
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "pillar.fullname" . }}-ledger-command
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "pillar.fullname" . }}-projection-worker
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "projection-worker") | indent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps", "secrets"]
+    resourceNames: [{{ include "pillar.fullname" . }}-config, {{ include "pillar.fullname" . }}-runtime]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "pillar.fullname" . }}-projection-worker
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "projection-worker") | indent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "pillar.fullname" . }}-projection-worker
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "pillar.fullname" . }}-projection-worker
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "pillar.fullname" . }}-workflow-orchestrator
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "workflow-orchestrator") | indent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps", "secrets"]
+    resourceNames: [{{ include "pillar.fullname" . }}-config, {{ include "pillar.fullname" . }}-runtime]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "pillar.fullname" . }}-workflow-orchestrator
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "workflow-orchestrator") | indent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "pillar.fullname" . }}-workflow-orchestrator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "pillar.fullname" . }}-workflow-orchestrator
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "pillar.fullname" . }}-webhook-dispatcher
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "webhook-dispatcher") | indent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps", "secrets"]
+    resourceNames: [{{ include "pillar.fullname" . }}-config, {{ include "pillar.fullname" . }}-runtime]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "pillar.fullname" . }}-webhook-dispatcher
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "webhook-dispatcher") | indent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "pillar.fullname" . }}-webhook-dispatcher
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "pillar.fullname" . }}-webhook-dispatcher
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "pillar.fullname" . }}-compliance-adapter
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "compliance-adapter") | indent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps", "secrets"]
+    resourceNames: [{{ include "pillar.fullname" . }}-config, {{ include "pillar.fullname" . }}-runtime]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "pillar.fullname" . }}-compliance-adapter
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "compliance-adapter") | indent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "pillar.fullname" . }}-compliance-adapter
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "pillar.fullname" . }}-compliance-adapter
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "pillar.fullname" . }}-reconciler
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "reconciler") | indent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps", "secrets"]
+    resourceNames: [{{ include "pillar.fullname" . }}-config, {{ include "pillar.fullname" . }}-runtime]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "pillar.fullname" . }}-reconciler
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "reconciler") | indent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "pillar.fullname" . }}-reconciler
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "pillar.fullname" . }}-reconciler
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "pillar.fullname" . }}-template-registry
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "template-registry") | indent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps", "secrets"]
+    resourceNames: [{{ include "pillar.fullname" . }}-config, {{ include "pillar.fullname" . }}-runtime]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "pillar.fullname" . }}-template-registry
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "template-registry") | indent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "pillar.fullname" . }}-template-registry
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "pillar.fullname" . }}-template-registry
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "pillar.fullname" . }}-export-worker
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "export-worker") | indent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps", "secrets"]
+    resourceNames: [{{ include "pillar.fullname" . }}-config, {{ include "pillar.fullname" . }}-runtime]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "pillar.fullname" . }}-export-worker
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "export-worker") | indent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "pillar.fullname" . }}-export-worker
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "pillar.fullname" . }}-export-worker
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "pillar.fullname" . }}-usage-meter
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "usage-meter") | indent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps", "secrets"]
+    resourceNames: [{{ include "pillar.fullname" . }}-config, {{ include "pillar.fullname" . }}-runtime]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "pillar.fullname" . }}-usage-meter
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "usage-meter") | indent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "pillar.fullname" . }}-usage-meter
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "pillar.fullname" . }}-usage-meter
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "pillar.fullname" . }}-search-indexer
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "search-indexer") | indent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps", "secrets"]
+    resourceNames: [{{ include "pillar.fullname" . }}-config, {{ include "pillar.fullname" . }}-runtime]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "pillar.fullname" . }}-search-indexer
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "search-indexer") | indent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "pillar.fullname" . }}-search-indexer
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "pillar.fullname" . }}-search-indexer

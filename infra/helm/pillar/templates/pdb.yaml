@@ -1,0 +1,165 @@
+{{- $svc := index .Values "api" -}}
+{{- if $svc.pdb.enabled }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "pillar.fullname" . }}-api
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "api") | indent 4 }}
+spec:
+  minAvailable: {{ $svc.pdb.minAvailable }}
+  selector:
+    matchLabels:
+{{ include "pillar.selectorLabels" (dict "root" . "component" "api") | indent 6 }}
+{{- end }}
+{{- $svc := index .Values "ledger-command" -}}
+{{- if $svc.pdb.enabled }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "pillar.fullname" . }}-ledger-command
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "ledger-command") | indent 4 }}
+spec:
+  minAvailable: {{ $svc.pdb.minAvailable }}
+  selector:
+    matchLabels:
+{{ include "pillar.selectorLabels" (dict "root" . "component" "ledger-command") | indent 6 }}
+{{- end }}
+{{- $svc := index .Values "projection-worker" -}}
+{{- if $svc.pdb.enabled }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "pillar.fullname" . }}-projection-worker
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "projection-worker") | indent 4 }}
+spec:
+  minAvailable: {{ $svc.pdb.minAvailable }}
+  selector:
+    matchLabels:
+{{ include "pillar.selectorLabels" (dict "root" . "component" "projection-worker") | indent 6 }}
+{{- end }}
+{{- $svc := index .Values "workflow-orchestrator" -}}
+{{- if $svc.pdb.enabled }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "pillar.fullname" . }}-workflow-orchestrator
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "workflow-orchestrator") | indent 4 }}
+spec:
+  minAvailable: {{ $svc.pdb.minAvailable }}
+  selector:
+    matchLabels:
+{{ include "pillar.selectorLabels" (dict "root" . "component" "workflow-orchestrator") | indent 6 }}
+{{- end }}
+{{- $svc := index .Values "webhook-dispatcher" -}}
+{{- if $svc.pdb.enabled }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "pillar.fullname" . }}-webhook-dispatcher
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "webhook-dispatcher") | indent 4 }}
+spec:
+  minAvailable: {{ $svc.pdb.minAvailable }}
+  selector:
+    matchLabels:
+{{ include "pillar.selectorLabels" (dict "root" . "component" "webhook-dispatcher") | indent 6 }}
+{{- end }}
+{{- $svc := index .Values "compliance-adapter" -}}
+{{- if $svc.pdb.enabled }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "pillar.fullname" . }}-compliance-adapter
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "compliance-adapter") | indent 4 }}
+spec:
+  minAvailable: {{ $svc.pdb.minAvailable }}
+  selector:
+    matchLabels:
+{{ include "pillar.selectorLabels" (dict "root" . "component" "compliance-adapter") | indent 6 }}
+{{- end }}
+{{- $svc := index .Values "reconciler" -}}
+{{- if $svc.pdb.enabled }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "pillar.fullname" . }}-reconciler
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "reconciler") | indent 4 }}
+spec:
+  minAvailable: {{ $svc.pdb.minAvailable }}
+  selector:
+    matchLabels:
+{{ include "pillar.selectorLabels" (dict "root" . "component" "reconciler") | indent 6 }}
+{{- end }}
+{{- $svc := index .Values "template-registry" -}}
+{{- if $svc.pdb.enabled }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "pillar.fullname" . }}-template-registry
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "template-registry") | indent 4 }}
+spec:
+  minAvailable: {{ $svc.pdb.minAvailable }}
+  selector:
+    matchLabels:
+{{ include "pillar.selectorLabels" (dict "root" . "component" "template-registry") | indent 6 }}
+{{- end }}
+{{- $svc := index .Values "export-worker" -}}
+{{- if $svc.pdb.enabled }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "pillar.fullname" . }}-export-worker
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "export-worker") | indent 4 }}
+spec:
+  minAvailable: {{ $svc.pdb.minAvailable }}
+  selector:
+    matchLabels:
+{{ include "pillar.selectorLabels" (dict "root" . "component" "export-worker") | indent 6 }}
+{{- end }}
+{{- $svc := index .Values "usage-meter" -}}
+{{- if $svc.pdb.enabled }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "pillar.fullname" . }}-usage-meter
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "usage-meter") | indent 4 }}
+spec:
+  minAvailable: {{ $svc.pdb.minAvailable }}
+  selector:
+    matchLabels:
+{{ include "pillar.selectorLabels" (dict "root" . "component" "usage-meter") | indent 6 }}
+{{- end }}
+{{- $svc := index .Values "search-indexer" -}}
+{{- if $svc.pdb.enabled }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "pillar.fullname" . }}-search-indexer
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "search-indexer") | indent 4 }}
+spec:
+  minAvailable: {{ $svc.pdb.minAvailable }}
+  selector:
+    matchLabels:
+{{ include "pillar.selectorLabels" (dict "root" . "component" "search-indexer") | indent 6 }}
+{{- end }}

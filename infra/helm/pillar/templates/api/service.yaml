@@ -1,0 +1,16 @@
+{{- $svc := index .Values "api" -}}
+{{- if $svc.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "pillar.fullname" . }}-api
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "api") | indent 4 }}
+spec:
+  selector:
+{{ include "pillar.selectorLabels" (dict "root" . "component" "api") | indent 4 }}
+  ports:
+    - name: http
+      port: {{ $svc.port }}
+      targetPort: http
+{{- end }}

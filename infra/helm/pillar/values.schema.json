@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["deploymentMode", "environment"],
+  "properties": {
+    "deploymentMode": {"enum": ["hosted", "customer-validator", "self-hosted"]},
+    "environment": {"enum": ["dev", "testnet", "mainnet", "sandbox"]},
+    "image": {"type": "object"}
+  },
+  "allOf": [
+    {"if": {"properties": {"environment": {"enum": ["testnet", "mainnet"]}}, "required": ["environment"]},
+     "then": {"properties": {
+       "api": {"$ref": "#/$defs/digestedService"}, "ledger-command": {"$ref": "#/$defs/digestedService"},
+       "projection-worker": {"$ref": "#/$defs/digestedService"}, "workflow-orchestrator": {"$ref": "#/$defs/digestedService"},
+       "webhook-dispatcher": {"$ref": "#/$defs/digestedService"}, "compliance-adapter": {"$ref": "#/$defs/digestedService"},
+       "reconciler": {"$ref": "#/$defs/digestedService"}, "template-registry": {"$ref": "#/$defs/digestedService"},
+       "export-worker": {"$ref": "#/$defs/digestedService"}, "usage-meter": {"$ref": "#/$defs/digestedService"},
+       "search-indexer": {"$ref": "#/$defs/digestedService"}, "migrator": {"$ref": "#/$defs/digestedService"}, "darUpload": {"$ref": "#/$defs/digestedService"}
+     }}}
+  ],
+  "$defs": {"digestedService": {"type": "object", "required": ["image"], "properties": {"image": {"type": "object", "required": ["repository", "digest"], "properties": {"repository": {"type": "string", "minLength": 1}, "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}}}}}}
+}

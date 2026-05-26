@@ -1,0 +1,6 @@
+apiVersion: v2
+name: pillar
+description: Pillar multi-environment deployment chart
+type: application
+version: 0.1.0
+appVersion: 0.1.0

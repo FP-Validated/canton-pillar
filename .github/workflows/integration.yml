@@ -1,0 +1,10 @@
+name: integration
+on: [push, pull_request]
+jobs:
+  compose-e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose -f infra/compose/local.yml --profile runtime config
+      - run: docker compose -f infra/compose/local.yml up -d postgres redis webhook-receiver
+      - run: docker compose -f infra/compose/local.yml down -v

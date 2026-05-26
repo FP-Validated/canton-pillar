@@ -1,18 +1,8 @@
-# Pillar local auth profile (overlay over local.yml).
-# Phase 0 placeholder. Phase 8 (Security/Compliance) wires real JWT/mTLS.
-# Usage: docker compose -f infra/compose/local.yml -f infra/compose/local-auth.yml config
-
 name: pillar-local
-
 services:
-  # In Phase 8, a local OIDC mock (e.g. Keycloak or dex) will be added here for
-  # Workbench/Dashboard sign-in flows. Phase 0 reserves the slot only.
-  oidc-mock:
-    image: alpine:3.20
-    profiles:
-      - phase8-not-yet-active
-    command:
-      ["sh", "-lc", "echo 'oidc-mock placeholder — enabled in Phase 8 only.'; sleep infinity"]
-
-  # API/ledger-command etc. will be re-declared here with auth-bearing env vars in Phase 8.
-  # In Phase 0 we leave the auth profile inert so that `docker compose ... config` succeeds.
+  api:
+    image: pillar/api:local
+    environment:
+      PILLAR_API_AUTH: db
+      PILLAR_API_KEY_SEED_SCRIPT: tools/scripts/ci/seed-api-keys.sh
+      DATABASE_URL: postgres://pillar:pillar@postgres:5432/pillar

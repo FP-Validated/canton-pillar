@@ -1,0 +1,16 @@
+{{- if .Values.canary.enabled }}
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{ include "pillar.fullname" . }}-api-canary
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "api") | indent 4 }}
+spec:
+  hosts: ["api"]
+  http:
+    - route:
+        - destination: { host: {{ include "pillar.fullname" . }}-api, subset: stable }
+          weight: {{ sub 100 .Values.canary.weight }}
+        - destination: { host: {{ include "pillar.fullname" . }}-api, subset: canary }
+          weight: {{ .Values.canary.weight }}
+{{- end }}

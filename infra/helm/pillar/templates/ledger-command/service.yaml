@@ -1,0 +1,16 @@
+{{- $svc := index .Values "ledger-command" -}}
+{{- if $svc.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "pillar.fullname" . }}-ledger-command
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "ledger-command") | indent 4 }}
+spec:
+  selector:
+{{ include "pillar.selectorLabels" (dict "root" . "component" "ledger-command") | indent 4 }}
+  ports:
+    - name: http
+      port: {{ $svc.port }}
+      targetPort: http
+{{- end }}

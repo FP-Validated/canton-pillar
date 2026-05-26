@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "pillar.fullname" . }}-migrator
+  labels:
+{{ include "pillar.labels" . | indent 4 }}
+    app.kubernetes.io/component: migrator
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-weight: "-10"
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+{{ include "pillar.labels" . | indent 8 }}
+        app.kubernetes.io/component: migrator
+    spec:
+      restartPolicy: Never
+      serviceAccountName: {{ include "pillar.fullname" . }}-api
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: migrator
+          image: {{ include "pillar.image" (dict "root" . "component" "migrator") }}
+          imagePullPolicy: IfNotPresent
+          command: ["node", "tools/migrator/dist/cli.js", "up"]
+          env:
+            - name: DATABASE_URL
+              valueFrom: { secretKeyRef: { name: {{ include "pillar.fullname" . }}-runtime, key: DATABASE_URL } }
+          resources:
+{{ toYaml .Values.migrator.resources | indent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }

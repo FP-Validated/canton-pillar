@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "pillar.fullname" . }}-dar-upload
+  labels:
+{{ include "pillar.labels" . | indent 4 }}
+    app.kubernetes.io/component: dar-upload
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-weight: "-5"
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+{{ include "pillar.labels" . | indent 8 }}
+        app.kubernetes.io/component: dar-upload
+    spec:
+      restartPolicy: Never
+      serviceAccountName: {{ include "pillar.fullname" . }}-ledger-command
+      initContainers:
+        - name: checksum-gate
+          image: {{ include "pillar.image" (dict "root" . "component" "darUpload") }}
+          command: ["sh", "-lc", "test -n '{{ .Values.darUpload.checksum }}'"]
+      containers:
+        - name: dar-uploader
+          image: {{ include "pillar.image" (dict "root" . "component" "darUpload") }}
+          imagePullPolicy: IfNotPresent
+          command: ["sh", "-lc", "pillar-dar-upload --checksum '{{ .Values.darUpload.checksum }}' && touch /tmp/ledger-command-ready"]
+          env:
+            - name: LEDGER_TOKEN
+              valueFrom: { secretKeyRef: { name: {{ include "pillar.fullname" . }}-runtime, key: LEDGER_TOKEN } }
+          resources:
+{{ toYaml .Values.darUpload.resources | indent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }

@@ -1,0 +1,321 @@
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "pillar.fullname" . }}-default-deny
+  labels:
+{{ include "pillar.labels" . | indent 4 }}
+    app.kubernetes.io/component: networkpolicy
+spec:
+  podSelector: {}
+  policyTypes: [Ingress, Egress]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "pillar.fullname" . }}-api
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "api") | indent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+{{ include "pillar.selectorLabels" (dict "root" . "component" "api") | indent 6 }}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: {{ (index .Values "api").port }}
+  egress:
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 5432
+        - protocol: TCP
+          port: 6865
+        - protocol: TCP
+          port: 443
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "pillar.fullname" . }}-ledger-command
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "ledger-command") | indent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+{{ include "pillar.selectorLabels" (dict "root" . "component" "ledger-command") | indent 6 }}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: {{ (index .Values "ledger-command").port }}
+  egress:
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 5432
+        - protocol: TCP
+          port: 6865
+        - protocol: TCP
+          port: 443
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "pillar.fullname" . }}-projection-worker
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "projection-worker") | indent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+{{ include "pillar.selectorLabels" (dict "root" . "component" "projection-worker") | indent 6 }}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: {{ (index .Values "projection-worker").port }}
+  egress:
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 5432
+        - protocol: TCP
+          port: 6865
+        - protocol: TCP
+          port: 443
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "pillar.fullname" . }}-workflow-orchestrator
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "workflow-orchestrator") | indent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+{{ include "pillar.selectorLabels" (dict "root" . "component" "workflow-orchestrator") | indent 6 }}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: {{ (index .Values "workflow-orchestrator").port }}
+  egress:
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 5432
+        - protocol: TCP
+          port: 6865
+        - protocol: TCP
+          port: 443
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "pillar.fullname" . }}-webhook-dispatcher
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "webhook-dispatcher") | indent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+{{ include "pillar.selectorLabels" (dict "root" . "component" "webhook-dispatcher") | indent 6 }}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: {{ (index .Values "webhook-dispatcher").port }}
+  egress:
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 5432
+        - protocol: TCP
+          port: 6865
+        - protocol: TCP
+          port: 443
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "pillar.fullname" . }}-compliance-adapter
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "compliance-adapter") | indent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+{{ include "pillar.selectorLabels" (dict "root" . "component" "compliance-adapter") | indent 6 }}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: {{ (index .Values "compliance-adapter").port }}
+  egress:
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 5432
+        - protocol: TCP
+          port: 6865
+        - protocol: TCP
+          port: 443
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "pillar.fullname" . }}-reconciler
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "reconciler") | indent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+{{ include "pillar.selectorLabels" (dict "root" . "component" "reconciler") | indent 6 }}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: {{ (index .Values "reconciler").port }}
+  egress:
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 5432
+        - protocol: TCP
+          port: 6865
+        - protocol: TCP
+          port: 443
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "pillar.fullname" . }}-template-registry
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "template-registry") | indent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+{{ include "pillar.selectorLabels" (dict "root" . "component" "template-registry") | indent 6 }}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: {{ (index .Values "template-registry").port }}
+  egress:
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 5432
+        - protocol: TCP
+          port: 6865
+        - protocol: TCP
+          port: 443
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "pillar.fullname" . }}-export-worker
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "export-worker") | indent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+{{ include "pillar.selectorLabels" (dict "root" . "component" "export-worker") | indent 6 }}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: {{ (index .Values "export-worker").port }}
+  egress:
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 5432
+        - protocol: TCP
+          port: 6865
+        - protocol: TCP
+          port: 443
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "pillar.fullname" . }}-usage-meter
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "usage-meter") | indent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+{{ include "pillar.selectorLabels" (dict "root" . "component" "usage-meter") | indent 6 }}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: {{ (index .Values "usage-meter").port }}
+  egress:
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 5432
+        - protocol: TCP
+          port: 6865
+        - protocol: TCP
+          port: 443
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "pillar.fullname" . }}-search-indexer
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "search-indexer") | indent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+{{ include "pillar.selectorLabels" (dict "root" . "component" "search-indexer") | indent 6 }}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: {{ (index .Values "search-indexer").port }}
+  egress:
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 5432
+        - protocol: TCP
+          port: 6865
+        - protocol: TCP
+          port: 443
+---
+{{- end }}

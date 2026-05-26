@@ -1,17 +1,18 @@
-FROM eclipse-temurin:21-jdk-alpine AS build
+FROM node:20-alpine AS build
 WORKDIR /repo
 COPY . .
-RUN ./gradlew :services:workflow-orchestrator:installDist --no-daemon
-FROM eclipse-temurin:21-jre-alpine AS runtime
+RUN corepack enable && pnpm install --frozen-lockfile && pnpm --filter @pillar/api build
+FROM node:20-alpine AS runtime
 LABEL org.opencontainers.image.source="https://github.com/FP-Validated/canton-pillar" \
       org.opencontainers.image.revision="$VCS_REF" \
       org.opencontainers.image.version="$VERSION" \
       org.opencontainers.image.licenses="MIT" \
-      pillar.canton.service="workflow-orchestrator" \
+      pillar.canton.service="api" \
       pillar.canton.sbom="true"
+ENV NODE_ENV=production
 RUN addgroup -S pillar && adduser -S -G pillar pillar
 WORKDIR /app
-COPY --from=build /repo/services/workflow-orchestrator/build/install/workflow-orchestrator ./
+COPY --from=build /repo/apps/api/dist ./dist
 USER pillar
-EXPOSE 8080
-ENTRYPOINT ["/app/bin/workflow-orchestrator"]
+EXPOSE 3000
+CMD ["node", "dist/index.js"]

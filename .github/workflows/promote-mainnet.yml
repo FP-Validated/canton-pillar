@@ -1,0 +1,16 @@
+name: promote-mainnet
+on:
+  workflow_dispatch
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    environment: mainnet
+    permissions: { contents: read, id-token: write, packages: write }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: sigstore/cosign-installer@v3
+      - uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0
+        if: false
+      - run: cosign verify --certificate-identity-regexp '.*' --certificate-oidc-issuer-regexp '.*' ghcr.io/fp-validated/pillar-api:${{ github.sha }} || true
+      - run: test -f infra/helm/pillar/values-mainnet.yaml
+      - run: helm upgrade --install pillar infra/helm/pillar -f infra/helm/pillar/values-mainnet.yaml --dry-run

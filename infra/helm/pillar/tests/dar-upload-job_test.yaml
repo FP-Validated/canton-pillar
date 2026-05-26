@@ -1,0 +1,10 @@
+suite: dar upload checksum gate
+templates:
+  - templates/dar-upload-job.yaml
+tests:
+  - it: renders Job
+    asserts:
+      - containsDocument:
+          kind: Job
+          apiVersion: batch/v1
+          name: RELEASE-NAME-pillar-dar-upload

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "pillar.fullname" . }}-config
+  labels:
+{{ include "pillar.labels" . | indent 4 }}
+    app.kubernetes.io/component: config
+data:
+  API_BASE_URL: {{ .Values.config.apiBaseUrl | quote }}
+  PILLAR_DEPLOYMENT_MODE: {{ .Values.deploymentMode | quote }}
+  PILLAR_ENVIRONMENT: {{ .Values.environment | quote }}
+  PILLAR_VERSION: {{ .Values.config.pillarVersion | quote }}
+  LOG_LEVEL: {{ .Values.config.logLevel | quote }}

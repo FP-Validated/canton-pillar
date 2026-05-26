@@ -1,0 +1,50 @@
+{{- $svc := index .Values "export-worker" -}}
+{{- if $svc.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pillar.fullname" . }}-export-worker
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "export-worker") | indent 4 }}
+spec:
+  replicas: {{ $svc.replicas }}
+  selector:
+    matchLabels:
+{{ include "pillar.selectorLabels" (dict "root" . "component" "export-worker") | indent 6 }}
+  template:
+    metadata:
+      labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "export-worker") | indent 8 }}
+    spec:
+      serviceAccountName: {{ include "pillar.fullname" . }}-export-worker
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: export-worker
+          image: {{ include "pillar.image" (dict "root" . "component" "export-worker") }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: {{ $svc.port }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "pillar.fullname" . }}-config
+          env:
+            - name: DATABASE_URL
+              valueFrom: { secretKeyRef: { name: {{ include "pillar.fullname" . }}-runtime, key: DATABASE_URL } }
+            - name: LEDGER_TOKEN
+              valueFrom: { secretKeyRef: { name: {{ include "pillar.fullname" . }}-runtime, key: LEDGER_TOKEN } }
+            - name: WEBHOOK_SIGNING_SECRET
+              valueFrom: { secretKeyRef: { name: {{ include "pillar.fullname" . }}-runtime, key: WEBHOOK_SIGNING_SECRET } }
+          readinessProbe:
+            httpGet: { path: /health/ready, port: http }
+          livenessProbe:
+            httpGet: { path: /health/live, port: http }
+          resources:
+{{ toYaml $svc.resources | indent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+{{- end }}

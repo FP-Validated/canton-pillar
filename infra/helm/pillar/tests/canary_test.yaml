@@ -1,0 +1,10 @@
+suite: api canary exists
+templates:
+  - templates/api/canary.yaml
+tests:
+  - it: renders VirtualService
+    asserts:
+      - containsDocument:
+          kind: VirtualService
+          apiVersion: networking.istio.io/v1beta1
+          name: RELEASE-NAME-pillar-api-canary

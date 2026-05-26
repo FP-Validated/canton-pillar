@@ -1,0 +1,17 @@
+{{- if .Values.blueGreen.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "pillar.fullname" . }}-api-green
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "api") | indent 4 }}
+    pillar.canton/color: green
+spec:
+  selector:
+{{ include "pillar.selectorLabels" (dict "root" . "component" "api") | indent 4 }}
+    pillar.canton/color: {{ ternary "green" "inactive" (eq .Values.blueGreen.activeColor "green") }}
+  ports:
+    - name: http
+      port: {{ .Values.api.port }}
+      targetPort: http
+{{- end }}

@@ -1,0 +1,16 @@
+{{- if .Values.canary.enabled }}
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{ include "pillar.fullname" . }}-webhook-dispatcher-canary
+  labels:
+{{ include "pillar.componentLabels" (dict "root" . "component" "webhook-dispatcher") | indent 4 }}
+spec:
+  hosts: ["webhook-dispatcher"]
+  http:
+    - route:
+        - destination: { host: {{ include "pillar.fullname" . }}-webhook-dispatcher, subset: stable }
+          weight: {{ sub 100 .Values.canary.weight }}
+        - destination: { host: {{ include "pillar.fullname" . }}-webhook-dispatcher, subset: canary }
+          weight: {{ .Values.canary.weight }}
+{{- end }}
