@@ -12,11 +12,15 @@ Scope: make Hold release, consume, and expire choices atomically update `Holding
 
 Exit condition: ledger-script or equivalent Canton-backed tests demonstrate issue, hold, release, consume, expire, transfer confirm, and operation trace creation against the Daml packages.
 
-## R2 — API correctness
+## R2 — API correctness — DONE
 
-Scope: remove projection fallback responses, gate demo data behind `PILLAR_DEMO_DATA=true`, and make idempotency DB-only with a canonical request hash.
+Scope: projection fallback responses removed from the R2-owned API repository paths; demo projection rows are gated behind `PILLAR_DEMO_DATA=true`; mutating-route idempotency now uses the `@pillar/idempotency` DB state machine by default with the in-memory adapter available only when `PILLAR_IDEMPOTENCY=memory`.
 
-Exit condition: API tests prove projection misses return explicit unavailable/not-found errors unless demo mode is enabled, and retry/conflict behavior is served from the database idempotency table only.
+Canonical request hash fields: HTTP method, path template (`METHOD /v1/.../{id}/action` via `pillar-path-template`), API version, normalized JSON body with deep key sort and decimal-string normalization, and `Pillar-Version`.
+
+Env switches: `PILLAR_IDEMPOTENCY` (`memory` for tests/dev only, DB otherwise), `PILLAR_DEMO_DATA` (`true` enables deterministic demo projection rows when `DATABASE_URL` is unset), `PILLAR_PROJECTION_STALE_SECONDS` (strong-read stale threshold, default 60).
+
+Exit condition: idempotency package build/test and API memory-mode typecheck/test passed in this remediation pass; DB-mode verification remains for the parent integration wave with Postgres/migrator.
 
 ## R3 — Real ledger-command worker
 

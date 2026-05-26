@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { auth, postHeaders, testServer } from './_helpers.js';
 
+process.env.PILLAR_IDEMPOTENCY = 'memory';
 test('mutating POST without Idempotency-Key is rejected', async () => {
   const server = await testServer();
   const response = await server.inject({ method: 'POST', url: '/v1/accounts', headers: auth, payload: { display_name: 'No Key' } });

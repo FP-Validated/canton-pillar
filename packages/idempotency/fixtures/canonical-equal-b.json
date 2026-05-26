@@ -1,0 +1,10 @@
+{
+  "api_version": "2026-05-26",
+  "method": "post",
+  "path_template": "/v1/transfer_intents",
+  "headers": { "pillar-version": "2026-05-26" },
+  "body": {
+    "metadata": { "a": "1", "b": "2" },
+    "amount": { "asset": "asset_demo", "value": "1.23" }
+  }
+}

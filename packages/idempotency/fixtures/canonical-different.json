@@ -1,0 +1,10 @@
+{
+  "method": "POST",
+  "pathTemplate": "/v1/transfer_intents",
+  "apiVersion": "2026-05-26",
+  "headersSubset": { "Pillar-Version": "2026-05-26" },
+  "body": {
+    "amount": { "value": "1.24", "asset": "asset_demo" },
+    "metadata": { "a": "1", "b": "2" }
+  }
+}
