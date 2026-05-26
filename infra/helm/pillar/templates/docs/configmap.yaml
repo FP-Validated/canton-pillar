@@ -1,0 +1,10 @@
+{{- $svc := index .Values "docs" -}}
+{{- if $svc.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-pillar-docs
+data:
+  NODE_ENV: production
+  PILLAR_API_URL: {{ $.Values.config.apiBaseUrl | quote }}
+{{- end }}

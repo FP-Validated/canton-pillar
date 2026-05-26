@@ -1,0 +1,7 @@
+{
+  "environment_id": "env_test",
+  "organization": {
+    "name": "Example Treasury",
+    "country": "US"
+  }
+}

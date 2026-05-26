@@ -1,0 +1,20 @@
+{{- $svc := index .Values "dashboard" -}}
+{{- if $svc.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-pillar-dashboard
+spec:
+  replicas: {{ $svc.replicas }}
+  selector: { matchLabels: { app: pillar-dashboard } }
+  template:
+    metadata: { labels: { app: pillar-dashboard } }
+    spec:
+      serviceAccountName: {{ .Release.Name }}-pillar-dashboard
+      containers:
+        - name: dashboard
+          image: "{{ $svc.image.repository }}:{{ $svc.image.tag }}{{ if $svc.image.digest }}@{{ $svc.image.digest }}{{ end }}"
+          ports: [{ containerPort: 3002, name: http }]
+          envFrom:
+            - configMapRef: { name: {{ .Release.Name }}-pillar-dashboard }
+{{- end }}

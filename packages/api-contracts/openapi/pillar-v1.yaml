@@ -1727,6 +1727,212 @@ components:
         - latest_event
         - account
       type: object
+    OnboardingNextAction:
+      properties:
+        href:
+          type: string
+        label:
+          type: string
+        required_fields:
+          default: []
+          items:
+            type: string
+          type: array
+        retry_after_seconds:
+          exclusiveMinimum: true
+          minimum: 0
+          type: integer
+        step:
+          enum:
+            - organization
+            - kyb
+            - sandbox
+            - api_key
+            - webhook
+            - first_transfer
+            - completed
+          type: string
+        type:
+          enum:
+            - collect_input
+            - wait
+            - redirect
+            - done
+            - error
+          type: string
+      required:
+        - type
+        - step
+        - label
+      type: object
+    OnboardingSession:
+      properties:
+        completed_at:
+          format: date-time
+          nullable: true
+          type: string
+        completion_event_id:
+          nullable: true
+          type: string
+        created:
+          format: date-time
+          type: string
+        current_step:
+          enum:
+            - organization
+            - kyb
+            - sandbox
+            - api_key
+            - webhook
+            - first_transfer
+            - completed
+          nullable: true
+          type: string
+        environment_id:
+          type: string
+        evidence_file_ids:
+          default: []
+          items:
+            type: string
+          type: array
+        first_api_key_id:
+          nullable: true
+          type: string
+        first_transfer_intent_id:
+          nullable: true
+          type: string
+        id:
+          pattern: ^onb_[A-Za-z0-9_\-]+$
+          type: string
+        kyb_decision_id:
+          nullable: true
+          type: string
+        livemode:
+          type: boolean
+        metadata:
+          additionalProperties:
+            type: string
+          type: object
+        next_action:
+          properties:
+            href:
+              type: string
+            label:
+              type: string
+            required_fields:
+              default: []
+              items:
+                type: string
+              type: array
+            retry_after_seconds:
+              exclusiveMinimum: true
+              minimum: 0
+              type: integer
+            step:
+              enum:
+                - organization
+                - kyb
+                - sandbox
+                - api_key
+                - webhook
+                - first_transfer
+                - completed
+              type: string
+            type:
+              enum:
+                - collect_input
+                - wait
+                - redirect
+                - done
+                - error
+              type: string
+          required:
+            - type
+            - step
+            - label
+          type: object
+        object:
+          enum:
+            - onboarding_session
+          type: string
+        status:
+          enum:
+            - created
+            - in_progress
+            - requires_action
+            - pending_review
+            - completed
+            - failed
+            - canceled
+          type: string
+        step_state:
+          additionalProperties:
+            nullable: true
+          default: {}
+          type: object
+        tenant_id:
+          type: string
+        updated:
+          format: date-time
+          type: string
+      required:
+        - id
+        - object
+        - livemode
+        - tenant_id
+        - environment_id
+        - status
+        - current_step
+        - created
+        - updated
+      type: object
+    OnboardingSessionAdvanceRequest:
+      properties:
+        input:
+          additionalProperties:
+            nullable: true
+          default: {}
+          type: object
+        step:
+          enum:
+            - organization
+            - kyb
+            - sandbox
+            - api_key
+            - webhook
+            - first_transfer
+            - completed
+          type: string
+      required:
+        - step
+      type: object
+    OnboardingSessionCreateRequest:
+      properties:
+        environment_id:
+          minLength: 1
+          type: string
+        metadata:
+          additionalProperties:
+            type: string
+          type: object
+        organization:
+          properties:
+            country:
+              maxLength: 2
+              minLength: 2
+              type: string
+            name:
+              minLength: 1
+              type: string
+            website:
+              format: uri
+              type: string
+          required:
+            - name
+          type: object
+      required:
+        - environment_id
+      type: object
     OperationListResponse:
       properties:
         data:
@@ -5944,6 +6150,399 @@ paths:
       tags:
         - Reserved
       x-pillar-reserved: true
+    post:
+      operationId: onboardingcreate
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema:
+            maxLength: 255
+            minLength: 1
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OnboardingSessionCreateRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OnboardingSession"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: create onboarding
+      tags:
+        - onboarding
+  /v1/onboarding/{id}:
+    get:
+      operationId: onboardingretrieve
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OnboardingSession"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: retrieve onboarding
+      tags:
+        - onboarding
+  /v1/onboarding/{id}/advance:
+    post:
+      operationId: onboardingadvance
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema:
+            maxLength: 255
+            minLength: 1
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OnboardingSessionAdvanceRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OnboardingSession"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: advance onboarding
+      tags:
+        - onboarding
+  /v1/onboarding/{id}/cancel:
+    post:
+      operationId: onboardingcancel
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema:
+            maxLength: 255
+            minLength: 1
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OnboardingSession"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: cancel onboarding
+      tags:
+        - onboarding
+  /v1/onboarding/{id}/next_action:
+    get:
+      operationId: onboardingnextAction
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OnboardingNextAction"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: nextAction onboarding
+      tags:
+        - onboarding
   /v1/openapi.json:
     get:
       operationId: openapiRetrieve

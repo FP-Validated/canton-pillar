@@ -1160,70 +1160,572 @@
         ],
         "type": "object"
       },
-      "EventTypeName": {
-        "enum": [
-          "account.created",
-          "account.updated",
-          "asset.created",
-          "asset.updated",
-          "asset.suspended",
-          "issue_intent.requires_action",
-          "issue_intent.processing",
-          "issue_intent.succeeded",
-          "issue_intent.failed",
-          "issue_intent.canceled",
-          "redeem_intent.requires_action",
-          "redeem_intent.processing",
-          "redeem_intent.succeeded",
-          "redeem_intent.failed",
-          "redeem_intent.canceled",
-          "transfer_intent.requires_action",
-          "transfer_intent.processing",
-          "transfer_intent.succeeded",
-          "transfer_intent.failed",
-          "transfer_intent.canceled",
-          "hold.created",
-          "hold.released",
-          "hold.consumed",
-          "hold.expired",
-          "webhook_endpoint.created",
-          "webhook_endpoint.secret_rotated",
-          "webhook_endpoint.disabled",
-          "api_key.created",
-          "api_key.revoked",
-          "api_key.rotated",
-          "export_job.queued",
-          "export_job.succeeded",
-          "export_job.failed",
-          "file.uploaded",
-          "file.scanned",
-          "file.deleted",
-          "evidence_file.linked",
-          "evidence_file.verified",
-          "compliance_decision.approved",
-          "compliance_decision.rejected",
-          "compliance_decision.requires_action",
-          "onboarding.completed",
-          "onboarding.failed",
-          "invoice.created",
-          "invoice.paid",
-          "invoice.uncollectible",
-          "usage.threshold_reached",
-          "balance.updated",
-          "holding.created",
-          "holding.updated",
-          "holding.closed",
-          "transfer.created",
-          "transfer.succeeded",
-          "transfer.failed",
-          "transfer.canceled",
-          "request.rate_limit_hit",
-          "webhook_delivery.failed",
-          "webhook_delivery.succeeded",
-          "template_version.activated",
-          "search_index.rebuilt"
+      "ExportCreateRequest": {
+        "properties": {
+          "columns": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "consistency_mode": {
+            "default": "eventual",
+            "enum": [
+              "eventual",
+              "ledger_snapshot"
+            ],
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "format": {
+            "default": "csv",
+            "enum": [
+              "csv",
+              "jsonl",
+              "parquet"
+            ],
+            "type": "string"
+          },
+          "metadata": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "default": {},
+            "type": "object"
+          },
+          "query": {
+            "additionalProperties": {
+              "nullable": true
+            },
+            "default": {},
+            "type": "object"
+          },
+          "resource": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "resource"
         ],
-        "type": "string"
+        "type": "object"
+      },
+      "ExportDestination": {
+        "properties": {
+          "created": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "disabled": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string"
+          },
+          "livemode": {
+            "type": "boolean"
+          },
+          "metadata": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "default": {},
+            "type": "object"
+          },
+          "name": {
+            "type": "string"
+          },
+          "object": {
+            "enum": [
+              "export_destination"
+            ],
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "s3",
+              "gcs",
+              "azure_blob",
+              "webhook"
+            ],
+            "type": "string"
+          },
+          "updated": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "object",
+          "livemode",
+          "type",
+          "name",
+          "disabled",
+          "created",
+          "updated"
+        ],
+        "type": "object"
+      },
+      "ExportDestinationCreateRequest": {
+        "properties": {
+          "config": {
+            "additionalProperties": {
+              "nullable": true
+            },
+            "default": {},
+            "type": "object"
+          },
+          "metadata": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "default": {},
+            "type": "object"
+          },
+          "name": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "secret_ref": {
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "s3",
+              "gcs",
+              "azure_blob",
+              "webhook"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "name"
+        ],
+        "type": "object"
+      },
+      "ExportDestinationListResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "properties": {
+                "created": {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                "disabled": {
+                  "type": "boolean"
+                },
+                "id": {
+                  "type": "string"
+                },
+                "livemode": {
+                  "type": "boolean"
+                },
+                "metadata": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "default": {},
+                  "type": "object"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "object": {
+                  "enum": [
+                    "export_destination"
+                  ],
+                  "type": "string"
+                },
+                "type": {
+                  "enum": [
+                    "s3",
+                    "gcs",
+                    "azure_blob",
+                    "webhook"
+                  ],
+                  "type": "string"
+                },
+                "updated": {
+                  "format": "date-time",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "object",
+                "livemode",
+                "type",
+                "name",
+                "disabled",
+                "created",
+                "updated"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "has_more": {
+            "type": "boolean"
+          },
+          "object": {
+            "enum": [
+              "list"
+            ],
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "object",
+          "url",
+          "has_more",
+          "data"
+        ],
+        "type": "object"
+      },
+      "ExportDownloadUrlResponse": {
+        "properties": {
+          "expires_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "object": {
+            "enum": [
+              "export_download_url"
+            ],
+            "type": "string"
+          },
+          "url": {
+            "format": "uri",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "object",
+          "url",
+          "expires_at"
+        ],
+        "type": "object"
+      },
+      "ExportJob": {
+        "properties": {
+          "columns": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "consistency_mode": {
+            "enum": [
+              "eventual",
+              "ledger_snapshot"
+            ],
+            "type": "string"
+          },
+          "created": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "destination": {
+            "nullable": true,
+            "type": "string"
+          },
+          "failure": {
+            "nullable": true,
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "code",
+              "message"
+            ],
+            "type": "object"
+          },
+          "format": {
+            "enum": [
+              "csv",
+              "jsonl",
+              "parquet"
+            ],
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "livemode": {
+            "type": "boolean"
+          },
+          "metadata": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "default": {},
+            "type": "object"
+          },
+          "object": {
+            "enum": [
+              "export_job"
+            ],
+            "type": "string"
+          },
+          "query": {
+            "additionalProperties": {
+              "nullable": true
+            },
+            "type": "object"
+          },
+          "query_hash": {
+            "type": "string"
+          },
+          "resource": {
+            "type": "string"
+          },
+          "result": {
+            "nullable": true,
+            "properties": {
+              "byte_count": {
+                "type": "integer"
+              },
+              "manifest": {
+                "additionalProperties": {
+                  "nullable": true
+                },
+                "type": "object"
+              },
+              "row_count": {
+                "type": "integer"
+              },
+              "sha256": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "row_count",
+              "byte_count",
+              "sha256",
+              "manifest"
+            ],
+            "type": "object"
+          },
+          "status": {
+            "enum": [
+              "queued",
+              "claimed",
+              "running",
+              "succeeded",
+              "failed",
+              "canceled"
+            ],
+            "type": "string"
+          },
+          "target_ledger_offset": {
+            "nullable": true,
+            "type": "string"
+          },
+          "updated": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "object",
+          "livemode",
+          "status",
+          "resource",
+          "query",
+          "query_hash",
+          "format",
+          "columns",
+          "consistency_mode",
+          "created",
+          "updated"
+        ],
+        "type": "object"
+      },
+      "ExportJobListResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "properties": {
+                "columns": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "consistency_mode": {
+                  "enum": [
+                    "eventual",
+                    "ledger_snapshot"
+                  ],
+                  "type": "string"
+                },
+                "created": {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                "destination": {
+                  "nullable": true,
+                  "type": "string"
+                },
+                "failure": {
+                  "nullable": true,
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "type": "object"
+                },
+                "format": {
+                  "enum": [
+                    "csv",
+                    "jsonl",
+                    "parquet"
+                  ],
+                  "type": "string"
+                },
+                "id": {
+                  "type": "string"
+                },
+                "livemode": {
+                  "type": "boolean"
+                },
+                "metadata": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "default": {},
+                  "type": "object"
+                },
+                "object": {
+                  "enum": [
+                    "export_job"
+                  ],
+                  "type": "string"
+                },
+                "query": {
+                  "additionalProperties": {
+                    "nullable": true
+                  },
+                  "type": "object"
+                },
+                "query_hash": {
+                  "type": "string"
+                },
+                "resource": {
+                  "type": "string"
+                },
+                "result": {
+                  "nullable": true,
+                  "properties": {
+                    "byte_count": {
+                      "type": "integer"
+                    },
+                    "manifest": {
+                      "additionalProperties": {
+                        "nullable": true
+                      },
+                      "type": "object"
+                    },
+                    "row_count": {
+                      "type": "integer"
+                    },
+                    "sha256": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "row_count",
+                    "byte_count",
+                    "sha256",
+                    "manifest"
+                  ],
+                  "type": "object"
+                },
+                "status": {
+                  "enum": [
+                    "queued",
+                    "claimed",
+                    "running",
+                    "succeeded",
+                    "failed",
+                    "canceled"
+                  ],
+                  "type": "string"
+                },
+                "target_ledger_offset": {
+                  "nullable": true,
+                  "type": "string"
+                },
+                "updated": {
+                  "format": "date-time",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "object",
+                "livemode",
+                "status",
+                "resource",
+                "query",
+                "query_hash",
+                "format",
+                "columns",
+                "consistency_mode",
+                "created",
+                "updated"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "has_more": {
+            "type": "boolean"
+          },
+          "object": {
+            "enum": [
+              "list"
+            ],
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "object",
+          "url",
+          "has_more",
+          "data"
+        ],
+        "type": "object"
       },
       "HealthEnvelope": {
         "properties": {
@@ -1879,6 +2381,281 @@
         ],
         "type": "object"
       },
+      "OnboardingNextAction": {
+        "properties": {
+          "href": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "required_fields": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "retry_after_seconds": {
+            "exclusiveMinimum": true,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "step": {
+            "enum": [
+              "organization",
+              "kyb",
+              "sandbox",
+              "api_key",
+              "webhook",
+              "first_transfer",
+              "completed"
+            ],
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "collect_input",
+              "wait",
+              "redirect",
+              "done",
+              "error"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "step",
+          "label"
+        ],
+        "type": "object"
+      },
+      "OnboardingSession": {
+        "properties": {
+          "completed_at": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "completion_event_id": {
+            "nullable": true,
+            "type": "string"
+          },
+          "created": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "current_step": {
+            "enum": [
+              "organization",
+              "kyb",
+              "sandbox",
+              "api_key",
+              "webhook",
+              "first_transfer",
+              "completed"
+            ],
+            "nullable": true,
+            "type": "string"
+          },
+          "environment_id": {
+            "type": "string"
+          },
+          "evidence_file_ids": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "first_api_key_id": {
+            "nullable": true,
+            "type": "string"
+          },
+          "first_transfer_intent_id": {
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "pattern": "^onb_[A-Za-z0-9_\\-]+$",
+            "type": "string"
+          },
+          "kyb_decision_id": {
+            "nullable": true,
+            "type": "string"
+          },
+          "livemode": {
+            "type": "boolean"
+          },
+          "metadata": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "next_action": {
+            "properties": {
+              "href": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              },
+              "required_fields": {
+                "default": [],
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "retry_after_seconds": {
+                "exclusiveMinimum": true,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "step": {
+                "enum": [
+                  "organization",
+                  "kyb",
+                  "sandbox",
+                  "api_key",
+                  "webhook",
+                  "first_transfer",
+                  "completed"
+                ],
+                "type": "string"
+              },
+              "type": {
+                "enum": [
+                  "collect_input",
+                  "wait",
+                  "redirect",
+                  "done",
+                  "error"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "type",
+              "step",
+              "label"
+            ],
+            "type": "object"
+          },
+          "object": {
+            "enum": [
+              "onboarding_session"
+            ],
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "created",
+              "in_progress",
+              "requires_action",
+              "pending_review",
+              "completed",
+              "failed",
+              "canceled"
+            ],
+            "type": "string"
+          },
+          "step_state": {
+            "additionalProperties": {
+              "nullable": true
+            },
+            "default": {},
+            "type": "object"
+          },
+          "tenant_id": {
+            "type": "string"
+          },
+          "updated": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "object",
+          "livemode",
+          "tenant_id",
+          "environment_id",
+          "status",
+          "current_step",
+          "created",
+          "updated"
+        ],
+        "type": "object"
+      },
+      "OnboardingSessionAdvanceRequest": {
+        "properties": {
+          "input": {
+            "additionalProperties": {
+              "nullable": true
+            },
+            "default": {},
+            "type": "object"
+          },
+          "step": {
+            "enum": [
+              "organization",
+              "kyb",
+              "sandbox",
+              "api_key",
+              "webhook",
+              "first_transfer",
+              "completed"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "step"
+        ],
+        "type": "object"
+      },
+      "OnboardingSessionCreateRequest": {
+        "properties": {
+          "environment_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "metadata": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "organization": {
+            "properties": {
+              "country": {
+                "maxLength": 2,
+                "minLength": 2,
+                "type": "string"
+              },
+              "name": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "website": {
+                "format": "uri",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "environment_id"
+        ],
+        "type": "object"
+      },
       "OperationListResponse": {
         "properties": {
           "data": {
@@ -2318,6 +3095,411 @@
         ],
         "type": "object"
       },
+      "ReportTemplate": {
+        "properties": {
+          "archived": {
+            "type": "boolean"
+          },
+          "columns": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "consistency_mode": {
+            "enum": [
+              "eventual",
+              "ledger_snapshot"
+            ],
+            "type": "string"
+          },
+          "created": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "format": {
+            "enum": [
+              "csv",
+              "jsonl",
+              "parquet"
+            ],
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "livemode": {
+            "type": "boolean"
+          },
+          "metadata": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "default": {},
+            "type": "object"
+          },
+          "name": {
+            "type": "string"
+          },
+          "object": {
+            "enum": [
+              "report_template"
+            ],
+            "type": "string"
+          },
+          "query": {
+            "additionalProperties": {
+              "nullable": true
+            },
+            "type": "object"
+          },
+          "resource": {
+            "type": "string"
+          },
+          "schedule": {
+            "additionalProperties": {
+              "nullable": true
+            },
+            "nullable": true,
+            "type": "object"
+          },
+          "updated": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "object",
+          "livemode",
+          "name",
+          "resource",
+          "query",
+          "columns",
+          "format",
+          "consistency_mode",
+          "archived",
+          "created",
+          "updated"
+        ],
+        "type": "object"
+      },
+      "ReportTemplateCreateRequest": {
+        "properties": {
+          "columns": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "consistency_mode": {
+            "default": "eventual",
+            "enum": [
+              "eventual",
+              "ledger_snapshot"
+            ],
+            "type": "string"
+          },
+          "format": {
+            "default": "csv",
+            "enum": [
+              "csv",
+              "jsonl",
+              "parquet"
+            ],
+            "type": "string"
+          },
+          "metadata": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "default": {},
+            "type": "object"
+          },
+          "name": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "query": {
+            "additionalProperties": {
+              "nullable": true
+            },
+            "default": {},
+            "type": "object"
+          },
+          "resource": {
+            "type": "string"
+          },
+          "schedule": {
+            "additionalProperties": {
+              "nullable": true
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "name",
+          "resource"
+        ],
+        "type": "object"
+      },
+      "ReportTemplateListResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "properties": {
+                "archived": {
+                  "type": "boolean"
+                },
+                "columns": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "consistency_mode": {
+                  "enum": [
+                    "eventual",
+                    "ledger_snapshot"
+                  ],
+                  "type": "string"
+                },
+                "created": {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                "format": {
+                  "enum": [
+                    "csv",
+                    "jsonl",
+                    "parquet"
+                  ],
+                  "type": "string"
+                },
+                "id": {
+                  "type": "string"
+                },
+                "livemode": {
+                  "type": "boolean"
+                },
+                "metadata": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "default": {},
+                  "type": "object"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "object": {
+                  "enum": [
+                    "report_template"
+                  ],
+                  "type": "string"
+                },
+                "query": {
+                  "additionalProperties": {
+                    "nullable": true
+                  },
+                  "type": "object"
+                },
+                "resource": {
+                  "type": "string"
+                },
+                "schedule": {
+                  "additionalProperties": {
+                    "nullable": true
+                  },
+                  "nullable": true,
+                  "type": "object"
+                },
+                "updated": {
+                  "format": "date-time",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "object",
+                "livemode",
+                "name",
+                "resource",
+                "query",
+                "columns",
+                "format",
+                "consistency_mode",
+                "archived",
+                "created",
+                "updated"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "has_more": {
+            "type": "boolean"
+          },
+          "object": {
+            "enum": [
+              "list"
+            ],
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "object",
+          "url",
+          "has_more",
+          "data"
+        ],
+        "type": "object"
+      },
+      "ReportTemplateRunResponse": {
+        "properties": {
+          "columns": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "consistency_mode": {
+            "enum": [
+              "eventual",
+              "ledger_snapshot"
+            ],
+            "type": "string"
+          },
+          "created": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "destination": {
+            "nullable": true,
+            "type": "string"
+          },
+          "failure": {
+            "nullable": true,
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "code",
+              "message"
+            ],
+            "type": "object"
+          },
+          "format": {
+            "enum": [
+              "csv",
+              "jsonl",
+              "parquet"
+            ],
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "livemode": {
+            "type": "boolean"
+          },
+          "metadata": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "default": {},
+            "type": "object"
+          },
+          "object": {
+            "enum": [
+              "export_job"
+            ],
+            "type": "string"
+          },
+          "query": {
+            "additionalProperties": {
+              "nullable": true
+            },
+            "type": "object"
+          },
+          "query_hash": {
+            "type": "string"
+          },
+          "resource": {
+            "type": "string"
+          },
+          "result": {
+            "nullable": true,
+            "properties": {
+              "byte_count": {
+                "type": "integer"
+              },
+              "manifest": {
+                "additionalProperties": {
+                  "nullable": true
+                },
+                "type": "object"
+              },
+              "row_count": {
+                "type": "integer"
+              },
+              "sha256": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "row_count",
+              "byte_count",
+              "sha256",
+              "manifest"
+            ],
+            "type": "object"
+          },
+          "status": {
+            "enum": [
+              "queued",
+              "claimed",
+              "running",
+              "succeeded",
+              "failed",
+              "canceled"
+            ],
+            "type": "string"
+          },
+          "target_ledger_offset": {
+            "nullable": true,
+            "type": "string"
+          },
+          "updated": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "object",
+          "livemode",
+          "status",
+          "resource",
+          "query",
+          "query_hash",
+          "format",
+          "columns",
+          "consistency_mode",
+          "created",
+          "updated"
+        ],
+        "type": "object"
+      },
       "RotateSecretResponse": {
         "properties": {
           "created": {
@@ -2342,6 +3524,157 @@
           "secret",
           "last4",
           "created"
+        ],
+        "type": "object"
+      },
+      "SearchQuery": {
+        "properties": {
+          "filters": {
+            "default": [],
+            "items": {
+              "properties": {
+                "field": {
+                  "type": "string"
+                },
+                "operator": {
+                  "enum": [
+                    "eq",
+                    "contains",
+                    "prefix",
+                    "gte",
+                    "lte"
+                  ],
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "field",
+                "operator",
+                "value"
+              ],
+              "type": "object"
+            },
+            "maxItems": 20,
+            "type": "array"
+          },
+          "limit": {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "query": {
+            "type": "string"
+          },
+          "resource": {
+            "enum": [
+              "transfer",
+              "holding",
+              "balance",
+              "event",
+              "operation"
+            ],
+            "type": "string"
+          },
+          "starting_after": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "resource"
+        ],
+        "type": "object"
+      },
+      "SearchResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "object": {
+                  "enum": [
+                    "search_result"
+                  ],
+                  "type": "string"
+                },
+                "projection_watermark": {
+                  "type": "string"
+                },
+                "resource": {
+                  "enum": [
+                    "transfer",
+                    "holding",
+                    "balance",
+                    "event",
+                    "operation"
+                  ],
+                  "type": "string"
+                },
+                "score": {
+                  "type": "number"
+                },
+                "snippet": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "updated": {
+                  "format": "date-time",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "object",
+                "resource",
+                "title",
+                "score",
+                "updated",
+                "projection_watermark"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "freshness": {
+            "properties": {
+              "checkpoint": {
+                "type": "string"
+              },
+              "lag_seconds": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "lag_seconds",
+              "checkpoint"
+            ],
+            "type": "object"
+          },
+          "has_more": {
+            "type": "boolean"
+          },
+          "object": {
+            "enum": [
+              "list"
+            ],
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "object",
+          "url",
+          "has_more",
+          "data",
+          "freshness"
         ],
         "type": "object"
       },
@@ -5337,6 +6670,385 @@
         "x-pillar-reserved": true
       }
     },
+    "/v1/export_destinations": {
+      "get": {
+        "operationId": "exportDestinationslist",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportDestinationListResponse"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 401"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 403"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 404"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 409"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 422"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 500"
+          }
+        },
+        "summary": "list export_destinations",
+        "tags": [
+          "export_destinations"
+        ]
+      },
+      "post": {
+        "operationId": "exportDestinationscreate",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 255,
+              "minLength": 1,
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExportDestinationCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportDestination"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 401"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 403"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 404"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 409"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 422"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 500"
+          }
+        },
+        "summary": "create export_destinations",
+        "tags": [
+          "export_destinations"
+        ]
+      }
+    },
+    "/v1/export_destinations/{id}/disable": {
+      "post": {
+        "operationId": "exportDestinationsdisable",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 255,
+              "minLength": 1,
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportDestination"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 401"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 403"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 404"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 409"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 422"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 500"
+          }
+        },
+        "summary": "disable export_destinations",
+        "tags": [
+          "export_destinations"
+        ]
+      }
+    },
     "/v1/export_jobs": {
       "get": {
         "operationId": "reserved_v1_export_jobs",
@@ -5357,6 +7069,643 @@
           "Reserved"
         ],
         "x-pillar-reserved": true
+      }
+    },
+    "/v1/exports": {
+      "get": {
+        "operationId": "exportslist",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportJobListResponse"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 401"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 403"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 404"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 409"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 422"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 500"
+          }
+        },
+        "summary": "list exports",
+        "tags": [
+          "exports"
+        ]
+      },
+      "post": {
+        "operationId": "exportscreate",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 255,
+              "minLength": 1,
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExportCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportJob"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 401"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 403"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 404"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 409"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 422"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 500"
+          }
+        },
+        "summary": "create exports",
+        "tags": [
+          "exports"
+        ]
+      }
+    },
+    "/v1/exports/{id}": {
+      "get": {
+        "operationId": "exportsretrieve",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportJob"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 401"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 403"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 404"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 409"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 422"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 500"
+          }
+        },
+        "summary": "retrieve exports",
+        "tags": [
+          "exports"
+        ]
+      }
+    },
+    "/v1/exports/{id}/cancel": {
+      "post": {
+        "operationId": "exportscancel",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 255,
+              "minLength": 1,
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportJob"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 401"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 403"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 404"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 409"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 422"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 500"
+          }
+        },
+        "summary": "cancel exports",
+        "tags": [
+          "exports"
+        ]
+      }
+    },
+    "/v1/exports/{id}/download_url": {
+      "post": {
+        "operationId": "exportsdownloadUrl",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 255,
+              "minLength": 1,
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportDownloadUrlResponse"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 401"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 403"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 404"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 409"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 422"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 500"
+          }
+        },
+        "summary": "downloadUrl exports",
+        "tags": [
+          "exports"
+        ]
       }
     },
     "/v1/files": {
@@ -6948,6 +9297,651 @@
           "Reserved"
         ],
         "x-pillar-reserved": true
+      },
+      "post": {
+        "operationId": "onboardingcreate",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 255,
+              "minLength": 1,
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OnboardingSessionCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingSession"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 401"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 403"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 404"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 409"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 422"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 500"
+          }
+        },
+        "summary": "create onboarding",
+        "tags": [
+          "onboarding"
+        ]
+      }
+    },
+    "/v1/onboarding/{id}": {
+      "get": {
+        "operationId": "onboardingretrieve",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingSession"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 401"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 403"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 404"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 409"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 422"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 500"
+          }
+        },
+        "summary": "retrieve onboarding",
+        "tags": [
+          "onboarding"
+        ]
+      }
+    },
+    "/v1/onboarding/{id}/advance": {
+      "post": {
+        "operationId": "onboardingadvance",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 255,
+              "minLength": 1,
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OnboardingSessionAdvanceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingSession"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 401"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 403"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 404"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 409"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 422"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 500"
+          }
+        },
+        "summary": "advance onboarding",
+        "tags": [
+          "onboarding"
+        ]
+      }
+    },
+    "/v1/onboarding/{id}/cancel": {
+      "post": {
+        "operationId": "onboardingcancel",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 255,
+              "minLength": 1,
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingSession"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 401"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 403"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 404"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 409"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 422"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 500"
+          }
+        },
+        "summary": "cancel onboarding",
+        "tags": [
+          "onboarding"
+        ]
+      }
+    },
+    "/v1/onboarding/{id}/next_action": {
+      "get": {
+        "operationId": "onboardingnextAction",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingNextAction"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 401"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 403"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 404"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 409"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 422"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 500"
+          }
+        },
+        "summary": "nextAction onboarding",
+        "tags": [
+          "onboarding"
+        ]
       }
     },
     "/v1/openapi.json": {
@@ -7851,6 +10845,643 @@
           "Reserved"
         ],
         "x-pillar-reserved": true
+      },
+      "post": {
+        "operationId": "reportTemplatescreate",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 255,
+              "minLength": 1,
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportTemplateCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportTemplate"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 401"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 403"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 404"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 409"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 422"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 500"
+          }
+        },
+        "summary": "create report_templates",
+        "tags": [
+          "report_templates"
+        ]
+      }
+    },
+    "/v1/report_templates/{id}": {
+      "get": {
+        "operationId": "reportTemplatesretrieve",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportTemplate"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 401"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 403"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 404"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 409"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 422"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 500"
+          }
+        },
+        "summary": "retrieve report_templates",
+        "tags": [
+          "report_templates"
+        ]
+      }
+    },
+    "/v1/report_templates/{id}/archive": {
+      "post": {
+        "operationId": "reportTemplatesarchive",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 255,
+              "minLength": 1,
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportTemplate"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 401"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 403"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 404"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 409"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 422"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 500"
+          }
+        },
+        "summary": "archive report_templates",
+        "tags": [
+          "report_templates"
+        ]
+      }
+    },
+    "/v1/report_templates/{id}/run": {
+      "post": {
+        "operationId": "reportTemplatesrun",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 255,
+              "minLength": 1,
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportTemplateRunResponse"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 401"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 403"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 404"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 409"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 422"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 500"
+          }
+        },
+        "summary": "run report_templates",
+        "tags": [
+          "report_templates"
+        ]
+      }
+    },
+    "/v1/search": {
+      "get": {
+        "operationId": "searchquery",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 400"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 401"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 403"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 404"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 409"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 422"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 429"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Error 500"
+          }
+        },
+        "summary": "query search",
+        "tags": [
+          "search"
+        ]
       }
     },
     "/v1/transfer_intents": {

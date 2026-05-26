@@ -1,0 +1,2 @@
+import { createHash } from 'node:crypto'; import { readFileSync } from 'node:fs'; import { join } from 'node:path';
+export function loadOpenApi() { const path = join(process.cwd(), '../../packages/api-contracts/openapi/pillar-v1.yaml'); const raw = readFileSync(path, 'utf8'); return { raw, checksum: createHash('sha256').update(raw).digest('hex'), paths: [...raw.matchAll(/^  (\/v1[^:]+):/gm)].map(m=>m[1]) }; }

@@ -1,0 +1,1 @@
+export function Nav({ title, children }: { title?: string; children?: React.ReactNode }) { return <section className="rounded border bg-white p-4"><h2 className="font-semibold">{title ?? 'Nav'}</h2>{children}</section>; }

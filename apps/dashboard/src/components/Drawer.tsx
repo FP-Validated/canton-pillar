@@ -1,0 +1,1 @@
+export function Drawer({ title, children }: { title?: string; children?: React.ReactNode }) { return <section className="rounded border bg-white p-4"><h2 className="font-semibold">{title ?? 'Drawer'}</h2>{children}</section>; }

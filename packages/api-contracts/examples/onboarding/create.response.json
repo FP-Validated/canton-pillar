@@ -1,0 +1,21 @@
+{
+  "id": "onb_01HXEXAMPLE",
+  "object": "onboarding_session",
+  "livemode": false,
+  "tenant_id": "tnt_demo",
+  "environment_id": "env_test",
+  "status": "in_progress",
+  "current_step": "organization",
+  "step_state": {},
+  "evidence_file_ids": [],
+  "created": "2026-05-26T00:00:00.000Z",
+  "updated": "2026-05-26T00:00:00.000Z",
+  "next_action": {
+    "type": "collect_input",
+    "step": "organization",
+    "label": "Confirm organization",
+    "required_fields": [
+      "organization.name"
+    ]
+  }
+}

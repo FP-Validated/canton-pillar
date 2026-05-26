@@ -1,0 +1,3 @@
+{{- if .Values.dashboard.enabled }}
+# dashboard pdb intentionally uses cluster defaults in Phase 13
+{{- end }}

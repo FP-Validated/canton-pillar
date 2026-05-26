@@ -1,0 +1,1 @@
+export async function requestKyb(input: Record<string, any>) { if (input.outage) return { status:'pending_review' as const }; return { status: input.approved === false ? 'requires_action' as const : 'approved' as const, decision_id: input.decision_id ?? 'kyb_decision' }; }

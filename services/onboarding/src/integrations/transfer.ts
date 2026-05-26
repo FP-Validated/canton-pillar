@@ -1,0 +1,1 @@
+export async function createAndObserveFirstTransfer(input: Record<string, any>) { return { transfer_intent_id: input.transfer_intent_id ?? 'trint_onboarding', projected: Boolean(input.projected), event_id: input.event_id }; }

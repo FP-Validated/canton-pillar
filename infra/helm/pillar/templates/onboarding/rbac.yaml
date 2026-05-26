@@ -1,0 +1,3 @@
+{{- if .Values.onboarding.enabled }}
+# onboarding rbac intentionally uses cluster defaults in Phase 13
+{{- end }}

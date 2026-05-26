@@ -1,0 +1,20 @@
+{{- $svc := index .Values "onboarding" -}}
+{{- if $svc.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-pillar-onboarding
+spec:
+  replicas: {{ $svc.replicas }}
+  selector: { matchLabels: { app: pillar-onboarding } }
+  template:
+    metadata: { labels: { app: pillar-onboarding } }
+    spec:
+      serviceAccountName: {{ .Release.Name }}-pillar-onboarding
+      containers:
+        - name: onboarding
+          image: "{{ $svc.image.repository }}:{{ $svc.image.tag }}{{ if $svc.image.digest }}@{{ $svc.image.digest }}{{ end }}"
+          ports: [{ containerPort: 8093, name: http }]
+          envFrom:
+            - configMapRef: { name: {{ .Release.Name }}-pillar-onboarding }
+{{- end }}

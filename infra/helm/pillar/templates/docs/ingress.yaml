@@ -1,0 +1,3 @@
+{{- if .Values.docs.enabled }}
+# docs ingress intentionally uses shared ingress in Phase 13
+{{- end }}

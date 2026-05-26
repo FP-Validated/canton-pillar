@@ -12,6 +12,7 @@ export * from './event.js';
 export * from './webhook-endpoint.js';
 export * from './api-key.js';
 export * from './events/index.js';
+export * from './onboarding/index.js';
 export * from './search-query.js';
 export * from './export-job.js';
 export * from './report-template.js';

@@ -1,0 +1,1 @@
+export function ApiKeyPanel({ title, children }: { title?: string; children?: React.ReactNode }) { return <section className="rounded border bg-white p-4"><h2 className="font-semibold">{title ?? 'ApiKeyPanel'}</h2>{children}</section>; }
