@@ -1,0 +1,22 @@
+{
+  "id": "evt_01JZ8K4J5S6Q9X2N8VZ7M8B9C1",
+  "object": "event",
+  "type": "transfer_intent.succeeded",
+  "api_version": "2026-05-26",
+  "created": 1782470400,
+  "livemode": false,
+  "data": {
+    "object": {
+      "id": "trint_01JZ8K3V2X8ZJ6P4M2N1Q9A7B6",
+      "object": "transfer_intent",
+      "url": "/v1/transfer_intents/trint_01JZ8K3V2X8ZJ6P4M2N1Q9A7B6"
+    },
+    "previous_attributes": {
+      "status": "processing"
+    }
+  },
+  "request": {
+    "id": "req_01JZ8K2T1VQZ8N6P4B3C2D1E0F",
+    "idempotency_key": "transfer-2026-05-26-000123"
+  }
+}

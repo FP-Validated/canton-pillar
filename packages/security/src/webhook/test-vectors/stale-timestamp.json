@@ -1,0 +1,12 @@
+{
+  "name": "stale",
+  "timestamp": 1779765314,
+  "rawBody": "{\"id\":\"evt_test\",\"object\":\"event\",\"type\":\"transfer_intent.succeeded\"}",
+  "secrets": [
+    "plr_whsec_test_123"
+  ],
+  "header": "t=1779765314,v1=a24c355601864af024ed4f25cae48b5083d8f43a1c765ea1e3986d4ce04abbb3",
+  "valid": false,
+  "now": 1779765615000,
+  "reason": "timestamp_out_of_tolerance"
+}

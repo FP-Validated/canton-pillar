@@ -1,0 +1,33 @@
+{
+  "name": "@pillar/security",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js"
+    },
+    "./webhook": {
+      "types": "./dist/src/webhook/index.d.ts",
+      "import": "./dist/src/webhook/index.js"
+    },
+    "./webhook/test-vectors/*": "./src/webhook/test-vectors/*"
+  },
+  "files": [
+    "dist",
+    "src/webhook/test-vectors"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "node --test --import tsx test/**/*.test.ts"
+  },
+  "devDependencies": {
+    "@types/node": "20.16.10",
+    "tsx": "4.19.1",
+    "typescript": "5.6.2"
+  }
+}

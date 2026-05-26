@@ -22,7 +22,7 @@ IssueIntentSchema:s.IssueIntentSchema, IssueIntentCreateRequest:s.IssueIntentCre
 RedeemIntentSchema:s.RedeemIntentSchema, RedeemIntentCreateRequest:s.RedeemIntentCreateRequest, RedeemIntentListResponse:s.RedeemIntentListResponse,
 TransferIntentSchema:s.TransferIntentSchema, TransferIntentCreateRequest:s.TransferIntentCreateRequest, TransferIntentListResponse:s.TransferIntentListResponse,
 HoldSchema:s.HoldSchema, HoldCreateRequest:s.HoldCreateRequest, HoldReleaseRequest:s.HoldReleaseRequest, HoldListResponse:s.HoldListResponse,
-OperationSchema:s.OperationSchema, OperationListResponse:s.OperationListResponse, EventSchema:s.EventSchema, EventListResponse:s.EventListResponse,
+OperationSchema:s.OperationSchema, OperationListResponse:s.OperationListResponse, EventSchema:s.EventSchema, EventListResponse:s.EventListResponse, EventTypeName:s.EventTypeName,
 WebhookEndpointSchema:s.WebhookEndpointSchema, WebhookEndpointCreateRequest:s.WebhookEndpointCreateRequest, WebhookEndpointUpdateRequest:s.WebhookEndpointUpdateRequest, RotateSecretResponse:s.RotateSecretResponse, WebhookEndpointListResponse:s.WebhookEndpointListResponse,
 ApiKeySchema:s.ApiKeySchema, ApiKeyCreateRequest:s.ApiKeyCreateRequest, ApiKeyCreateResponse:s.ApiKeyCreateResponse, ApiKeyListResponse:s.ApiKeyListResponse,
 ErrorEnvelope:s.ErrorEnvelope, HealthEnvelope:s.HealthEnvelope

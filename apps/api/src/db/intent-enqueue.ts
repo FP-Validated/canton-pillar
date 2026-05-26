@@ -33,7 +33,7 @@ async function updateClaim(client: pg.PoolClient, tenantId: string, key: string,
 }
 
 export async function enqueueIntent(input: EnqueueInput): Promise<EnqueueResult> {
-  if (process.env.PILLAR_DB === 'memory') return { operationId: id('op_'), intentId: input.intentKind === 'hold_release' && typeof input.payload.hold_id === 'string' ? input.payload.hold_id : id(intentPrefix[input.intentKind]), commandId: commandId(input.tenantId, id('op_')), status: 'processing' };
+  if (process.env.PILLAR_DB === 'memory' || !process.env.DATABASE_URL) return { operationId: id('op_'), intentId: input.intentKind === 'hold_release' && typeof input.payload.hold_id === 'string' ? input.payload.hold_id : id(intentPrefix[input.intentKind]), commandId: commandId(input.tenantId, id('op_')), status: 'processing' };
   const requestHash = canonicalRequestHash({ method: 'POST', path_template: `/v1/${input.intentKind}`, api_version: '2026-05-26', body: input.payload });
   const claim = await store.claim(input.tenantId, input.idempotencyKey, requestHash);
   if (claim.status === 'completed' && claim.stored) return { ...(claim.stored.response_body as EnqueueResult), cached: true };

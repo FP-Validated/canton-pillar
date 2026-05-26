@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { AccountSchema, AccountCreateRequest, AccountUpdateRequest, AccountListResponse, AssetSchema, AssetCreateRequest, AssetUpdateRequest, AssetListResponse, BalanceSchema, BalanceListResponse, HoldingSchema, HoldingListResponse, IssueIntentSchema, IssueIntentCreateRequest, IssueIntentListResponse, RedeemIntentSchema, RedeemIntentCreateRequest, RedeemIntentListResponse, TransferIntentSchema, TransferIntentCreateRequest, TransferIntentListResponse, HoldSchema, HoldCreateRequest, HoldReleaseRequest, HoldListResponse, OperationSchema, OperationListResponse, EventSchema, EventListResponse, WebhookEndpointSchema, WebhookEndpointCreateRequest, WebhookEndpointUpdateRequest, RotateSecretResponse, WebhookEndpointListResponse, ApiKeySchema, ApiKeyCreateRequest, ApiKeyCreateResponse, ApiKeyListResponse } from '../schemas/index.js';
+import { AccountSchema, AccountCreateRequest, AccountUpdateRequest, AccountListResponse, AssetSchema, AssetCreateRequest, AssetUpdateRequest, AssetListResponse, BalanceSchema, BalanceListResponse, HoldingSchema, HoldingListResponse, IssueIntentSchema, IssueIntentCreateRequest, IssueIntentListResponse, RedeemIntentSchema, RedeemIntentCreateRequest, RedeemIntentListResponse, TransferIntentSchema, TransferIntentCreateRequest, TransferIntentListResponse, HoldSchema, HoldCreateRequest, HoldReleaseRequest, HoldListResponse, OperationSchema, OperationListResponse, EventSchema, EventListResponse, EventTypeName, WebhookEndpointSchema, WebhookEndpointCreateRequest, WebhookEndpointUpdateRequest, RotateSecretResponse, WebhookEndpointListResponse, ApiKeySchema, ApiKeyCreateRequest, ApiKeyCreateResponse, ApiKeyListResponse } from '../schemas/index.js';
 
 export type Account = z.infer<typeof AccountSchema>;
 export type AccountCreate = z.infer<typeof AccountCreateRequest>;
@@ -30,6 +30,7 @@ export type Operation = z.infer<typeof OperationSchema>;
 export type OperationList = z.infer<typeof OperationListResponse>;
 export type Event = z.infer<typeof EventSchema>;
 export type EventList = z.infer<typeof EventListResponse>;
+export type EventTypeName = z.infer<typeof EventTypeName>;
 export type WebhookEndpoint = z.infer<typeof WebhookEndpointSchema>;
 export type WebhookEndpointCreate = z.infer<typeof WebhookEndpointCreateRequest>;
 export type WebhookEndpointUpdate = z.infer<typeof WebhookEndpointUpdateRequest>;

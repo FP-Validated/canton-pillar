@@ -25,6 +25,7 @@ val kotlinServices = listOf(
     "compliance-adapter",
     "token-standard-adapter",
     "template-registry",
+    "webhook-dispatcher",
 )
 
 kotlinServices.forEach { serviceName ->

@@ -837,6 +837,69 @@ components:
         - request
         - metadata
       type: object
+    EventTypeName:
+      enum:
+        - account.created
+        - account.updated
+        - asset.created
+        - asset.updated
+        - asset.suspended
+        - issue_intent.requires_action
+        - issue_intent.processing
+        - issue_intent.succeeded
+        - issue_intent.failed
+        - issue_intent.canceled
+        - redeem_intent.requires_action
+        - redeem_intent.processing
+        - redeem_intent.succeeded
+        - redeem_intent.failed
+        - redeem_intent.canceled
+        - transfer_intent.requires_action
+        - transfer_intent.processing
+        - transfer_intent.succeeded
+        - transfer_intent.failed
+        - transfer_intent.canceled
+        - hold.created
+        - hold.released
+        - hold.consumed
+        - hold.expired
+        - webhook_endpoint.created
+        - webhook_endpoint.secret_rotated
+        - webhook_endpoint.disabled
+        - api_key.created
+        - api_key.revoked
+        - api_key.rotated
+        - export_job.queued
+        - export_job.succeeded
+        - export_job.failed
+        - file.uploaded
+        - file.scanned
+        - file.deleted
+        - evidence_file.linked
+        - evidence_file.verified
+        - compliance_decision.approved
+        - compliance_decision.rejected
+        - compliance_decision.requires_action
+        - onboarding.completed
+        - onboarding.failed
+        - invoice.created
+        - invoice.paid
+        - invoice.uncollectible
+        - usage.threshold_reached
+        - balance.updated
+        - holding.created
+        - holding.updated
+        - holding.closed
+        - transfer.created
+        - transfer.succeeded
+        - transfer.failed
+        - transfer.canceled
+        - request.rate_limit_hit
+        - webhook_delivery.failed
+        - webhook_delivery.succeeded
+        - template_version.activated
+        - search_index.rebuilt
+      type: string
     HealthEnvelope:
       properties:
         api_version:
