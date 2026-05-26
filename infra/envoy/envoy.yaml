@@ -1,0 +1,68 @@
+static_resources:
+  listeners:
+    - name: https
+      address:
+        socket_address: { address: 0.0.0.0, port_value: 8443 }
+      filter_chains:
+        - transport_socket:
+            name: envoy.transport_sockets.tls
+            typed_config:
+              '@type': type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.DownstreamTlsContext
+              common_tls_context:
+                tls_certificates:
+                  - certificate_chain: { filename: /etc/envoy/tls/tls.crt }
+                    private_key: { filename: /etc/envoy/tls/tls.key }
+          filters: &filters
+            - name: envoy.filters.network.http_connection_manager
+              typed_config:
+                '@type': type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+                stat_prefix: pillar
+                server_header_transformation: PASS_THROUGH
+                request_headers_to_add:
+                  - header: { key: Pillar-Request-Id, value: '%REQ(X-REQUEST-ID)%' }
+                    append_action: OVERWRITE_IF_EXISTS_OR_ADD
+                route_config:
+                  name: pillar
+                  virtual_hosts:
+                    - name: api
+                      domains: ['*']
+                      routes:
+                        - match: { path: /healthz }
+                          route: { cluster: api, prefix_rewrite: /v1/health }
+                        - match: { prefix: /v1/ }
+                          route: { cluster: api, timeout: 30s, retry_policy: { retry_on: 5xx, num_retries: 3 } }
+                http_filters:
+                  - name: envoy.filters.http.local_ratelimit
+                    typed_config:
+                      '@type': type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
+                      stat_prefix: pillar_rate_limit
+                      token_bucket: { max_tokens: 1000, tokens_per_fill: 1000, fill_interval: 60s }
+                      response_headers_to_add:
+                        - append_action: OVERWRITE_IF_EXISTS_OR_ADD
+                          header: { key: Pillar-Rate-Limited-Reason, value: endpoint-rate }
+                  - name: envoy.filters.http.router
+                    typed_config:
+                      '@type': type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+    - name: http_local
+      address:
+        socket_address: { address: 0.0.0.0, port_value: 80 }
+      filter_chains:
+        - filters: *filters
+  clusters:
+    - name: api
+      connect_timeout: 2s
+      type: STRICT_DNS
+      lb_policy: ROUND_ROBIN
+      http2_protocol_options: {}
+      circuit_breakers:
+        thresholds:
+          - max_connections: 1024
+            max_pending_requests: 256
+            max_retries: 3
+      load_assignment:
+        cluster_name: api
+        endpoints:
+          - lb_endpoints:
+              - endpoint:
+                  address:
+                    socket_address: { address: pillar-api, port_value: 4000 }

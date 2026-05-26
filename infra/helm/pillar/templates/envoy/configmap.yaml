@@ -1,0 +1,11 @@
+{{- if .Values.envoy.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "pillar.fullname" . }}-envoy
+  labels:
+    {{- include "pillar.labels" . | nindent 4 }}
+data:
+  envoy.yaml: |
+{{ .Values.envoy.config | indent 4 }}
+{{- end }}

@@ -1,0 +1,6 @@
+health_check_route:
+  match:
+    path: /healthz
+  route:
+    cluster: api
+    prefix_rewrite: /v1/health

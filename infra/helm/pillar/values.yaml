@@ -58,6 +58,64 @@ darUpload:
   resources:
     requests: { cpu: 100m, memory: 256Mi }
     limits: { cpu: 500m, memory: 1Gi }
+envoy:
+  enabled: true
+  replicas: 1
+  image: envoyproxy/envoy:v1.31-latest
+  service:
+    type: ClusterIP
+  ingress:
+    enabled: false
+    host: api.dev.pillar.local
+  config: |
+    static_resources:
+      listeners:
+        - name: http
+          address:
+            socket_address: { address: 0.0.0.0, port_value: 80 }
+          filter_chains:
+            - filters:
+                - name: envoy.filters.network.http_connection_manager
+                  typed_config:
+                    '@type': type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+                    stat_prefix: pillar
+                    route_config:
+                      name: pillar
+                      virtual_hosts:
+                        - name: api
+                          domains: ['*']
+                          routes:
+                            - match: { path: /healthz }
+                              route: { cluster: api, prefix_rewrite: /v1/health }
+                            - match: { prefix: /v1/ }
+                              route: { cluster: api, timeout: 30s }
+                    http_filters:
+                      - name: envoy.filters.http.local_ratelimit
+                        typed_config:
+                          '@type': type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
+                          stat_prefix: pillar_rate_limit
+                          token_bucket: { max_tokens: 1000, tokens_per_fill: 1000, fill_interval: 60s }
+                      - name: envoy.filters.http.router
+                        typed_config:
+                          '@type': type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+      clusters:
+        - name: api
+          connect_timeout: 2s
+          type: STRICT_DNS
+          lb_policy: ROUND_ROBIN
+          http2_protocol_options: {}
+          circuit_breakers:
+            thresholds:
+              - max_connections: 1024
+                max_pending_requests: 256
+                max_retries: 3
+          load_assignment:
+            cluster_name: api
+            endpoints:
+              - lb_endpoints:
+                  - endpoint:
+                      address:
+                        socket_address: { address: pillar-api, port_value: 4000 }
 api:
   enabled: true
   replicas: 2

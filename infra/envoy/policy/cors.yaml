@@ -1,0 +1,9 @@
+cors:
+  allow_origin_string_match:
+    - safe_regex:
+        google_re2: {}
+        regex: '${PILLAR_CORS_ALLOW_ORIGIN_REGEX:-https://.*}'
+  allow_methods: GET,POST,OPTIONS
+  allow_headers: Authorization,Content-Type,Idempotency-Key,Pillar-Version,Pillar-Client-Request-Id
+  expose_headers: Pillar-Request-Id,Pillar-Version,ETag
+  max_age: '86400'

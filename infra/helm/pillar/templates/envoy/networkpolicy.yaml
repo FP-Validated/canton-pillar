@@ -1,0 +1,21 @@
+{{- if .Values.envoy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "pillar.fullname" . }}-envoy-api
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "pillar.name" . }}-envoy
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: {{ include "pillar.name" . }}-api
+              app.kubernetes.io/instance: {{ .Release.Name }}
+      ports:
+        - protocol: TCP
+          port: 4000
+{{- end }}

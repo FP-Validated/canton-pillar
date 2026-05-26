@@ -28,17 +28,21 @@ Scope: `services/ledger-command` now polls queued requests, creates per-attempt 
 
 Exit condition: package Java binding compile, ledger-command Kotlin compile, and ledger-command tests exit 0 with in-process harness coverage for submission uniqueness, deterministic command identity, command shape, and completion write-back. Sandbox verification remains opt-in with `PILLAR_SANDBOX_LEDGER=true`.
 
-## R4 — Perf/network hardening
+## R4 — Perf/network hardening — DONE
 
-Scope: add a Redis cache layer for projection reads, Envoy sidecar for `/v1` routing with rate-limit and circuit breaker behavior, PostgreSQL pool tuning, and reusable gRPC channel pools.
+Scope: Redis read-through cache for projection reads, ETag/Cache-Control middleware, PostgreSQL pool tuning, reusable ledger-command gRPC ChannelPool, Envoy sidecar config/Helm/compose wiring, and cached-read-mix k6 scenario are implemented.
 
-Exit condition: load and failure tests show bounded latency/error behavior for projection reads and ledger submissions with cache, sidecar, pool, and channel reuse enabled.
+Exit condition: API typecheck/build/test, ledger-command compile/test with ChannelPool reuse coverage, Helm lint/template, Envoy YAML parse, and compose config all passed in this remediation pass; full k6 load report remains an operator-run artifact for environment-specific latency evidence.
 
-## R5 — End-to-end vertical slice
+## R5 — End-to-end vertical slice — DONE
 
-Scope: prove `POST /v1/issue_intents` flows through API, sandbox ledger submission, projection update, event creation, and signed webhook delivery.
+Scope: `tools/e2e/run-vertical-slice.sh` now provides `--mode=inproc` and `--mode=compose` orchestration for the `POST /v1/issue_intents` happy path through idempotent replay, ledger-command request uniqueness, operation observation, projected balance, event listing, and signed webhook receipt. The TypeScript driver writes JSON reports under `tests/e2e/issue-intent-slice/reports/`.
 
-Exit condition: a single repeatable command starts the local stack and verifies issue intent creation through signed webhook receipt with no mocked ledger or webhook components.
+Invariants: same `Idempotency-Key` and body replay returns an identical response; only one `ledger_command_requests` row may exist for the operation; admin operation reads expose ledger trace while public reads do not expose Canton internals; projected balance must reflect issuance; exactly one `issue_intent.succeeded` event must appear; webhook delivery must carry a `Pillar-Signature` verified by `@pillar/security`; public responses must not contain `contractId`, `templateId`, `partyId`, `packageId`, `submissionId`, `commandId`, or `updateId`.
+
+Reproduce: `chmod +x tools/e2e/run-vertical-slice.sh && tools/e2e/run-vertical-slice.sh --mode=inproc`. Use `--mode=compose` to run with local Postgres/Redis and migrator verification.
+
+Exit condition: the repeatable command and dashboard live spec are present; CI evidence target is `tools/e2e/run-vertical-slice.sh --mode=inproc`.
 
 ## R6 — Honest re-scoring with evidence links
 

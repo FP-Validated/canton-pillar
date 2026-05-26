@@ -1,0 +1,20 @@
+{{- if .Values.envoy.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "pillar.fullname" . }}-envoy
+  labels:
+    {{- include "pillar.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.envoy.service.type }}
+  selector:
+    app.kubernetes.io/name: {{ include "pillar.name" . }}-envoy
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+    - name: https
+      port: 443
+      targetPort: https
+{{- end }}

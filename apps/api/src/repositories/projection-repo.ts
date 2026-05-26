@@ -1,5 +1,7 @@
 import { nid, now } from '../routes/v1/data.js';
 import { demoDataEnabled } from '../config/runtime-mode.js';
+import { ReadThroughCache } from '../cache/ReadThroughCache.js';
+import { balanceKey, holdingKey, operationKey } from '../cache/KeyBuilders.js';
 
 export type Page = { account?: string; asset?: string; status?: string; limit?: number; startingAfter?: string; endingBefore?: string };
 export type ProjectionMeta = { stale?: boolean; as_of_ledger_offset?: string; participantDown?: boolean };
@@ -41,11 +43,13 @@ function demoBalance(account: string, asset: string): Balance { return { ...memo
 function demoHolding(id: string): Holding { return { ...memoryHoldings[0], id, created: now(), metadata: { __missing: 'true' } }; }
 
 export async function getBalance(tenantId: string, accountId: string, assetId: string): Promise<Balance | null> {
-  if (useDemo()) return memoryBalances.find(b => b.account === accountId && b.asset === assetId) ?? demoBalance(accountId, assetId);
-  const r = await query('select * from balances where tenant_id=$1 and account_id=$2 and asset_id=$3 limit 1', [tenantId, accountId, assetId]);
-  const row = r.rows[0];
-  if (!row) return null;
-  return { id: row.id, object: 'balance', created: iso(row.created_at), livemode: false, account: row.account_id, asset: row.asset_id, available: dec(row.available), pending: dec(row.pending), reserved: dec(row.reserved), settled: dec(Number(row.available) + Number(row.pending) + Number(row.reserved)), as_of_ledger_offset: row.as_of_ledger_offset ?? '0', as_of_ledger_time: iso(row.as_of_ledger_time), metadata: meta(row.metadata), projection: stale(row) };
+  return ReadThroughCache.get(balanceKey({ tenantId, livemode: false }, accountId, assetId), 5, async () => {
+    if (useDemo()) return memoryBalances.find(b => b.account === accountId && b.asset === assetId) ?? demoBalance(accountId, assetId);
+    const r = await query('select * from balances where tenant_id=$1 and account_id=$2 and asset_id=$3 limit 1', [tenantId, accountId, assetId]);
+    const row = r.rows[0];
+    if (!row) return null;
+    return { id: row.id, object: 'balance', created: iso(row.created_at), livemode: false, account: row.account_id, asset: row.asset_id, available: dec(row.available), pending: dec(row.pending), reserved: dec(row.reserved), settled: dec(Number(row.available) + Number(row.pending) + Number(row.reserved)), as_of_ledger_offset: row.as_of_ledger_offset ?? '0', as_of_ledger_time: iso(row.as_of_ledger_time), metadata: meta(row.metadata), projection: stale(row) };
+  });
 }
 
 export async function listBalances(tenantId: string, p: Page): Promise<Balance[]> {
@@ -55,11 +59,13 @@ export async function listBalances(tenantId: string, p: Page): Promise<Balance[]
 }
 
 export async function getHolding(tenantId: string, holdingId: string): Promise<Holding | null> {
-  if (useDemo()) return memoryHoldings.find(h => h.id === holdingId) ?? demoHolding(holdingId);
-  const r = await query('select * from holdings where tenant_id=$1 and id=$2 limit 1', [tenantId, holdingId]);
-  const row = r.rows[0];
-  if (!row) return null;
-  return { id: row.id, object: 'holding', created: iso(row.created_at), livemode: false, account: row.account_id, asset: row.asset_id, amount: dec(row.total ?? row.available), status: row.status ?? 'active', restrictions: [], source_intent: row.source_intent ?? 'trint_projection', metadata: meta(row.metadata), projection: stale(row) };
+  return ReadThroughCache.get(holdingKey({ tenantId, livemode: false }, holdingId), 5, async () => {
+    if (useDemo()) return memoryHoldings.find(h => h.id === holdingId) ?? demoHolding(holdingId);
+    const r = await query('select * from holdings where tenant_id=$1 and id=$2 limit 1', [tenantId, holdingId]);
+    const row = r.rows[0];
+    if (!row) return null;
+    return { id: row.id, object: 'holding', created: iso(row.created_at), livemode: false, account: row.account_id, asset: row.asset_id, amount: dec(row.total ?? row.available), status: row.status ?? 'active', restrictions: [], source_intent: row.source_intent ?? 'trint_projection', metadata: meta(row.metadata), projection: stale(row) };
+  });
 }
 
 export async function listHoldings(tenantId: string, p: Page): Promise<Holding[]> {
@@ -69,11 +75,14 @@ export async function listHoldings(tenantId: string, p: Page): Promise<Holding[]
 }
 
 export async function getOperationProjection(tenantId: string, operationId: string) {
-  if (useDemo()) return { operation_id: operationId, command_id: 'cmd_opaque', update_id: 'upd_opaque', ledger_offset: operationId.includes('lag') ? '99' : '10', status: 'projected', projected_at: now(), participant_id: 'prt_opaque', synchronizer_id: 'snc_opaque', ledger_record_time: now(), projection: { stale: false } };
-  const r = await query('select * from operations where tenant_id=$1 and operation_id=$2 limit 1', [tenantId, operationId]);
-  const row = r.rows[0];
-  if (!row) return { operation_id: operationId, command_id: 'cmd_opaque', update_id: 'upd_opaque', ledger_offset: '0', status: 'missing', projected_at: now(), participant_id: 'prt_opaque', synchronizer_id: 'snc_opaque', ledger_record_time: now(), projection: { stale: false }, missing: true };
-  return { operation_id: operationId, command_id: row.command_id, update_id: row.update_id ?? row.ledger_trace_id, ledger_offset: row.ledger_offset, status: row.status ?? 'projected', projected_at: iso(row.updated_at), participant_id: row.participant_id, synchronizer_id: row.synchronizer_id, ledger_record_time: iso(row.ledger_recorded_at ?? row.updated_at), projection: stale(row) };
+  const cached = await ReadThroughCache.get(operationKey({ tenantId, livemode: false }, operationId), 30, async () => {
+    if (useDemo()) return { operation_id: operationId, command_id: 'cmd_opaque', update_id: 'upd_opaque', ledger_offset: operationId.includes('lag') ? '99' : '10', status: 'projected', projected_at: now(), participant_id: 'prt_opaque', synchronizer_id: 'snc_opaque', ledger_record_time: now(), projection: { stale: false, as_of_ledger_offset: operationId.includes('lag') ? '99' : '10' } };
+    const r = await query('select * from operations where tenant_id=$1 and operation_id=$2 limit 1', [tenantId, operationId]);
+    const row = r.rows[0];
+    if (!row) return null;
+    return { operation_id: operationId, command_id: row.command_id, update_id: row.update_id ?? row.ledger_trace_id, ledger_offset: row.ledger_offset, status: row.status ?? 'projected', projected_at: iso(row.updated_at), participant_id: row.participant_id, synchronizer_id: row.synchronizer_id, ledger_record_time: iso(row.ledger_recorded_at ?? row.updated_at), projection: stale(row) };
+  });
+  return cached ?? { operation_id: operationId, command_id: 'cmd_opaque', update_id: 'upd_opaque', ledger_offset: '0', status: 'missing', projected_at: now(), participant_id: 'prt_opaque', synchronizer_id: 'snc_opaque', ledger_record_time: now(), projection: { stale: false, as_of_ledger_offset: '0' }, missing: true };
 }
 
 export async function checkpointForProjector(projectorName: string): Promise<{ applied_offset: string; last_record_time: string }> {

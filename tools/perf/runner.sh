@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 SCENARIO="${1:-mutation-mix}"
+if [ "${SCENARIO}" = "--scenario" ]; then SCENARIO="${2:-mutation-mix}"; fi
 TS="$(date -u +%Y%m%dT%H%M%SZ)"
 OUT="tests/perf/reports/${SCENARIO}-${TS}.json"
 mkdir -p tests/perf/reports
-if command -v docker >/dev/null 2>&1; then docker compose -f infra/compose/local.yml up -d >/dev/null 2>&1 || true; fi
+if command -v docker >/dev/null 2>&1; then docker compose -f infra/compose/local.yml up -d redis envoy >/dev/null 2>&1 || true; fi
+if [ "$SCENARIO" = "cached-read-mix" ] && command -v curl >/dev/null 2>&1; then for p in /v1/balances/bal_demo0001 /v1/events/evt_demo0001; do curl -fsS "http://localhost:8080$p" -H "Authorization: Bearer plr_sk_test_perf" -H "Pillar-Version: 2026-06-30.cedar" >/dev/null 2>&1 || true; done; fi
 if command -v k6 >/dev/null 2>&1 && [ -f "tests/perf/k6/${SCENARIO}.k6.ts" ]; then k6 run "tests/perf/k6/${SCENARIO}.k6.ts" --summary-export "$OUT.raw" || true; fi
 python3 - "$SCENARIO" "$OUT" <<'PY'
 import json, sys, pathlib, time

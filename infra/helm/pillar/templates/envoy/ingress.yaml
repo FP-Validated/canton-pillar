@@ -1,0 +1,18 @@
+{{- if and .Values.envoy.enabled .Values.envoy.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "pillar.fullname" . }}-envoy
+spec:
+  rules:
+    - host: {{ .Values.envoy.ingress.host | quote }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "pillar.fullname" . }}-envoy
+                port:
+                  name: http
+{{- end }}

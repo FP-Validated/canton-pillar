@@ -4,4 +4,4 @@ export class SessionRepo { constructor(private pool: pg.Pool) {}
   async get(id:string) { const r=await this.pool.query('select * from onboarding_state where id=$1',[id]); return r.rows[0] as OnboardingSession|undefined; }
   async save(s: OnboardingSession) { s.updated_at=new Date().toISOString(); await this.create(s); return s; }
 }
-export function makePool(connectionString=process.env.DATABASE_URL) { return new pg.Pool({ connectionString }); }
+export function makePool(connectionString=process.env.DATABASE_URL) { return new pg.Pool({ connectionString, max: 20, min: 2, idleTimeoutMillis: 30_000, connectionTimeoutMillis: 2_000, statement_timeout: 10_000 }); }
