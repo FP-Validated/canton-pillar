@@ -1,0 +1,38 @@
+# Default owner
+*       @pillar/platform
+
+# Areas
+/apps/                          @pillar/api @pillar/platform
+/apps/dashboard/                @pillar/frontend
+/apps/workbench/                @pillar/frontend
+/apps/docs/                     @pillar/devrel
+/apps/webhook-receiver/         @pillar/platform
+
+/services/api/                  @pillar/api
+/services/ledger-command/       @pillar/ledger
+/services/projection-worker/    @pillar/ledger
+/services/workflow-orchestrator/ @pillar/ledger
+/services/webhook-dispatcher/   @pillar/platform
+/services/compliance-adapter/   @pillar/compliance
+/services/template-registry/    @pillar/ledger
+/services/reconciler/           @pillar/ledger
+/services/search-indexer/       @pillar/platform
+/services/export-worker/        @pillar/platform
+/services/usage-meter/          @pillar/platform
+/services/billing-adapter/      @pillar/platform
+/services/onboarding/           @pillar/platform
+
+/daml/                          @pillar/ledger
+/infra/                         @pillar/platform @pillar/sre
+/infra/helm/                    @pillar/sre
+/infra/observability/           @pillar/sre
+/tools/                         @pillar/platform
+/tools/cli/                     @pillar/devrel
+/docs/                          @pillar/architecture
+/docs/Dev/                      @pillar/architecture @pillar/platform
+/docs/Dev/RUNBOOKS/             @pillar/sre
+
+# Security-sensitive
+/SECURITY.md                    @pillar/security
+/packages/security/             @pillar/security
+/tools/release/                 @pillar/release

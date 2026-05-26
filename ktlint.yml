@@ -1,0 +1,15 @@
+# ktlint baseline. P0 only declares preferred conventions; CI enforcement lands in P9.
+version: "1.4.0"
+
+filters:
+  - exclude: "build/**"
+  - exclude: ".gradle/**"
+  - exclude: "**/generated/**"
+
+code_style: ktlint_official
+indent_size: 4
+continuation_indent_size: 4
+max_line_length: 120
+insert_final_newline: true
+disabled_rules:
+  - filename

@@ -1,0 +1,30 @@
+{
+  "name": "@pillar/webhook-receiver",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Local-only webhook capture harness for Pillar dev/test. NOT a production receiver.",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "test": "node --test --import tsx test/*.test.ts",
+    "lint": "prettier --check src test",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.17.10",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "supertest": "^7.0.0",
+    "@types/supertest": "^6.0.2"
+  },
+  "engines": {
+    "node": ">=20.18.0"
+  }
+}

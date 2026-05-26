@@ -1,0 +1,33 @@
+name: daml
+on:
+  pull_request:
+    paths:
+      - "daml/**"
+      - ".github/workflows/daml.yml"
+      - ".tool-versions"
+  push:
+    branches: [main]
+    paths:
+      - "daml/**"
+jobs:
+  build:
+    name: dpm build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Install DPM
+        run: |
+          # Phase 0 placeholder; real DPM install instructions land in P0.A22 and tools/scripts/ci/install-dpm.sh.
+          echo 'DPM install not yet automated; CI is informational until install-dpm.sh exists.'
+      - name: Build Daml packages
+        run: |
+          if command -v dpm >/dev/null; then
+            cd daml && dpm build
+          else
+            echo 'dpm missing; skipping build in P0.' && exit 0
+          fi

@@ -1,0 +1,7 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+  - "services/*"
+  - "tools/cli"
+  - "tools/migrator"
+  - "tools/codegen/openapi-to-sdks"

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "release-type": "node",
+  "separate-pull-requests": false,
+  "pull-request-title-pattern": "chore(release): pillar v${version}",
+  "include-component-in-tag": false,
+  "draft": false,
+  "prerelease": true,
+  "bootstrap-sha": "REPLACE_AT_FIRST_RELEASE",
+  "packages": {
+    ".": {
+      "release-type": "node",
+      "package-name": "pillar",
+      "changelog-path": "CHANGELOG.md",
+      "versioning": "default"
+    }
+  }
+}

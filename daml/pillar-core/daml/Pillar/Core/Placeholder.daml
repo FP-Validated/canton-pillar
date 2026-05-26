@@ -1,0 +1,5 @@
+-- Phase 0 placeholder. Real templates land in Phase 1.
+module Pillar.Core.Placeholder where
+
+phase0Marker : Text
+phase0Marker = "pillar-core/P0"

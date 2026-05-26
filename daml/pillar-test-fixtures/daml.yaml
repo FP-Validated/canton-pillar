@@ -1,0 +1,10 @@
+sdk-version: 3.5.0
+name: pillar-test-fixtures
+version: 0.0.1
+source: daml
+parties: []
+dependencies:
+  - daml-prim
+  - daml-stdlib
+  - pillar-core
+module-prefixes: {}

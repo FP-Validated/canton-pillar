@@ -1,0 +1,8 @@
+sdk-version: 3.5.0
+name: pillar-core
+version: 0.0.1
+source: daml
+parties: []
+dependencies:
+  - daml-prim
+  - daml-stdlib

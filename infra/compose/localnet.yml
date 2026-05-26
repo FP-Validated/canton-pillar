@@ -1,0 +1,22 @@
+# Pillar localnet profile (overlay over local.yml).
+# Phase 0 placeholder. Phase 9 (Deployment) wires multi-validator/multi-participant topology.
+# Usage: docker compose -f infra/compose/local.yml -f infra/compose/localnet.yml config
+#
+# IMPORTANT INVARIANT: per docs/Dev/REGRESSION_CONTRACT.md §12.3 and ADR-0010, multi-validator
+# topology MUST NOT change the public /v1 grammar. This file alters infrastructure wiring only.
+
+name: pillar-local
+
+services:
+  # In Phase 9, a second canton-sandbox node will be added here under a different port set so that
+  # cross-participant scenarios can be exercised. Phase 0 reserves the slot only.
+  canton-sandbox-secondary:
+    image: alpine:3.20
+    profiles:
+      - phase9-not-yet-active
+    command:
+      [
+        "sh",
+        "-lc",
+        "echo 'canton-sandbox-secondary placeholder — enabled in Phase 9 only.'; sleep infinity",
+      ]

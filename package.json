@@ -1,0 +1,27 @@
+{
+  "name": "pillar",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.12.3",
+  "engines": {
+    "node": ">=20.18.0"
+  },
+  "scripts": {
+    "lint": "turbo run lint",
+    "format": "turbo run format",
+    "typecheck": "turbo run typecheck",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "dev": "turbo run dev"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.0",
+    "prettier": "^3.4.2",
+    "@commitlint/cli": "^19.6.1",
+    "@commitlint/config-conventional": "^19.6.0",
+    "typescript": "^5.7.2"
+  },
+  "pnpm": {
+    "overrides": {}
+  }
+}

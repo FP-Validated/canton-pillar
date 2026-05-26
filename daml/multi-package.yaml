@@ -1,0 +1,4 @@
+packages:
+  - ./pillar-core
+  - ./pillar-test-fixtures
+projects: []

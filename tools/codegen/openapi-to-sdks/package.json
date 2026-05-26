@@ -1,0 +1,13 @@
+{
+  "name": "@pillar/codegen-openapi-to-sdks",
+  "private": true,
+  "version": "0.0.0",
+  "description": "OpenAPI to SDK codegen stub. Real generation lands in P7.",
+  "type": "module",
+  "bin": {
+    "pillar-openapi-codegen": "./generate.sh"
+  },
+  "scripts": {
+    "check": "bash generate.sh --check"
+  }
+}

@@ -1,0 +1,25 @@
+node_modules/
+dist/
+build/
+coverage/
+.turbo/
+.next/
+.gradle/
+.kotlin/
+target/
+out/
+.daml/
+*.dar
+*.lock
+pnpm-lock.yaml
+gradle/wrapper/gradle-wrapper.properties
+gradle/wrapper/gradle-wrapper.jar
+gradlew
+gradlew.bat
+# Daml files use a separate formatter (damlfmt); prettier should not touch them.
+*.daml
+# Generated dirs
+packages/api-contracts/dist/
+packages/ledger-types/generated/
+# Architecture/Dev docs are author-controlled; prettier owns markdown defaults but skip the long-form architecture docs to avoid churn during this design phase.
+docs/Architecture/
