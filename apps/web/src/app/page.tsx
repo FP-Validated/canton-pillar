@@ -59,8 +59,8 @@ export default function HomePage() {
         eyebrow="CANTON-NATIVE PAYMENTS RUNTIME"
         title="The payments runtime for Canton-backed assets."
         body="Canton Pillar gives product teams a polished /v1 API for issuing, transferring, redeeming, and observing Canton-backed assets. The ledger-of-truth model keeps balances and lifecycle events rooted in committed asset movement while the API stays clean for developers."
-        primaryCta={{ label: 'Sign in', href: '/dashboard/login' }}
-        secondaryCta={{ label: 'Try the flow', href: '/get-api-keys' }}
+        primaryCta={{ label: 'Sign in with Google', href: '/signup' }}
+        secondaryCta={{ label: 'Read the docs', href: '/docs' }}
       />
       <LogoCloud />
       <FeatureGrid features={features} />

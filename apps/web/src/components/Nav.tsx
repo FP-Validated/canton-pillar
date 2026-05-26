@@ -32,7 +32,7 @@ export function Nav() {
             );
           })}
           <Link
-            href="/dashboard/login"
+            href="/signup"
             className="rounded-full bg-accent px-4 py-2 font-semibold text-white shadow-sm hover:bg-accentDark"
           >
             Sign in
