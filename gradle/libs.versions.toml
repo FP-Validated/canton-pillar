@@ -12,6 +12,8 @@ protobuf = "3.25.5"
 daml = "3.4.11"
 jackson = "2.18.0"
 bouncycastle = "1.78.1"
+micrometer = "1.13.5"
+flyway = "10.20.0"
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -31,3 +33,5 @@ grpc-netty-shaded = { module = "io.grpc:grpc-netty-shaded", version.ref = "grpc"
 protobuf-java = { module = "com.google.protobuf:protobuf-java", version.ref = "protobuf" }
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 bouncycastle = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncycastle" }
+micrometer-core = { module = "io.micrometer:micrometer-core", version.ref = "micrometer" }
+flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }

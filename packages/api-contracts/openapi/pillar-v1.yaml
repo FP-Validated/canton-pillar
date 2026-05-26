@@ -1337,20 +1337,25 @@ components:
                     type: string
                   - pattern: ^hold_[A-Za-z0-9_-]{4,80}$
                     type: string
-              ledger:
+              ledger_trace:
                 properties:
-                  backend:
-                    enum:
-                      - canton
+                  ledger_offset:
                     type: string
-                  offset:
+                  ledger_record_time:
+                    format: date-time
                     type: string
-                  update_reference:
+                  participant_id:
+                    type: string
+                  synchronizer_id:
+                    type: string
+                  update_id:
                     type: string
                 required:
-                  - backend
-                  - update_reference
-                  - offset
+                  - update_id
+                  - ledger_offset
+                  - participant_id
+                  - synchronizer_id
+                  - ledger_record_time
                 type: object
               livemode:
                 type: boolean
@@ -1381,7 +1386,6 @@ components:
               - livemode
               - intent
               - status
-              - ledger
               - metadata
             type: object
           type: array
@@ -1417,20 +1421,25 @@ components:
               type: string
             - pattern: ^hold_[A-Za-z0-9_-]{4,80}$
               type: string
-        ledger:
+        ledger_trace:
           properties:
-            backend:
-              enum:
-                - canton
+            ledger_offset:
               type: string
-            offset:
+            ledger_record_time:
+              format: date-time
               type: string
-            update_reference:
+            participant_id:
+              type: string
+            synchronizer_id:
+              type: string
+            update_id:
               type: string
           required:
-            - backend
-            - update_reference
-            - offset
+            - update_id
+            - ledger_offset
+            - participant_id
+            - synchronizer_id
+            - ledger_record_time
           type: object
         livemode:
           type: boolean
@@ -1461,7 +1470,6 @@ components:
         - livemode
         - intent
         - status
-        - ledger
         - metadata
       type: object
     RedeemIntentCreateRequest:
