@@ -4,19 +4,14 @@ The payments runtime for Canton-backed assets. A Canton-native runtime exposing 
 
 ## Status
 
-This repository is in active development. It contains:
+This repository is in active development and is not production-ready. R6 executable re-scoring on 2026-05-26 produced this grade distribution across P0..P14, M15.A/B, and R0..R6:
 
-- A complete Daml package model (pillar-core/pillar-assets/pillar-intents/pillar-ops/pillar-token-adapter/pillar-test) with `dpm build --all` passing on Daml SDK 3.4.11.
-- A broad TypeScript/Kotlin scaffolding for API, projection, webhook, identity, validator-registry, compliance, and supporting services.
-- A complete OpenAPI 3.1 contract at `packages/api-contracts/openapi/pillar-v1.yaml`.
-- A migration tree under `packages/db/migrations/0000_*..0130_*` covering config, audit, idempotency, intents/operations, projections, events/webhooks, reconciliation, security/compliance, search/reporting, template-registry, usage/billing, identity, and networks/validators.
+- PASS: 15
+- PARTIAL: 9
+- SCAFFOLD: 0
+- STUB: 0
 
-It is NOT yet a production-ready Canton-backed runtime. The next milestones (R0..R6 in `docs/Dev/REMEDIATION.md`) deliver:
-- Daml lifecycle atomicity (Hold/Holding).
-- A real ledger-command worker (Canton sandbox submission, completion correlation).
-- Projection fallback removal.
-- DB-only idempotency.
-- A working vertical slice issue_intent → projection → event → webhook.
+Current blockers are concrete executable gates: migrator/idempotency failures, public-contract lint failure, onboarding test failure, API auth-route test timeout, and incomplete proof for vertical-slice/chaos gates. See `docs/Dev/SCORING.md` and `docs/Dev/EVIDENCE.md` for command-level evidence.
 
 ## Repository layout
 
