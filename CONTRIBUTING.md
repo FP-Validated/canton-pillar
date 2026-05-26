@@ -21,7 +21,7 @@ Conventional Commits, validated by `commitlint`. Examples:
 
 - `feat(api): add /v1/accounts CRUD-lite (P2.E04)`
 - `fix(ledger-command): preserve command_id on retry (P4.F04)`
-- `chore(ci): pin Daml SDK to 3.5.0 (P0.A18)`
+- `chore(ci): pin Daml SDK to 3.4.11 (P0.A18)`
 
 Allowed types: `feat`, `fix`, `chore`, `docs`, `refactor`, `perf`, `test`, `build`, `ci`, `revert`.
 
@@ -44,7 +44,7 @@ make bootstrap
 make dev-up
 ```
 
-Requires Node 20.18.0, pnpm 9.12.3, JDK 21, Gradle 8.10.2, Daml SDK 3.5.0, Docker. See `.tool-versions` and `local://pillar-p0-impl-shared.md` for exact pins.
+Requires Node 20.18.0, pnpm 9.12.3, JDK 21, Gradle 8.10.2, Daml SDK 3.4.11, Docker. See `.tool-versions` and `local://pillar-p0-impl-shared.md` for exact pins.
 
 ## Non-secret policy
 

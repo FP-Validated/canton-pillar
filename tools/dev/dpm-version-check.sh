@@ -21,16 +21,16 @@ if ! command -v dpm >/dev/null 2>&1; then
   exit 1
 fi
 
-INSTALLED="$(dpm --version 2>/dev/null | awk '{print $NF}' | head -n1 || true)"
-if [[ -z "$INSTALLED" ]]; then
-  echo "dpm-version-check: could not read 'dpm --version' output." >&2
+INSTALLED_DAML_VERSION="$(dpm version 2>/dev/null | awk '/^[[:space:]]*\\*/{print $2; exit}' || true)"
+if [[ -z "$INSTALLED_DAML_VERSION" ]]; then
+  echo "dpm-version-check: could not find an installed Daml SDK from 'dpm version'." >&2
   exit 1
 fi
 
-if [[ "$INSTALLED" != "$PINNED_DAML_VERSION" ]]; then
-  echo "dpm-version-check: MISMATCH. installed=$INSTALLED, pinned=$PINNED_DAML_VERSION" >&2
+if [[ "$INSTALLED_DAML_VERSION" != "$PINNED_DAML_VERSION" ]]; then
+  echo "dpm-version-check: MISMATCH. installed=$INSTALLED_DAML_VERSION, pinned=$PINNED_DAML_VERSION" >&2
   exit 1
 fi
 
-echo "dpm-version-check: OK ($INSTALLED matches pin $PINNED_DAML_VERSION)"
+echo "dpm-version-check: OK (Daml SDK $INSTALLED_DAML_VERSION matches pin $PINNED_DAML_VERSION)"
 exit 0

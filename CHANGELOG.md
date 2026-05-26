@@ -12,7 +12,7 @@ API versions follow Stripe-style date-pinned versioning per `docs/Dev/RELEASE_PL
 
 - Initial Phase 0 repository scaffold: pnpm + Gradle + Daml multi-package workspaces.
 - Phase 0 policy files: CODEOWNERS, SECURITY.md, CONTRIBUTING.md, LICENSE placeholder.
-- Phase 0 toolchain pins: Node 20.18, pnpm 9.12.3, JDK 21, Gradle 8.10.2, Daml 3.5.0.
+- Phase 0 toolchain pins: Node 20.18, pnpm 9.12.3, JDK 21, Gradle 8.10.2, Daml 3.4.11.
 - Local compose stack scaffold: Postgres, Redis, Canton sandbox, webhook receiver, migrator stub, OpenTelemetry collector.
 - CI skeleton workflows: workspace lint/test and Daml build.
 

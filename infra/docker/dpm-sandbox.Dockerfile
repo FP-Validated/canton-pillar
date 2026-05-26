@@ -2,7 +2,7 @@
 # Pillar DPM sandbox image. LOCAL DEVELOPMENT ONLY. Not for production deployment.
 
 ARG JRE_TAG=21-jre-jammy
-ARG DAML_SDK_VERSION=3.5.0
+ARG DAML_SDK_VERSION=3.4.11
 
 FROM eclipse-temurin:${JRE_TAG} AS dpm
 ARG DAML_SDK_VERSION

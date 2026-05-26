@@ -27,7 +27,7 @@ jobs:
       - name: Build Daml packages
         run: |
           if command -v dpm >/dev/null; then
-            cd daml && dpm build
+            cd daml && dpm build --all
           else
             echo 'dpm missing; skipping build in P0.' && exit 0
           fi

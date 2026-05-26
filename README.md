@@ -6,7 +6,7 @@ See `docs/Architecture/` for design, `docs/Dev/` for the phased implementation p
 
 ## Quickstart
 
-Requires Node 20.18, pnpm 9.12.3, JDK 21, Gradle 8.10.2, Daml SDK 3.5.0, Docker.
+Requires Node 20.18, pnpm 9.12.3, JDK 21, Gradle 8.10.2, Daml SDK 3.4.11, Docker.
 
 ```
 make bootstrap

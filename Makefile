@@ -31,7 +31,7 @@ bootstrap:
 
 daml-build:
 	@command -v dpm >/dev/null || { echo "dpm not installed; see .tool-versions" >&2; exit 1; }
-	cd daml && dpm build
+	cd daml && dpm build --all
 
 codegen:
 	bash tools/codegen/generate-all.sh
