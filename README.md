@@ -48,6 +48,18 @@ cd daml && dpm build --all
 pnpm --filter @pillar/web dev    # http://localhost:3000
 ```
 
+## Vertical Slice
+
+Run the R5 issue-intent vertical slice from the repository root:
+
+```bash
+chmod +x tools/e2e/run-vertical-slice.sh
+tools/e2e/run-vertical-slice.sh --mode=inproc
+tools/e2e/run-vertical-slice.sh --mode=compose
+```
+
+`--mode=inproc` uses the API's test/memory mode plus the TypeScript driver and mock webhook receiver. `--mode=compose` brings up local Postgres/Redis, applies and verifies migrations, starts the API in test mode, then runs the same assertions.
+
 ## Principles
 
 1. Canton Ledger is the source of truth.

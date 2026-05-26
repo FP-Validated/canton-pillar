@@ -1,0 +1,60 @@
+{
+  "started_at": "2026-05-26T21:07:42.528Z",
+  "api_base": "http://127.0.0.1:43659/v1",
+  "checks": [
+    {
+      "name": "issue_intent:create_status",
+      "ok": true,
+      "operation": "op_01KSK1TRTMSQ6Z2CR9J5JB53PQ"
+    },
+    {
+      "name": "issue_intent:create_public:no_canton_internal_fields",
+      "ok": true,
+      "forbidden": "contractId|templateId|partyId|packageId|submissionId|commandId|updateId"
+    },
+    {
+      "name": "issue_intent:idempotent_replay_body",
+      "ok": true
+    },
+    {
+      "name": "ledger_command_requests:single_row",
+      "ok": true
+    },
+    {
+      "name": "operation:admin_trace_populated",
+      "ok": true
+    },
+    {
+      "name": "operation:public:no_canton_internal_fields",
+      "ok": true,
+      "forbidden": "contractId|templateId|partyId|packageId|submissionId|commandId|updateId"
+    },
+    {
+      "name": "balance:available_reflects_issuance",
+      "ok": true,
+      "available": "100.000000"
+    },
+    {
+      "name": "balance:public:no_canton_internal_fields",
+      "ok": true,
+      "forbidden": "contractId|templateId|partyId|packageId|submissionId|commandId|updateId"
+    },
+    {
+      "name": "event:exactly_one_succeeded",
+      "ok": true,
+      "id": "evt_issint_01KSK1TRTM8NFPPK0NCQZBYHG3"
+    },
+    {
+      "name": "event:public:no_canton_internal_fields",
+      "ok": true,
+      "forbidden": "contractId|templateId|partyId|packageId|submissionId|commandId|updateId"
+    },
+    {
+      "name": "webhook:signature_verified",
+      "ok": true,
+      "received": 1
+    }
+  ],
+  "duration_ms": 49,
+  "ok": true
+}
