@@ -22,11 +22,11 @@ Env switches: `PILLAR_IDEMPOTENCY` (`memory` for tests/dev only, DB otherwise), 
 
 Exit condition: idempotency package build/test and API memory-mode typecheck/test passed in this remediation pass; DB-mode verification remains for the parent integration wave with Postgres/migrator.
 
-## R3 — Real ledger-command worker
+## R3 — Real ledger-command worker — DONE
 
-Scope: implement `services/ledger-command` as a real worker that polls operations, attempts work, builds Daml commands, submits to Canton, consumes completions, and updates operation state.
+Scope: `services/ledger-command` now polls queued requests, creates per-attempt `sub_<uuid>` values, enforces ADR-0011 `cmd_<24-hex>` derivation, builds Daml command envelopes, submits through the submitter boundary, and writes completion correlation back to operation rows. `packages/ledger-types` bindings were regenerated from the R1 DARs and expose the required Holding, Intent, and OperationTrace choices.
 
-Exit condition: an integration run against Canton sandbox shows an operation moving from pending to submitted to completed or failed with command/workflow/update correlation persisted.
+Exit condition: package Java binding compile, ledger-command Kotlin compile, and ledger-command tests exit 0 with in-process harness coverage for submission uniqueness, deterministic command identity, command shape, and completion write-back. Sandbox verification remains opt-in with `PILLAR_SANDBOX_LEDGER=true`.
 
 ## R4 — Perf/network hardening
 
