@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pillar.fullname" . }}-billing-adapter
+spec:
+  replicas: {{ .Values.billingAdapter.replicas | default 1 }}
+  selector: { matchLabels: { app.kubernetes.io/name: billing-adapter } }
+  template:
+    metadata: { labels: { app.kubernetes.io/name: billing-adapter } }
+    spec:
+      serviceAccountName: {{ include "pillar.fullname" . }}-billing-adapter
+      containers:
+        - name: billing-adapter
+          image: "{{ .Values.billingAdapter.image.repository }}:{{ .Values.billingAdapter.image.tag }}"
+          envFrom: [{ configMapRef: { name: {{ include "pillar.fullname" . }}-billing-adapter } }]
+          ports: [{ name: http, containerPort: 8080 }]

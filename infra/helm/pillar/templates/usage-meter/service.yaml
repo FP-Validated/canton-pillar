@@ -1,0 +1,4 @@
+apiVersion: v1
+kind: Service
+metadata: { name: {{ include "pillar.fullname" . }}-usage-meter }
+spec: { selector: { app.kubernetes.io/name: usage-meter }, ports: [{ name: http, port: 8080, targetPort: http }] }

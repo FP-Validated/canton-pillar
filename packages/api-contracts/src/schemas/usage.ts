@@ -1,0 +1,8 @@
+import { z } from 'zod';
+import { ListEnvelope, Timestamp } from './common.js';
+
+export const UsageMeter = z.enum(['api.request.accepted','api.request.read_sampled','api.request.replayed','intent.created','ledger.command.submitted','ledger.command.rejected','webhook.delivery.attempted','webhook.delivery.succeeded','webhook.delivery.failed','webhook.delivery.dlq','projection.storage.byte_hour','search.indexed_object','export.bytes','workflow.task.executed']);
+export const UsageRollup = z.object({ id:z.string().startsWith('uro_'), object:z.literal('usage_rollup'), livemode:z.boolean(), tenant_id:z.string(), environment_id:z.string(), meter:UsageMeter, granularity:z.enum(['hour','day','month']), period_start:Timestamp, period_end:Timestamp, quantity:z.string(), unit:z.string(), event_count:z.number().int(), created:Timestamp, updated:Timestamp });
+export const UsageEvent = z.object({ id:z.string(), object:z.literal('usage_event'), livemode:z.boolean(), tenant_id:z.string(), environment_id:z.string(), meter:UsageMeter, quantity:z.string(), unit:z.string(), source_service:z.string(), source_event_time:Timestamp, request_id:z.string().optional(), operation_id:z.string().optional(), dedupe_key:z.string(), billable:z.boolean(), attributes:z.record(z.string()).default({}) });
+export const CurrentPeriodSummary = z.object({ object:z.literal('current_period_summary'), livemode:z.boolean(), period_start:Timestamp, period_end:Timestamp, totals:z.array(UsageRollup), forecast:z.array(z.object({ meter:UsageMeter, quantity:z.string(), unit:z.string() })).default([]) });
+export const UsageRollupListResponse = ListEnvelope(UsageRollup);

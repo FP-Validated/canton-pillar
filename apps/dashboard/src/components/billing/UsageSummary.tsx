@@ -1,0 +1,1 @@
+export function UsageSummary({ summary }: { summary?: { totals?: Array<{ meter:string; quantity:string; unit:string }> } }) { if (!summary) return <div role="status">Billing usage unavailable</div>; return <section><h2>Usage</h2>{(summary.totals ?? []).map(t => <div key={t.meter}>{t.meter}: {t.quantity} {t.unit}</div>)}</section>; }

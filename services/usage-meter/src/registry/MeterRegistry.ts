@@ -1,0 +1,2 @@
+export const knownMeters = new Set(['api.request.accepted','api.request.read_sampled','api.request.replayed','intent.created','ledger.command.submitted','ledger.command.rejected','webhook.delivery.attempted','webhook.delivery.succeeded','webhook.delivery.failed','webhook.delivery.dlq','projection.storage.byte_hour','search.indexed_object','export.bytes','workflow.task.executed']);
+export function assertKnownMeter(meter: string) { if (!knownMeters.has(meter)) throw new Error(`unknown meter: ${meter}`); }

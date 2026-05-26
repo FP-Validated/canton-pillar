@@ -1,0 +1,1 @@
+export class PartitionManager { created:string[] = []; ensureNextMonth(now = new Date()) { const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth()+1, 1)); const name = `usage_events_${d.getUTCFullYear()}_${String(d.getUTCMonth()+1).padStart(2,'0')}`; this.created.push(name); return name; } }

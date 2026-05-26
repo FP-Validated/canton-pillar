@@ -1,0 +1,2 @@
+export type ProviderInvoice = { id:string; tenant_id:string; amount:string; currency:string; period_start:string; period_end:string; signature?:string };
+export interface ProviderAdapter { exportUsage(key:string, rollup:unknown): Promise<{ idempotency_key:string; accepted:boolean }>; importInvoice(id:string): Promise<ProviderInvoice>; createPortalUrl(customerRef:string): Promise<{ url:string; expires_at:string }>; verifyWebhook(payload:string, signature:string, secret:string): boolean; }

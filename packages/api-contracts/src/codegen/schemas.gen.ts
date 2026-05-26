@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { AccountSchema, AccountCreateRequest, AccountUpdateRequest, AccountListResponse, AssetSchema, AssetCreateRequest, AssetUpdateRequest, AssetListResponse, BalanceSchema, BalanceListResponse, HoldingSchema, HoldingListResponse, IssueIntentSchema, IssueIntentCreateRequest, IssueIntentListResponse, RedeemIntentSchema, RedeemIntentCreateRequest, RedeemIntentListResponse, TransferIntentSchema, TransferIntentCreateRequest, TransferIntentListResponse, HoldSchema, HoldCreateRequest, HoldReleaseRequest, HoldListResponse, OperationSchema, OperationListResponse, EventSchema, EventListResponse, WebhookEndpointSchema, WebhookEndpointCreateRequest, WebhookEndpointUpdateRequest, RotateSecretResponse, WebhookEndpointListResponse, ApiKeySchema, ApiKeyCreateRequest, ApiKeyCreateResponse, ApiKeyListResponse, OnboardingSession, OnboardingSessionCreateRequest, OnboardingSessionAdvanceRequest, OnboardingNextAction, SearchQuery, SearchResponse, ExportJob, ExportCreateRequest, ExportDownloadUrlResponse, ExportJobListResponse, ReportTemplate, ReportTemplateCreateRequest, ReportTemplateListResponse, ReportTemplateRunResponse, ExportDestination, ExportDestinationCreateRequest, ExportDestinationListResponse } from '../schemas/index.js';
+import { AccountSchema, AccountCreateRequest, AccountUpdateRequest, AccountListResponse, AssetSchema, AssetCreateRequest, AssetUpdateRequest, AssetListResponse, BalanceSchema, BalanceListResponse, HoldingSchema, HoldingListResponse, IssueIntentSchema, IssueIntentCreateRequest, IssueIntentListResponse, RedeemIntentSchema, RedeemIntentCreateRequest, RedeemIntentListResponse, TransferIntentSchema, TransferIntentCreateRequest, TransferIntentListResponse, HoldSchema, HoldCreateRequest, HoldReleaseRequest, HoldListResponse, OperationSchema, OperationListResponse, EventSchema, EventListResponse, WebhookEndpointSchema, WebhookEndpointCreateRequest, WebhookEndpointUpdateRequest, RotateSecretResponse, WebhookEndpointListResponse, ApiKeySchema, ApiKeyCreateRequest, ApiKeyCreateResponse, ApiKeyListResponse, OnboardingSession, OnboardingSessionCreateRequest, OnboardingSessionAdvanceRequest, OnboardingNextAction, SearchQuery, SearchResponse, ExportJob, ExportCreateRequest, ExportDownloadUrlResponse, ExportJobListResponse, ReportTemplate, ReportTemplateCreateRequest, ReportTemplateListResponse, ReportTemplateRunResponse, ExportDestination, ExportDestinationCreateRequest, ExportDestinationListResponse, UsageRollup, UsageEvent, CurrentPeriodSummary, UsageRollupListResponse, Invoice, InvoiceLine, InvoiceListResponse, InvoiceDisputeRequest, PricingPlan, PricingPlanListResponse, PricingPlanPublishRequest, CustomerBilling, PortalUrlResponse } from '../schemas/index.js';
 
 export type Account = z.infer<typeof AccountSchema>;
 export type AccountCreate = z.infer<typeof AccountCreateRequest>;
@@ -56,3 +56,16 @@ export type ReportTemplateRun = z.infer<typeof ReportTemplateRunResponse>;
 export type ExportDestination = z.infer<typeof ExportDestination>;
 export type ExportDestinationCreate = z.infer<typeof ExportDestinationCreateRequest>;
 export type ExportDestinationList = z.infer<typeof ExportDestinationListResponse>;
+export type UsageRollup = z.infer<typeof UsageRollup>;
+export type UsageEvent = z.infer<typeof UsageEvent>;
+export type CurrentPeriodSummary = z.infer<typeof CurrentPeriodSummary>;
+export type UsageRollupList = z.infer<typeof UsageRollupListResponse>;
+export type Invoice = z.infer<typeof Invoice>;
+export type InvoiceLine = z.infer<typeof InvoiceLine>;
+export type InvoiceList = z.infer<typeof InvoiceListResponse>;
+export type InvoiceDispute = z.infer<typeof InvoiceDisputeRequest>;
+export type PricingPlan = z.infer<typeof PricingPlan>;
+export type PricingPlanList = z.infer<typeof PricingPlanListResponse>;
+export type PricingPlanPublish = z.infer<typeof PricingPlanPublishRequest>;
+export type CustomerBilling = z.infer<typeof CustomerBilling>;
+export type PortalUrl = z.infer<typeof PortalUrlResponse>;

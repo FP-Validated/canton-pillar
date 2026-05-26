@@ -659,6 +659,176 @@ components:
         - as_of_ledger_time
         - metadata
       type: object
+    CurrentPeriodSummary:
+      properties:
+        forecast:
+          default: []
+          items:
+            properties:
+              meter:
+                enum:
+                  - api.request.accepted
+                  - api.request.read_sampled
+                  - api.request.replayed
+                  - intent.created
+                  - ledger.command.submitted
+                  - ledger.command.rejected
+                  - webhook.delivery.attempted
+                  - webhook.delivery.succeeded
+                  - webhook.delivery.failed
+                  - webhook.delivery.dlq
+                  - projection.storage.byte_hour
+                  - search.indexed_object
+                  - export.bytes
+                  - workflow.task.executed
+                type: string
+              quantity:
+                type: string
+              unit:
+                type: string
+            required:
+              - meter
+              - quantity
+              - unit
+            type: object
+          type: array
+        livemode:
+          type: boolean
+        object:
+          enum:
+            - current_period_summary
+          type: string
+        period_end:
+          format: date-time
+          type: string
+        period_start:
+          format: date-time
+          type: string
+        totals:
+          items:
+            properties:
+              created:
+                format: date-time
+                type: string
+              environment_id:
+                type: string
+              event_count:
+                type: integer
+              granularity:
+                enum:
+                  - hour
+                  - day
+                  - month
+                type: string
+              id:
+                type: string
+              livemode:
+                type: boolean
+              meter:
+                enum:
+                  - api.request.accepted
+                  - api.request.read_sampled
+                  - api.request.replayed
+                  - intent.created
+                  - ledger.command.submitted
+                  - ledger.command.rejected
+                  - webhook.delivery.attempted
+                  - webhook.delivery.succeeded
+                  - webhook.delivery.failed
+                  - webhook.delivery.dlq
+                  - projection.storage.byte_hour
+                  - search.indexed_object
+                  - export.bytes
+                  - workflow.task.executed
+                type: string
+              object:
+                enum:
+                  - usage_rollup
+                type: string
+              period_end:
+                format: date-time
+                type: string
+              period_start:
+                format: date-time
+                type: string
+              quantity:
+                type: string
+              tenant_id:
+                type: string
+              unit:
+                type: string
+              updated:
+                format: date-time
+                type: string
+            required:
+              - id
+              - object
+              - livemode
+              - tenant_id
+              - environment_id
+              - meter
+              - granularity
+              - period_start
+              - period_end
+              - quantity
+              - unit
+              - event_count
+              - created
+              - updated
+            type: object
+          type: array
+      required:
+        - object
+        - livemode
+        - period_start
+        - period_end
+        - totals
+      type: object
+    CustomerBilling:
+      properties:
+        created:
+          format: date-time
+          type: string
+        environment_id:
+          type: string
+        id:
+          type: string
+        livemode:
+          type: boolean
+        object:
+          enum:
+            - customer_billing
+          type: string
+        plan:
+          nullable: true
+          type: string
+        status:
+          enum:
+            - active
+            - trialing
+            - past_due
+            - disabled
+            - canceled
+          type: string
+        tax_region:
+          nullable: true
+          type: string
+        tenant_id:
+          type: string
+        updated:
+          format: date-time
+          type: string
+      required:
+        - id
+        - object
+        - livemode
+        - tenant_id
+        - environment_id
+        - plan
+        - status
+        - created
+        - updated
+      type: object
     ErrorEnvelope:
       properties:
         error:
@@ -1575,6 +1745,305 @@ components:
         - operation
         - metadata
       type: object
+    Invoice:
+      properties:
+        created:
+          format: date-time
+          type: string
+        currency:
+          type: string
+        customer_billing:
+          type: string
+        dispute:
+          nullable: true
+          properties:
+            evidence:
+              additionalProperties:
+                nullable: true
+              type: object
+            status:
+              type: string
+            submitted_at:
+              format: date-time
+              type: string
+          required:
+            - status
+            - evidence
+            - submitted_at
+          type: object
+        hosted_invoice_url:
+          format: uri
+          nullable: true
+          type: string
+        id:
+          type: string
+        lines:
+          items:
+            properties:
+              amount:
+                type: string
+              currency:
+                type: string
+              description:
+                type: string
+              id:
+                type: string
+              meter:
+                type: string
+              object:
+                enum:
+                  - invoice_line
+                type: string
+              period_end:
+                format: date-time
+                type: string
+              period_start:
+                format: date-time
+                type: string
+              quantity:
+                type: string
+              unit_amount:
+                type: string
+            required:
+              - id
+              - object
+              - meter
+              - description
+              - quantity
+              - unit_amount
+              - amount
+              - currency
+              - period_start
+              - period_end
+            type: object
+          type: array
+        livemode:
+          type: boolean
+        object:
+          enum:
+            - invoice
+          type: string
+        period_end:
+          format: date-time
+          type: string
+        period_start:
+          format: date-time
+          type: string
+        status:
+          enum:
+            - draft
+            - open
+            - paid
+            - void
+            - uncollectible
+            - disputed
+          type: string
+        subtotal:
+          type: string
+        total:
+          type: string
+        updated:
+          format: date-time
+          type: string
+      required:
+        - id
+        - object
+        - livemode
+        - customer_billing
+        - status
+        - currency
+        - subtotal
+        - total
+        - period_start
+        - period_end
+        - lines
+        - created
+        - updated
+      type: object
+    InvoiceDisputeRequest:
+      properties:
+        evidence:
+          additionalProperties:
+            nullable: true
+          default: {}
+          type: object
+        reason:
+          minLength: 1
+          type: string
+      required:
+        - reason
+      type: object
+    InvoiceLine:
+      properties:
+        amount:
+          type: string
+        currency:
+          type: string
+        description:
+          type: string
+        id:
+          type: string
+        meter:
+          type: string
+        object:
+          enum:
+            - invoice_line
+          type: string
+        period_end:
+          format: date-time
+          type: string
+        period_start:
+          format: date-time
+          type: string
+        quantity:
+          type: string
+        unit_amount:
+          type: string
+      required:
+        - id
+        - object
+        - meter
+        - description
+        - quantity
+        - unit_amount
+        - amount
+        - currency
+        - period_start
+        - period_end
+      type: object
+    InvoiceListResponse:
+      properties:
+        data:
+          items:
+            properties:
+              created:
+                format: date-time
+                type: string
+              currency:
+                type: string
+              customer_billing:
+                type: string
+              dispute:
+                nullable: true
+                properties:
+                  evidence:
+                    additionalProperties:
+                      nullable: true
+                    type: object
+                  status:
+                    type: string
+                  submitted_at:
+                    format: date-time
+                    type: string
+                required:
+                  - status
+                  - evidence
+                  - submitted_at
+                type: object
+              hosted_invoice_url:
+                format: uri
+                nullable: true
+                type: string
+              id:
+                type: string
+              lines:
+                items:
+                  properties:
+                    amount:
+                      type: string
+                    currency:
+                      type: string
+                    description:
+                      type: string
+                    id:
+                      type: string
+                    meter:
+                      type: string
+                    object:
+                      enum:
+                        - invoice_line
+                      type: string
+                    period_end:
+                      format: date-time
+                      type: string
+                    period_start:
+                      format: date-time
+                      type: string
+                    quantity:
+                      type: string
+                    unit_amount:
+                      type: string
+                  required:
+                    - id
+                    - object
+                    - meter
+                    - description
+                    - quantity
+                    - unit_amount
+                    - amount
+                    - currency
+                    - period_start
+                    - period_end
+                  type: object
+                type: array
+              livemode:
+                type: boolean
+              object:
+                enum:
+                  - invoice
+                type: string
+              period_end:
+                format: date-time
+                type: string
+              period_start:
+                format: date-time
+                type: string
+              status:
+                enum:
+                  - draft
+                  - open
+                  - paid
+                  - void
+                  - uncollectible
+                  - disputed
+                type: string
+              subtotal:
+                type: string
+              total:
+                type: string
+              updated:
+                format: date-time
+                type: string
+            required:
+              - id
+              - object
+              - livemode
+              - customer_billing
+              - status
+              - currency
+              - subtotal
+              - total
+              - period_start
+              - period_end
+              - lines
+              - created
+              - updated
+            type: object
+          type: array
+        has_more:
+          type: boolean
+        object:
+          enum:
+            - list
+          type: string
+        url:
+          type: string
+      required:
+        - object
+        - url
+        - has_more
+        - data
+      type: object
     IssueIntentCreateRequest:
       properties:
         account:
@@ -2088,6 +2557,185 @@ components:
         - intent
         - status
         - metadata
+      type: object
+    PortalUrlResponse:
+      properties:
+        expires_at:
+          format: date-time
+          type: string
+        object:
+          enum:
+            - billing_portal_url
+          type: string
+        url:
+          format: uri
+          type: string
+      required:
+        - object
+        - url
+        - expires_at
+      type: object
+    PricingPlan:
+      properties:
+        created:
+          format: date-time
+          type: string
+        currency:
+          type: string
+        effective_from:
+          format: date-time
+          type: string
+        effective_to:
+          format: date-time
+          nullable: true
+          type: string
+        id:
+          type: string
+        meter_config:
+          additionalProperties:
+            properties:
+              included:
+                type: string
+              unit:
+                type: string
+              unit_amount:
+                type: string
+            required:
+              - unit
+            type: object
+          type: object
+        name:
+          type: string
+        object:
+          enum:
+            - pricing_plan
+          type: string
+        provider_price_map:
+          additionalProperties:
+            type: string
+          type: object
+        status:
+          enum:
+            - draft
+            - published
+            - retired
+          type: string
+        updated:
+          format: date-time
+          type: string
+      required:
+        - id
+        - object
+        - name
+        - status
+        - currency
+        - meter_config
+        - provider_price_map
+        - effective_from
+        - created
+        - updated
+      type: object
+    PricingPlanListResponse:
+      properties:
+        data:
+          items:
+            properties:
+              created:
+                format: date-time
+                type: string
+              currency:
+                type: string
+              effective_from:
+                format: date-time
+                type: string
+              effective_to:
+                format: date-time
+                nullable: true
+                type: string
+              id:
+                type: string
+              meter_config:
+                additionalProperties:
+                  properties:
+                    included:
+                      type: string
+                    unit:
+                      type: string
+                    unit_amount:
+                      type: string
+                  required:
+                    - unit
+                  type: object
+                type: object
+              name:
+                type: string
+              object:
+                enum:
+                  - pricing_plan
+                type: string
+              provider_price_map:
+                additionalProperties:
+                  type: string
+                type: object
+              status:
+                enum:
+                  - draft
+                  - published
+                  - retired
+                type: string
+              updated:
+                format: date-time
+                type: string
+            required:
+              - id
+              - object
+              - name
+              - status
+              - currency
+              - meter_config
+              - provider_price_map
+              - effective_from
+              - created
+              - updated
+            type: object
+          type: array
+        has_more:
+          type: boolean
+        object:
+          enum:
+            - list
+          type: string
+        url:
+          type: string
+      required:
+        - object
+        - url
+        - has_more
+        - data
+      type: object
+    PricingPlanPublishRequest:
+      properties:
+        currency:
+          type: string
+        effective_from:
+          format: date-time
+          type: string
+        meter_config:
+          additionalProperties:
+            nullable: true
+          type: object
+        name:
+          type: string
+        provider_price_map:
+          additionalProperties:
+            type: string
+          default: {}
+          type: object
+      required:
+        - name
+        - currency
+        - meter_config
+        - effective_from
       type: object
     RedeemIntentCreateRequest:
       properties:
@@ -2836,6 +3484,233 @@ components:
         - latest_event
         - from_account
         - to_account
+      type: object
+    UsageEvent:
+      properties:
+        attributes:
+          additionalProperties:
+            type: string
+          default: {}
+          type: object
+        billable:
+          type: boolean
+        dedupe_key:
+          type: string
+        environment_id:
+          type: string
+        id:
+          type: string
+        livemode:
+          type: boolean
+        meter:
+          enum:
+            - api.request.accepted
+            - api.request.read_sampled
+            - api.request.replayed
+            - intent.created
+            - ledger.command.submitted
+            - ledger.command.rejected
+            - webhook.delivery.attempted
+            - webhook.delivery.succeeded
+            - webhook.delivery.failed
+            - webhook.delivery.dlq
+            - projection.storage.byte_hour
+            - search.indexed_object
+            - export.bytes
+            - workflow.task.executed
+          type: string
+        object:
+          enum:
+            - usage_event
+          type: string
+        operation_id:
+          type: string
+        quantity:
+          type: string
+        request_id:
+          type: string
+        source_event_time:
+          format: date-time
+          type: string
+        source_service:
+          type: string
+        tenant_id:
+          type: string
+        unit:
+          type: string
+      required:
+        - id
+        - object
+        - livemode
+        - tenant_id
+        - environment_id
+        - meter
+        - quantity
+        - unit
+        - source_service
+        - source_event_time
+        - dedupe_key
+        - billable
+      type: object
+    UsageRollup:
+      properties:
+        created:
+          format: date-time
+          type: string
+        environment_id:
+          type: string
+        event_count:
+          type: integer
+        granularity:
+          enum:
+            - hour
+            - day
+            - month
+          type: string
+        id:
+          type: string
+        livemode:
+          type: boolean
+        meter:
+          enum:
+            - api.request.accepted
+            - api.request.read_sampled
+            - api.request.replayed
+            - intent.created
+            - ledger.command.submitted
+            - ledger.command.rejected
+            - webhook.delivery.attempted
+            - webhook.delivery.succeeded
+            - webhook.delivery.failed
+            - webhook.delivery.dlq
+            - projection.storage.byte_hour
+            - search.indexed_object
+            - export.bytes
+            - workflow.task.executed
+          type: string
+        object:
+          enum:
+            - usage_rollup
+          type: string
+        period_end:
+          format: date-time
+          type: string
+        period_start:
+          format: date-time
+          type: string
+        quantity:
+          type: string
+        tenant_id:
+          type: string
+        unit:
+          type: string
+        updated:
+          format: date-time
+          type: string
+      required:
+        - id
+        - object
+        - livemode
+        - tenant_id
+        - environment_id
+        - meter
+        - granularity
+        - period_start
+        - period_end
+        - quantity
+        - unit
+        - event_count
+        - created
+        - updated
+      type: object
+    UsageRollupListResponse:
+      properties:
+        data:
+          items:
+            properties:
+              created:
+                format: date-time
+                type: string
+              environment_id:
+                type: string
+              event_count:
+                type: integer
+              granularity:
+                enum:
+                  - hour
+                  - day
+                  - month
+                type: string
+              id:
+                type: string
+              livemode:
+                type: boolean
+              meter:
+                enum:
+                  - api.request.accepted
+                  - api.request.read_sampled
+                  - api.request.replayed
+                  - intent.created
+                  - ledger.command.submitted
+                  - ledger.command.rejected
+                  - webhook.delivery.attempted
+                  - webhook.delivery.succeeded
+                  - webhook.delivery.failed
+                  - webhook.delivery.dlq
+                  - projection.storage.byte_hour
+                  - search.indexed_object
+                  - export.bytes
+                  - workflow.task.executed
+                type: string
+              object:
+                enum:
+                  - usage_rollup
+                type: string
+              period_end:
+                format: date-time
+                type: string
+              period_start:
+                format: date-time
+                type: string
+              quantity:
+                type: string
+              tenant_id:
+                type: string
+              unit:
+                type: string
+              updated:
+                format: date-time
+                type: string
+            required:
+              - id
+              - object
+              - livemode
+              - tenant_id
+              - environment_id
+              - meter
+              - granularity
+              - period_start
+              - period_end
+              - quantity
+              - unit
+              - event_count
+              - created
+              - updated
+            type: object
+          type: array
+        has_more:
+          type: boolean
+        object:
+          enum:
+            - list
+          type: string
+        url:
+          type: string
+      required:
+        - object
+        - url
+        - has_more
+        - data
       type: object
     WebhookEndpointCreateRequest:
       properties:
@@ -4229,6 +5104,153 @@ paths:
       summary: retrieve balances
       tags:
         - balances
+  /v1/billing/portal_url:
+    post:
+      operationId: billingportalUrl
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema:
+            maxLength: 255
+            minLength: 1
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PortalUrlResponse"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: portalUrl billing
+      tags:
+        - billing
+  /v1/customer_billing:
+    get:
+      operationId: customerBillingretrieve
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerBilling"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: retrieve customer_billing
+      tags:
+        - customer_billing
   /v1/events:
     get:
       operationId: eventslist
@@ -5748,6 +6770,163 @@ paths:
       tags:
         - Reserved
       x-pillar-reserved: true
+  /v1/invoices/{id}:
+    get:
+      operationId: invoicesretrieve
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Invoice"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: retrieve invoices
+      tags:
+        - invoices
+  /v1/invoices/{id}/dispute:
+    post:
+      operationId: invoicesdispute
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema:
+            maxLength: 255
+            minLength: 1
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InvoiceDisputeRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Invoice"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: dispute invoices
+      tags:
+        - invoices
   /v1/issue_intents:
     get:
       operationId: issueIntentslist
@@ -6691,6 +7870,152 @@ paths:
       summary: retrieve operations
       tags:
         - operations
+  /v1/pricing_plans:
+    get:
+      operationId: pricingPlanslist
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PricingPlanListResponse"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: list pricing_plans
+      tags:
+        - pricing_plans
+    post:
+      operationId: pricingPlanspublish
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema:
+            maxLength: 255
+            minLength: 1
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PricingPlanPublishRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PricingPlan"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: publish pricing_plans
+      tags:
+        - pricing_plans
   /v1/redeem_intents:
     get:
       operationId: redeemIntentslist
@@ -7869,6 +9194,73 @@ paths:
       summary: confirm transfer_intents
       tags:
         - transfer_intents
+  /v1/usage:
+    get:
+      operationId: usagelist
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsageRollupListResponse"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: list usage
+      tags:
+        - usage
   /v1/usage_events:
     get:
       operationId: reserved_v1_usage_events
@@ -7883,6 +9275,73 @@ paths:
       tags:
         - Reserved
       x-pillar-reserved: true
+  /v1/usage/current_period:
+    get:
+      operationId: usagecurrentPeriod
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CurrentPeriodSummary"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: currentPeriod usage
+      tags:
+        - usage
   /v1/webhook_endpoints:
     get:
       operationId: webhookEndpointslist

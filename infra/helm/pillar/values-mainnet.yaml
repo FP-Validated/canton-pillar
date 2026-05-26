@@ -302,3 +302,20 @@ onboarding:
   hpa: { enabled: false, minReplicas: 1, maxReplicas: 3, targetCPUUtilizationPercentage: 70 }
   pdb: { enabled: true, minAvailable: 1 }
 
+
+usageMeter:
+  replicas: 1
+  image: { repository: pillar/usage-meter, tag: latest }
+  streamBackend: redis
+  externalSecret: { enabled: false, spec: {} }
+  hpa: { enabled: false, maxReplicas: 3 }
+billingAdapter:
+  replicas: 1
+  image: { repository: pillar/billing-adapter, tag: latest }
+  externalSecret: { enabled: false, spec: {} }
+  hpa: { enabled: false, maxReplicas: 3 }
+provider:
+  endpoint: ""
+  apiKeySecretRef: ""
+serviceMonitor:
+  enabled: false

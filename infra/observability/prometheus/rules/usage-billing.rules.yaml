@@ -1,0 +1,23 @@
+groups:
+  - name: usage-billing
+    rules:
+      - alert: UsageEmitFailures
+        expr: increase(pillar_usage_emit_failed_total[5m]) > 0
+        for: 5m
+        labels: { severity: warning }
+      - alert: UsageRollupLag
+        expr: pillar_usage_rollup_lag_seconds > 900
+        for: 10m
+        labels: { severity: warning }
+      - alert: BillingProviderOutage
+        expr: increase(pillar_billing_provider_outage_total[10m]) > 0
+        for: 10m
+        labels: { severity: critical }
+      - alert: InvoiceReconciliationMismatch
+        expr: increase(pillar_invoice_reconciliation_mismatch_total[10m]) > 0
+        for: 1m
+        labels: { severity: critical }
+      - alert: PartitionCreateFailed
+        expr: increase(pillar_partition_create_failed_total[10m]) > 0
+        for: 1m
+        labels: { severity: critical }

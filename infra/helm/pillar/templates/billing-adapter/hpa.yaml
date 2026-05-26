@@ -1,0 +1,9 @@
+{{- if .Values.billingAdapter.hpa.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata: { name: {{ include "pillar.fullname" . }}-billing-adapter }
+spec:
+  scaleTargetRef: { apiVersion: apps/v1, kind: Deployment, name: {{ include "pillar.fullname" . }}-billing-adapter }
+  minReplicas: 1
+  maxReplicas: {{ .Values.billingAdapter.hpa.maxReplicas | default 3 }}
+{{- end }}

@@ -1,0 +1,1 @@
+export function InvoiceList({ invoices }: { invoices: Array<{ id:string; status:string; total:string; currency:string }> }) { return <section><h2>Invoices</h2>{invoices.map(i => <div key={i.id}>{i.id} {i.status} {i.total} {i.currency}</div>)}</section>; }

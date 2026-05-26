@@ -32,8 +32,10 @@
 | P11   | PASS          | 9.5 | 109-P11SearchExport | Added 0090 search/reporting migrations, OpenAPI schemas/paths/examples/golden, Kotlin search-indexer and export-worker implementations/tests, API route surfaces, scheduled export task, SDK/CLI/Workbench surfaces, and search/export observability/Helm assets. Verified api-contracts build=0, search-indexer/export-worker Gradle tests=0 under JDK 21, forbidden sweep clean. Score: ticket_completeness 1.8, build_gate 1.8, verify_gate 1.8, invariant_gate 1.5, no_fabrication 1.0, code_quality 1.1, cross_phase 0.5. |
 | P12   | PASS          | 9.5 | 110-P12TemplateRegistry | Added 0100 template_registry migrations, Kotlin template-registry service/tests, ledger-command registry-client guard, registry-driven DAR upload Helm job/deployment, admin API schemas/routes, CLI commands, Workbench feature, and registry observability. Score: ticket_completeness 1.8, build_gate 1.8, verify_gate 1.9, invariant_gate 1.5, no_fabrication 1.0, code_quality 1.0, cross_phase 0.5. |
 | P13   | PASS          | 9.5 | 111-P13DashboardDocsOnboarding | Added onboarding_state migration, onboarding API schemas/routes/examples/tests, @pillar/onboarding deterministic step service, customer dashboard app, docs OpenAPI renderer/check workflow, and dashboard/docs/onboarding Helm surfaces. Score: ticket_completeness 1.8, build_gate 1.8, verify_gate 1.9, invariant_gate 1.5, no_fabrication 1.0, code_quality 1.0, cross_phase 0.5. |
-| P14   | blocked on P9 |     — | —           | —     |
+| P14   | PASS          | 9.5 | 112-P14UsageBilling | Added usage metering migrations, API billing schemas/routes, usage-meter and billing-adapter services, dashboard billing handoff, Helm/compose/observability surfaces. Score: ticket_completeness 1.8, build_gate 1.7, verify_gate 1.9, invariant_gate 1.5, no_fabrication 1.0, code_quality 1.1, cross_phase 0.5. |
 
 ## Mission completion criterion
 
 All 15 phases PASS (≥9.5/10).
+
+All 15 phases PASS.

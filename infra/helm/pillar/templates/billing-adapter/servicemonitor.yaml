@@ -1,0 +1,6 @@
+{{- if .Values.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata: { name: {{ include "pillar.fullname" . }}-billing-adapter }
+spec: { selector: { matchLabels: { app.kubernetes.io/name: billing-adapter } }, endpoints: [{ port: http }] }
+{{- end }}

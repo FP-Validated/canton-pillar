@@ -1,0 +1,2 @@
+import type { ProviderAdapter } from '../providers/ProviderAdapter.js';
+export class InvoiceImport { private imported = new Set<string>(); constructor(private provider: ProviderAdapter) {} async importOnce(id:string) { if (this.imported.has(id)) return { imported:false }; this.imported.add(id); return { imported:true, invoice: await this.provider.importInvoice(id) }; } verifySignedEvent(payload:string, sig:string, secret:string) { return this.provider.verifyWebhook(payload, sig, secret); } }

@@ -1,0 +1,4 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata: { name: {{ include "pillar.fullname" . }}-billing-adapter }
+spec: { minAvailable: 0, selector: { matchLabels: { app.kubernetes.io/name: billing-adapter } } }

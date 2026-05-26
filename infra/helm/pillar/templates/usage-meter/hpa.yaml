@@ -1,0 +1,9 @@
+{{- if .Values.usageMeter.hpa.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata: { name: {{ include "pillar.fullname" . }}-usage-meter }
+spec:
+  scaleTargetRef: { apiVersion: apps/v1, kind: Deployment, name: {{ include "pillar.fullname" . }}-usage-meter }
+  minReplicas: 1
+  maxReplicas: {{ .Values.usageMeter.hpa.maxReplicas | default 3 }}
+{{- end }}

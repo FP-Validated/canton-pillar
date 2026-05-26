@@ -1,0 +1,1 @@
+export class Reconciliation { compare(local:string, provider:string, invoice:string) { const ok = local === provider && provider === invoice; if (!ok) throw new Error('invoice reconciliation mismatch'); return { ok }; } }

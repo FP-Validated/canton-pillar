@@ -1,0 +1,3 @@
+import type { UsageEnvelope } from '../consumer/StreamConsumer.js';
+import type { Rollup } from '../rollups/HourlyRollup.js';
+export class RollupReconciler { compare(raw: UsageEnvelope[], rollups: Rollup[]) { const rawTotal = raw.filter(e=>e.billable!==false).reduce((n,e)=>n+BigInt(e.quantity),0n); const rollTotal = rollups.reduce((n,r)=>n+BigInt(r.quantity),0n); return { ok: rawTotal === rollTotal, expected:String(rawTotal), actual:String(rollTotal) }; } blockMonthlyClose(raw: UsageEnvelope[], rollups: Rollup[]) { const r = this.compare(raw, rollups); if (!r.ok) throw new Error(`invoice reconciliation mismatch expected=${r.expected} actual=${r.actual}`); return r; } }

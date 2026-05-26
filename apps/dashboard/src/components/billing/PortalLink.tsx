@@ -1,0 +1,1 @@
+export function PortalLink({ url, admin }: { url?: string; admin: boolean }) { if (!admin) return null; if (!url) return <div>Billing portal unavailable for this deployment mode.</div>; return <a href={url}>Open billing portal</a>; }
