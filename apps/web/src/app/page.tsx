@@ -1,99 +1,81 @@
-import Link from 'next/link';
+import { CodeShowcase } from '@/components/marketing/CodeShowcase';
+import { ComparisonTable } from '@/components/marketing/ComparisonTable';
+import { CtaBand } from '@/components/marketing/CtaBand';
+import { FaqAccordion } from '@/components/marketing/FaqAccordion';
+import { FeatureGrid } from '@/components/marketing/FeatureGrid';
+import { Footer } from '@/components/marketing/Footer';
+import { Hero } from '@/components/marketing/Hero';
+import { LifecycleDiagram } from '@/components/marketing/LifecycleDiagram';
+import { LogoCloud } from '@/components/marketing/LogoCloud';
+import { MetricBand } from '@/components/marketing/MetricBand';
+import { ObjectModelTable } from '@/components/marketing/ObjectModelTable';
+import { SecurityBand } from '@/components/marketing/SecurityBand';
+import { SplitFeature } from '@/components/marketing/SplitFeature';
+import { Testimonial } from '@/components/marketing/Testimonial';
+import { UseCaseStrip } from '@/components/marketing/UseCaseStrip';
 
-const objects = [
-  ['issue_intent', 'Create newly issued asset units under an issuer-controlled workflow.', 'issint_'],
-  ['transfer_intent', 'Move asset value between accounts through an intent lifecycle.', 'trint_'],
-  ['redeem_intent', 'Redeem asset value back to the issuer under policy controls.', 'redint_'],
-  ['hold', 'Reserve value for a downstream settlement or compliance decision.', 'hold_'],
-  ['holding', 'Projected account-level asset balance available to the API.', 'hldg_'],
-  ['asset', 'A configured asset with issuance, transfer, and redemption policy.', 'asst_'],
-  ['operation', 'A traceable asynchronous runtime operation.', 'op_'],
-  ['event', 'A thin webhook event emitted from state transitions.', 'evt_'],
-  ['webhook_endpoint', 'A configured delivery target with signing and retry policy.', 'we_']
+const features = [
+  ['Intent-first API', 'Create issue, transfer, and redeem intents that describe the business outcome before the runtime performs settlement work.'],
+  ['Ledger source-of-truth', 'Projected balances come from committed asset movement, giving operators a reliable boundary between requests and truth.'],
+  ['Webhook-first', 'Thin signed events let downstream systems react to lifecycle changes without polling or coupling to internals.'],
+  ['Idempotency you can trust', 'Request keys make retries safe for clients, workers, and support teams during network failures.'],
+  ['Polyglot SDKs', 'Use raw HTTP or typed clients while preserving the same object model and error semantics.'],
+  ['Three deployment modes', 'Run hosted, customer-validator, or self-hosted without changing application code.']
+].map(([title, body]) => ({ title, body }));
+
+const splitRows = [
+  {
+    eyebrow: 'Issuance',
+    title: 'Issue assets with policy controls.',
+    body: 'Model issuance as an intent, attach issuer policy, and let the runtime produce auditable operations and events for every state transition.',
+    figure: <pre className="overflow-x-auto rounded-2xl bg-ink p-5 text-sm leading-6 text-slate-100"><code>{`{
+  "id": "issint_91Kp2",
+  "asset": "asst_usdc_demo",
+  "amount": 10000000,
+  "destination": "acct_treasury_001",
+  "policy": "issuer_approval_required",
+  "operation": "op_issue_7mQ"
+}`}</code></pre>
+  },
+  {
+    eyebrow: 'Settlement',
+    title: 'Transfer with deterministic settlement.',
+    body: 'Each transfer intent advances through explicit processing states so product, finance, and support teams can explain what happened without guessing.',
+    reverse: true,
+    figure: <div className="grid gap-3 text-sm font-semibold text-ink sm:grid-cols-3"><div className="rounded-2xl bg-white p-4 shadow-sm">trint_created</div><div className="rounded-2xl bg-white p-4 shadow-sm">op_processing</div><div className="rounded-2xl bg-white p-4 shadow-sm">evt_succeeded</div></div>
+  },
+  {
+    eyebrow: 'Reconciliation',
+    title: 'Reconcile and audit by default.',
+    body: 'Operations, holdings, and events give finance teams the evidence they need to close books and investigate exceptions from one stable model.',
+    figure: <div className="overflow-hidden rounded-2xl bg-white text-sm shadow-sm"><div className="grid grid-cols-3 bg-bgSoft p-3 font-bold text-ink"><span>Object</span><span>Status</span><span>Prefix</span></div><div className="grid grid-cols-3 p-3 text-slateMuted"><span>holding</span><span>available</span><span>hldg_</span></div><div className="grid grid-cols-3 border-t border-slate-100 p-3 text-slateMuted"><span>operation</span><span>succeeded</span><span>op_</span></div></div>
+  }
 ];
 
 export default function HomePage() {
   return (
     <>
-      <section className="mx-auto grid max-w-6xl gap-12 px-6 py-20 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-        <div>
-          <p className="mb-4 text-sm font-bold tracking-[0.24em] text-accent">CANTON-NATIVE PAYMENTS RUNTIME</p>
-          <h1 className="text-5xl font-bold tracking-tight text-ink md:text-6xl">The payments runtime for Canton-backed assets.</h1>
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-slateMuted">
-            Canton Pillar gives product teams a clean `/v1` API for issuing, transferring, redeeming, and observing ledger-backed assets without exposing Canton internals to customers.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-4">
-            <Link href="/api" className="rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-accentDark">
-              Read API reference
-            </Link>
-            <Link href="/dashboard" className="rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-ink hover:border-accent hover:text-accent">
-              Open dashboard
-            </Link>
-          </div>
-        </div>
-        <pre className="overflow-x-auto rounded-3xl bg-ink p-6 text-sm leading-6 text-slate-100 shadow-2xl"><code>{`curl https://api.cantonpillar.example/v1/transfer_intents \\
-  -H "Authorization: Bearer pk_test_..." \\
-  -H "Idempotency-Key: ik_4c0f6a" \\
-  -d '{
-    "amount": 2500000,
-    "asset": "asst_usdc_demo",
-    "from_account": "acct_treasury_001",
-    "to_account": "acct_vendor_874"
-  }'
-
-{
-  "id": "trint_7Kq2Vm91",
-  "object": "transfer_intent",
-  "status": "processing",
-  "operation": "op_5pK91XdR2"
-}`}</code></pre>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-6 py-20">
-        <div className="grid gap-6 md:grid-cols-3">
-          {[
-            ['Intent-first API', 'REST-style verbs over Canton workflows.'],
-            ['Ledger-of-truth', 'Pillar never invents balances; every state mutation is rooted on the Canton ledger.'],
-            ['Webhook-first', 'HMAC-signed thin events with idempotent retries.']
-          ].map(([title, body]) => (
-            <div key={title} className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-              <h2 className="text-xl font-bold text-ink">{title}</h2>
-              <p className="mt-3 leading-7 text-slateMuted">{body}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-6 py-20">
-        <h2 className="text-3xl font-bold tracking-tight">Object model</h2>
-        <div className="mt-8 overflow-hidden rounded-3xl border border-slate-200">
-          <table className="min-w-full divide-y divide-slate-200 text-left text-sm">
-            <thead className="bg-bgSoft text-xs uppercase tracking-wide text-slateMuted">
-              <tr><th className="px-6 py-4">Object</th><th className="px-6 py-4">Description</th><th className="px-6 py-4">Example ID prefix</th></tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 bg-white">
-              {objects.map(([object, description, prefix]) => (
-                <tr key={object}><td className="px-6 py-4 font-mono font-semibold text-ink">{object}</td><td className="px-6 py-4 text-slateMuted">{description}</td><td className="px-6 py-4 font-mono text-accent">{prefix}</td></tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-6 py-20">
-        <div className="rounded-3xl bg-bgSoft p-8">
-          <p className="text-sm font-semibold uppercase tracking-wide text-accent">Deployment modes</p>
-          <h2 className="mt-2 text-3xl font-bold">Deployment model changes, API experience does not.</h2>
-          <div className="mt-8 grid gap-4 md:grid-cols-3">
-            {['hosted', 'customer-validator', 'self-hosted'].map((mode) => <div key={mode} className="rounded-2xl bg-white p-6 font-mono font-semibold shadow-sm">{mode}</div>)}
-          </div>
-        </div>
-      </section>
-
-      <footer className="mx-auto flex max-w-6xl flex-col justify-between gap-4 px-6 py-10 text-sm text-slateMuted md:flex-row">
-        <span>© Canton Pillar prototype. Not for production use.</span>
-        <Link href="https://github.com/FP-Validated/pillar" className="font-semibold text-accent">GitHub repository</Link>
-      </footer>
+      <Hero
+        eyebrow="CANTON-NATIVE PAYMENTS RUNTIME"
+        title="The payments runtime for Canton-backed assets."
+        body="Canton Pillar gives product teams a polished /v1 API for issuing, transferring, redeeming, and observing Canton-backed assets. The ledger-of-truth model keeps balances and lifecycle events rooted in committed asset movement while the API stays clean for developers."
+        primaryCta={{ label: 'Get API keys', href: '/get-api-keys' }}
+        secondaryCta={{ label: 'Read the docs', href: '/docs' }}
+      />
+      <LogoCloud />
+      <FeatureGrid features={features} />
+      <LifecycleDiagram />
+      <SplitFeature rows={splitRows} />
+      <CodeShowcase />
+      <ObjectModelTable />
+      <ComparisonTable />
+      <SecurityBand />
+      <MetricBand />
+      <UseCaseStrip />
+      <Testimonial />
+      <FaqAccordion />
+      <CtaBand />
+      <Footer />
     </>
   );
 }
