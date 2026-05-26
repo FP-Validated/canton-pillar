@@ -2196,6 +2196,216 @@ components:
         - latest_event
         - account
       type: object
+    NetworkListResponse:
+      properties:
+        data:
+          items:
+            properties:
+              created:
+                format: date-time
+                type: string
+              default_synchronizer_id:
+                nullable: true
+                type: string
+              display_name:
+                type: string
+              id:
+                pattern: ^net_
+                type: string
+              kind:
+                enum:
+                  - devnet
+                  - testnet
+                  - mainnet
+                  - custom
+                type: string
+              livemode:
+                type: boolean
+              object:
+                enum:
+                  - network
+                type: string
+              slug:
+                enum:
+                  - dev
+                  - testnet
+                  - mainnet
+                  - custom
+                type: string
+              status:
+                enum:
+                  - active
+                  - paused
+                  - disabled
+                type: string
+              updated:
+                format: date-time
+                type: string
+            required:
+              - id
+              - object
+              - slug
+              - display_name
+              - kind
+              - livemode
+              - default_synchronizer_id
+              - status
+              - created
+              - updated
+            type: object
+          type: array
+        has_more:
+          type: boolean
+        object:
+          enum:
+            - list
+          type: string
+        url:
+          type: string
+      required:
+        - object
+        - url
+        - has_more
+        - data
+      type: object
+    NetworkPublicListResponse:
+      properties:
+        data:
+          items:
+            properties:
+              display_name:
+                type: string
+              kind:
+                enum:
+                  - devnet
+                  - testnet
+                  - mainnet
+                  - custom
+                type: string
+              livemode:
+                type: boolean
+              slug:
+                enum:
+                  - dev
+                  - testnet
+                  - mainnet
+                  - custom
+                type: string
+              status:
+                enum:
+                  - active
+                  - paused
+                  - disabled
+                type: string
+            required:
+              - slug
+              - display_name
+              - kind
+              - livemode
+              - status
+            type: object
+          type: array
+        has_more:
+          type: boolean
+        object:
+          enum:
+            - list
+          type: string
+        url:
+          type: string
+      required:
+        - object
+        - url
+        - has_more
+        - data
+      type: object
+    NetworkPublicSchema:
+      properties:
+        display_name:
+          type: string
+        kind:
+          enum:
+            - devnet
+            - testnet
+            - mainnet
+            - custom
+          type: string
+        livemode:
+          type: boolean
+        slug:
+          enum:
+            - dev
+            - testnet
+            - mainnet
+            - custom
+          type: string
+        status:
+          enum:
+            - active
+            - paused
+            - disabled
+          type: string
+      required:
+        - slug
+        - display_name
+        - kind
+        - livemode
+        - status
+      type: object
+    NetworkSchema:
+      properties:
+        created:
+          format: date-time
+          type: string
+        default_synchronizer_id:
+          nullable: true
+          type: string
+        display_name:
+          type: string
+        id:
+          pattern: ^net_
+          type: string
+        kind:
+          enum:
+            - devnet
+            - testnet
+            - mainnet
+            - custom
+          type: string
+        livemode:
+          type: boolean
+        object:
+          enum:
+            - network
+          type: string
+        slug:
+          enum:
+            - dev
+            - testnet
+            - mainnet
+            - custom
+          type: string
+        status:
+          enum:
+            - active
+            - paused
+            - disabled
+          type: string
+        updated:
+          format: date-time
+          type: string
+      required:
+        - id
+        - object
+        - slug
+        - display_name
+        - kind
+        - livemode
+        - default_synchronizer_id
+        - status
+        - created
+        - updated
+      type: object
     OnboardingNextAction:
       properties:
         href:
@@ -3321,6 +3531,143 @@ components:
         - data
         - freshness
       type: object
+    TenantNetworkBindingListResponse:
+      properties:
+        data:
+          items:
+            properties:
+              created:
+                format: date-time
+                type: string
+              default_validator_id:
+                pattern: ^val_
+                type: string
+              fallback_validator_id:
+                nullable: true
+                pattern: ^val_
+                type: string
+              id:
+                pattern: ^tnb_
+                type: string
+              livemode:
+                type: boolean
+              network:
+                type: string
+              network_id:
+                pattern: ^net_
+                type: string
+              object:
+                enum:
+                  - tenant_network_binding
+                type: string
+              status:
+                enum:
+                  - active
+                  - paused
+                  - disabled
+                type: string
+              tenant_id:
+                type: string
+              updated:
+                format: date-time
+                type: string
+            required:
+              - id
+              - object
+              - tenant_id
+              - network
+              - network_id
+              - default_validator_id
+              - fallback_validator_id
+              - livemode
+              - status
+              - created
+              - updated
+            type: object
+          type: array
+        has_more:
+          type: boolean
+        object:
+          enum:
+            - list
+          type: string
+        url:
+          type: string
+      required:
+        - object
+        - url
+        - has_more
+        - data
+      type: object
+    TenantNetworkBindingSchema:
+      properties:
+        created:
+          format: date-time
+          type: string
+        default_validator_id:
+          pattern: ^val_
+          type: string
+        fallback_validator_id:
+          nullable: true
+          pattern: ^val_
+          type: string
+        id:
+          pattern: ^tnb_
+          type: string
+        livemode:
+          type: boolean
+        network:
+          type: string
+        network_id:
+          pattern: ^net_
+          type: string
+        object:
+          enum:
+            - tenant_network_binding
+          type: string
+        status:
+          enum:
+            - active
+            - paused
+            - disabled
+          type: string
+        tenant_id:
+          type: string
+        updated:
+          format: date-time
+          type: string
+      required:
+        - id
+        - object
+        - tenant_id
+        - network
+        - network_id
+        - default_validator_id
+        - fallback_validator_id
+        - livemode
+        - status
+        - created
+        - updated
+      type: object
+    TenantNetworkBindingUpsertRequest:
+      properties:
+        fallback:
+          pattern: ^val_
+          type: string
+        network:
+          enum:
+            - dev
+            - testnet
+            - mainnet
+            - custom
+          type: string
+        validator:
+          pattern: ^val_
+          type: string
+      required:
+        - network
+        - validator
+      type: object
     TransferIntentCreateRequest:
       properties:
         amount:
@@ -3711,6 +4058,433 @@ components:
         - url
         - has_more
         - data
+      type: object
+    ValidatorCreateRequest:
+      properties:
+        capacity_tier:
+          default: standard
+          type: string
+        display_name:
+          type: string
+        jwt_issuer:
+          type: string
+        network:
+          type: string
+        participant_endpoint_ref:
+          type: string
+        provider_id:
+          type: string
+        regions:
+          default: []
+          items:
+            type: string
+          type: array
+        tls_profile:
+          type: string
+      required:
+        - provider_id
+        - network
+        - display_name
+        - participant_endpoint_ref
+      type: object
+    ValidatorHealthListResponse:
+      properties:
+        data:
+          items:
+            properties:
+              error_class:
+                nullable: true
+                type: string
+              health_status:
+                enum:
+                  - healthy
+                  - degraded
+                  - unhealthy
+                  - unknown
+                type: string
+              latency_ms:
+                minimum: 0
+                nullable: true
+                type: integer
+              object:
+                enum:
+                  - validator_health_snapshot
+                type: string
+              package_visibility_status:
+                enum:
+                  - visible
+                  - missing
+                  - unknown
+                type: string
+              sampled_at:
+                format: date-time
+                type: string
+              sequencer_offset_lag_seconds:
+                minimum: 0
+                nullable: true
+                type: integer
+              validator_id:
+                pattern: ^val_
+                type: string
+            required:
+              - object
+              - validator_id
+              - sampled_at
+              - health_status
+              - latency_ms
+              - error_class
+              - sequencer_offset_lag_seconds
+              - package_visibility_status
+            type: object
+          type: array
+        has_more:
+          type: boolean
+        object:
+          enum:
+            - list
+          type: string
+        url:
+          type: string
+      required:
+        - object
+        - url
+        - has_more
+        - data
+      type: object
+    ValidatorHealthSnapshotSchema:
+      properties:
+        error_class:
+          nullable: true
+          type: string
+        health_status:
+          enum:
+            - healthy
+            - degraded
+            - unhealthy
+            - unknown
+          type: string
+        latency_ms:
+          minimum: 0
+          nullable: true
+          type: integer
+        object:
+          enum:
+            - validator_health_snapshot
+          type: string
+        package_visibility_status:
+          enum:
+            - visible
+            - missing
+            - unknown
+          type: string
+        sampled_at:
+          format: date-time
+          type: string
+        sequencer_offset_lag_seconds:
+          minimum: 0
+          nullable: true
+          type: integer
+        validator_id:
+          pattern: ^val_
+          type: string
+      required:
+        - object
+        - validator_id
+        - sampled_at
+        - health_status
+        - latency_ms
+        - error_class
+        - sequencer_offset_lag_seconds
+        - package_visibility_status
+      type: object
+    ValidatorListResponse:
+      properties:
+        data:
+          items:
+            properties:
+              capacity_tier:
+                type: string
+              created:
+                format: date-time
+                type: string
+              display_name:
+                type: string
+              id:
+                pattern: ^val_
+                type: string
+              jwt_issuer:
+                nullable: true
+                type: string
+              network_id:
+                pattern: ^net_
+                type: string
+              object:
+                enum:
+                  - validator
+                type: string
+              participant_endpoint_ref:
+                type: string
+              provider_id:
+                pattern: ^valp_
+                type: string
+              regions:
+                items:
+                  type: string
+                type: array
+              status:
+                enum:
+                  - active
+                  - degraded
+                  - disabled
+                type: string
+              tls_profile:
+                nullable: true
+                type: string
+              updated:
+                format: date-time
+                type: string
+            required:
+              - id
+              - object
+              - provider_id
+              - network_id
+              - display_name
+              - participant_endpoint_ref
+              - jwt_issuer
+              - tls_profile
+              - capacity_tier
+              - regions
+              - status
+              - created
+              - updated
+            type: object
+          type: array
+        has_more:
+          type: boolean
+        object:
+          enum:
+            - list
+          type: string
+        url:
+          type: string
+      required:
+        - object
+        - url
+        - has_more
+        - data
+      type: object
+    ValidatorProviderCreateRequest:
+      properties:
+        contact_email:
+          format: email
+          type: string
+        deployment_modes:
+          items:
+            enum:
+              - hosted
+              - customer-validator
+              - self-hosted
+            type: string
+          minItems: 1
+          type: array
+        display_name:
+          minLength: 1
+          type: string
+        slug:
+          minLength: 1
+          type: string
+        website_url:
+          format: uri
+          type: string
+      required:
+        - slug
+        - display_name
+        - contact_email
+        - deployment_modes
+      type: object
+    ValidatorProviderListResponse:
+      properties:
+        data:
+          items:
+            properties:
+              contact_email:
+                format: email
+                type: string
+              created:
+                format: date-time
+                type: string
+              deployment_modes:
+                items:
+                  enum:
+                    - hosted
+                    - customer-validator
+                    - self-hosted
+                  type: string
+                minItems: 1
+                type: array
+              display_name:
+                type: string
+              id:
+                pattern: ^valp_
+                type: string
+              object:
+                enum:
+                  - validator_provider
+                type: string
+              slug:
+                type: string
+              status:
+                enum:
+                  - pending_verification
+                  - verified
+                  - paused
+                  - disabled
+                type: string
+              updated:
+                format: date-time
+                type: string
+              website_url:
+                format: uri
+                nullable: true
+                type: string
+            required:
+              - id
+              - object
+              - slug
+              - display_name
+              - contact_email
+              - website_url
+              - deployment_modes
+              - status
+              - created
+              - updated
+            type: object
+          type: array
+        has_more:
+          type: boolean
+        object:
+          enum:
+            - list
+          type: string
+        url:
+          type: string
+      required:
+        - object
+        - url
+        - has_more
+        - data
+      type: object
+    ValidatorProviderSchema:
+      properties:
+        contact_email:
+          format: email
+          type: string
+        created:
+          format: date-time
+          type: string
+        deployment_modes:
+          items:
+            enum:
+              - hosted
+              - customer-validator
+              - self-hosted
+            type: string
+          minItems: 1
+          type: array
+        display_name:
+          type: string
+        id:
+          pattern: ^valp_
+          type: string
+        object:
+          enum:
+            - validator_provider
+          type: string
+        slug:
+          type: string
+        status:
+          enum:
+            - pending_verification
+            - verified
+            - paused
+            - disabled
+          type: string
+        updated:
+          format: date-time
+          type: string
+        website_url:
+          format: uri
+          nullable: true
+          type: string
+      required:
+        - id
+        - object
+        - slug
+        - display_name
+        - contact_email
+        - website_url
+        - deployment_modes
+        - status
+        - created
+        - updated
+      type: object
+    ValidatorSchema:
+      properties:
+        capacity_tier:
+          type: string
+        created:
+          format: date-time
+          type: string
+        display_name:
+          type: string
+        id:
+          pattern: ^val_
+          type: string
+        jwt_issuer:
+          nullable: true
+          type: string
+        network_id:
+          pattern: ^net_
+          type: string
+        object:
+          enum:
+            - validator
+          type: string
+        participant_endpoint_ref:
+          type: string
+        provider_id:
+          pattern: ^valp_
+          type: string
+        regions:
+          items:
+            type: string
+          type: array
+        status:
+          enum:
+            - active
+            - degraded
+            - disabled
+          type: string
+        tls_profile:
+          nullable: true
+          type: string
+        updated:
+          format: date-time
+          type: string
+      required:
+        - id
+        - object
+        - provider_id
+        - network_id
+        - display_name
+        - participant_endpoint_ref
+        - jwt_issuer
+        - tls_profile
+        - capacity_tier
+        - regions
+        - status
+        - created
+        - updated
       type: object
     WebhookEndpointCreateRequest:
       properties:
@@ -4162,6 +4936,1094 @@ paths:
       summary: update accounts
       tags:
         - accounts
+  /v1/admin/network/networks:
+    get:
+      operationId: adminNetworklistNetworks
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NetworkListResponse"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: listNetworks admin_network
+      tags:
+        - admin_network
+  /v1/admin/network/networks/{slug}:
+    get:
+      operationId: adminNetworkretrieveNetwork
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NetworkSchema"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: retrieveNetwork admin_network
+      tags:
+        - admin_network
+  /v1/admin/network/validator_providers:
+    get:
+      operationId: validatorProviderslist
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidatorProviderListResponse"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: list validator_providers
+      tags:
+        - validator_providers
+    post:
+      operationId: validatorProviderscreate
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema:
+            maxLength: 255
+            minLength: 1
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ValidatorProviderCreateRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidatorProviderSchema"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: create validator_providers
+      tags:
+        - validator_providers
+  /v1/admin/network/validator_providers/{id}/disable:
+    post:
+      operationId: validatorProvidersdisable
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema:
+            maxLength: 255
+            minLength: 1
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidatorProviderSchema"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: disable validator_providers
+      tags:
+        - validator_providers
+  /v1/admin/network/validator_providers/{id}/enable:
+    post:
+      operationId: validatorProvidersenable
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema:
+            maxLength: 255
+            minLength: 1
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidatorProviderSchema"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: enable validator_providers
+      tags:
+        - validator_providers
+  /v1/admin/network/validator_providers/{id}/pause:
+    post:
+      operationId: validatorProviderspause
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema:
+            maxLength: 255
+            minLength: 1
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidatorProviderSchema"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: pause validator_providers
+      tags:
+        - validator_providers
+  /v1/admin/network/validator_providers/{id}/verify:
+    post:
+      operationId: validatorProvidersverify
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema:
+            maxLength: 255
+            minLength: 1
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidatorProviderSchema"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: verify validator_providers
+      tags:
+        - validator_providers
+  /v1/admin/network/validators:
+    get:
+      operationId: validatorslist
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidatorListResponse"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: list validators
+      tags:
+        - validators
+    post:
+      operationId: validatorscreate
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema:
+            maxLength: 255
+            minLength: 1
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ValidatorCreateRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidatorSchema"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: create validators
+      tags:
+        - validators
+  /v1/admin/network/validators/{id}/activate:
+    post:
+      operationId: validatorsactivate
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema:
+            maxLength: 255
+            minLength: 1
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidatorSchema"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: activate validators
+      tags:
+        - validators
+  /v1/admin/network/validators/{id}/degrade:
+    post:
+      operationId: validatorsdegrade
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema:
+            maxLength: 255
+            minLength: 1
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidatorSchema"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: degrade validators
+      tags:
+        - validators
+  /v1/admin/network/validators/{id}/disable:
+    post:
+      operationId: validatorsdisable
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema:
+            maxLength: 255
+            minLength: 1
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidatorSchema"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: disable validators
+      tags:
+        - validators
+  /v1/admin/network/validators/health:
+    get:
+      operationId: validatorshealth
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidatorHealthListResponse"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: health validators
+      tags:
+        - validators
   /v1/admin/template_registry/templates:
     get:
       operationId: reserved_v1_admin_template_registry_templates
@@ -7315,6 +9177,322 @@ paths:
       summary: confirm issue_intents
       tags:
         - issue_intents
+  /v1/network/bindings:
+    get:
+      operationId: networkBindingslist
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenantNetworkBindingListResponse"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: list network_bindings
+      tags:
+        - network_bindings
+    post:
+      operationId: networkBindingsupsert
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema:
+            maxLength: 255
+            minLength: 1
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TenantNetworkBindingUpsertRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenantNetworkBindingSchema"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: upsert network_bindings
+      tags:
+        - network_bindings
+  /v1/network/bindings/{id}/pause:
+    post:
+      operationId: networkBindingspause
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema:
+            maxLength: 255
+            minLength: 1
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenantNetworkBindingSchema"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: pause network_bindings
+      tags:
+        - network_bindings
+  /v1/network/bindings/{id}/resume:
+    post:
+      operationId: networkBindingsresume
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema:
+            maxLength: 255
+            minLength: 1
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenantNetworkBindingSchema"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: resume network_bindings
+      tags:
+        - network_bindings
   /v1/onboarding:
     get:
       operationId: reserved_v1_onboarding

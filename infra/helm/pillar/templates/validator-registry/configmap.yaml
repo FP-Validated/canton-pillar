@@ -1,0 +1,9 @@
+{{- if .Values.validatorRegistry.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "pillar.fullname" . }}-validator-registry
+data:
+  PORT: "{{ .Values.validatorRegistry.port | default 8094 }}"
+  LOG_LEVEL: {{ .Values.config.logLevel | quote }}
+{{- end }}

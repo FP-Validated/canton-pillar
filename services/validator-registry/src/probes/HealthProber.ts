@@ -1,0 +1,3 @@
+import { HealthRepo } from '../db/HealthRepo.js';
+import { ValidatorRepo } from '../db/ValidatorRepo.js';
+export class HealthProber { constructor(private validators:ValidatorRepo, private health:HealthRepo) {} async probeOnce(){ for (const v of this.validators.list()) { const start=Date.now(); const ok = v.participant_endpoint_ref.length > 0; this.health.append({ validator_id:v.id, sampled_at:new Date().toISOString(), health_status:ok?'healthy':'unhealthy', latency_ms:Date.now()-start, sequencer_offset_lag_seconds:0, package_visibility_status:'visible' }); } } start(intervalMs=60000){ const t=setInterval(()=>void this.probeOnce(), intervalMs); return () => clearInterval(t); } }

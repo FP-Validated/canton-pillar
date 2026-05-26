@@ -1,0 +1,19 @@
+{{- if .Values.validatorRegistry.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pillar.fullname" . }}-validator-registry
+spec:
+  replicas: {{ .Values.validatorRegistry.replicas | default 1 }}
+  selector: { matchLabels: { app.kubernetes.io/name: validator-registry } }
+  template:
+    metadata: { labels: { app.kubernetes.io/name: validator-registry } }
+    spec:
+      serviceAccountName: {{ include "pillar.fullname" . }}-validator-registry
+      containers:
+        - name: validator-registry
+          image: "{{ .Values.validatorRegistry.image.repository }}:{{ .Values.validatorRegistry.image.tag }}{{ if .Values.validatorRegistry.image.digest }}@{{ .Values.validatorRegistry.image.digest }}{{ end }}"
+          envFrom: [{ configMapRef: { name: {{ include "pillar.fullname" . }}-validator-registry } }]
+          ports: [{ name: http, containerPort: {{ .Values.validatorRegistry.port | default 8094 }} }]
+          resources: {{- toYaml .Values.validatorRegistry.resources | nindent 12 }}
+{{- end }}

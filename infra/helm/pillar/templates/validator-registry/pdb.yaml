@@ -1,0 +1,8 @@
+{{- if and .Values.validatorRegistry.enabled .Values.validatorRegistry.pdb.enabled }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata: { name: {{ include "pillar.fullname" . }}-validator-registry }
+spec:
+  minAvailable: {{ .Values.validatorRegistry.pdb.minAvailable | default 1 }}
+  selector: { matchLabels: { app.kubernetes.io/name: validator-registry } }
+{{- end }}

@@ -1,0 +1,8 @@
+{{- if and .Values.validatorRegistry.enabled .Values.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata: { name: {{ include "pillar.fullname" . }}-validator-registry }
+spec:
+  selector: { matchLabels: { app.kubernetes.io/name: validator-registry } }
+  endpoints: [{ port: http, path: /internal/validator-registry/health }]
+{{- end }}

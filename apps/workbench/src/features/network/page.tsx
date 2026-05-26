@@ -1,0 +1,2 @@
+const rows = ['dev','testnet','mainnet'];
+export default function NetworkAdminPage(){ return <main><h1>Network registry</h1><section><h2>Networks</h2>{rows.map(n=><div key={n}>{n} <button>verify provider</button> <button>activate validator</button> <button>pause</button> <button>disable</button></div>)}</section><section><h2>Providers and validators</h2><p>Super admins can verify providers, activate validators, and inspect tenant bindings.</p></section></main>; }

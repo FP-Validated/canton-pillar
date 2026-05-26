@@ -1,0 +1,2 @@
+import type { Provider, Store } from './models.js';
+export class ProviderRepo { constructor(private store:Store) {} list(){return this.store.providers;} get(id:string){return this.store.providers.find(p=>p.id===id);} create(p:Provider){this.store.providers.push(p);return p;} setStatus(id:string,status:Provider['status']){const p=this.get(id); if(!p) throw new Error('provider_not_found'); p.status=status; return p;} }

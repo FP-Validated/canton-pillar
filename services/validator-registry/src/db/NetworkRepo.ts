@@ -1,0 +1,1 @@
+export class NetworkRepo { list(){ return ['dev','testnet','mainnet'].map(slug=>({ slug, id:`net_${slug}`, livemode:slug==='mainnet', status:'active' })); } get(slug:string){ return this.list().find(n=>n.slug===slug); } }

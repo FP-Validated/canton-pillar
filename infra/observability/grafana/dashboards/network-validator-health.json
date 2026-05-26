@@ -1,0 +1,1 @@
+{"title":"Network Validator Health","schemaVersion":39,"panels":[{"type":"stat","title":"Validator health","targets":[{"expr":"pillar_validator_health_status"}]},{"type":"timeseries","title":"Validator latency","targets":[{"expr":"pillar_validator_latency_ms"}]},{"type":"timeseries","title":"Sequencer lag","targets":[{"expr":"pillar_validator_sequencer_lag_seconds"}]}]}

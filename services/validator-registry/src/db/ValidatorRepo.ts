@@ -1,0 +1,2 @@
+import type { Store, Validator } from './models.js';
+export class ValidatorRepo { constructor(private store:Store) {} list(){return this.store.validators;} get(id:string){return this.store.validators.find(v=>v.id===id);} create(v:Validator){this.store.validators.push(v);return v;} byNetwork(network:string){return this.store.validators.filter(v=>v.network===network);} setStatus(id:string,status:Validator['status']){const v=this.get(id); if(!v) throw new Error('validator_not_found'); v.status=status; return v;} }

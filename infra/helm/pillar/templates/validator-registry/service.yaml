@@ -1,0 +1,12 @@
+{{- if .Values.validatorRegistry.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "pillar.fullname" . }}-validator-registry
+spec:
+  selector: { app.kubernetes.io/name: validator-registry }
+  ports:
+    - name: http
+      port: {{ .Values.validatorRegistry.port | default 8094 }}
+      targetPort: http
+{{- end }}

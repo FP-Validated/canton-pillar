@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { AccountSchema, AccountCreateRequest, AccountUpdateRequest, AccountListResponse, AssetSchema, AssetCreateRequest, AssetUpdateRequest, AssetListResponse, BalanceSchema, BalanceListResponse, HoldingSchema, HoldingListResponse, IssueIntentSchema, IssueIntentCreateRequest, IssueIntentListResponse, RedeemIntentSchema, RedeemIntentCreateRequest, RedeemIntentListResponse, TransferIntentSchema, TransferIntentCreateRequest, TransferIntentListResponse, HoldSchema, HoldCreateRequest, HoldReleaseRequest, HoldListResponse, OperationSchema, OperationListResponse, EventSchema, EventListResponse, WebhookEndpointSchema, WebhookEndpointCreateRequest, WebhookEndpointUpdateRequest, RotateSecretResponse, WebhookEndpointListResponse, ApiKeySchema, ApiKeyCreateRequest, ApiKeyCreateResponse, ApiKeyListResponse, OnboardingSession, OnboardingSessionCreateRequest, OnboardingSessionAdvanceRequest, OnboardingNextAction, SearchQuery, SearchResponse, ExportJob, ExportCreateRequest, ExportDownloadUrlResponse, ExportJobListResponse, ReportTemplate, ReportTemplateCreateRequest, ReportTemplateListResponse, ReportTemplateRunResponse, ExportDestination, ExportDestinationCreateRequest, ExportDestinationListResponse, UsageRollup, UsageEvent, CurrentPeriodSummary, UsageRollupListResponse, Invoice, InvoiceLine, InvoiceListResponse, InvoiceDisputeRequest, PricingPlan, PricingPlanListResponse, PricingPlanPublishRequest, CustomerBilling, PortalUrlResponse } from '../schemas/index.js';
+import { AccountSchema, AccountCreateRequest, AccountUpdateRequest, AccountListResponse, AssetSchema, AssetCreateRequest, AssetUpdateRequest, AssetListResponse, BalanceSchema, BalanceListResponse, HoldingSchema, HoldingListResponse, IssueIntentSchema, IssueIntentCreateRequest, IssueIntentListResponse, RedeemIntentSchema, RedeemIntentCreateRequest, RedeemIntentListResponse, TransferIntentSchema, TransferIntentCreateRequest, TransferIntentListResponse, HoldSchema, HoldCreateRequest, HoldReleaseRequest, HoldListResponse, OperationSchema, OperationListResponse, EventSchema, EventListResponse, WebhookEndpointSchema, WebhookEndpointCreateRequest, WebhookEndpointUpdateRequest, RotateSecretResponse, WebhookEndpointListResponse, ApiKeySchema, ApiKeyCreateRequest, ApiKeyCreateResponse, ApiKeyListResponse, OnboardingSession, OnboardingSessionCreateRequest, OnboardingSessionAdvanceRequest, OnboardingNextAction, SearchQuery, SearchResponse, ExportJob, ExportCreateRequest, ExportDownloadUrlResponse, ExportJobListResponse, ReportTemplate, ReportTemplateCreateRequest, ReportTemplateListResponse, ReportTemplateRunResponse, ExportDestination, ExportDestinationCreateRequest, ExportDestinationListResponse, UsageRollup, UsageEvent, CurrentPeriodSummary, UsageRollupListResponse, Invoice, InvoiceLine, InvoiceListResponse, InvoiceDisputeRequest, PricingPlan, PricingPlanListResponse, PricingPlanPublishRequest, CustomerBilling, PortalUrlResponse, NetworkSchema, NetworkPublicSchema, NetworkListResponse, NetworkPublicListResponse, ValidatorProviderSchema, ValidatorProviderCreateRequest, ValidatorProviderListResponse, ValidatorSchema, ValidatorCreateRequest, ValidatorListResponse, TenantNetworkBindingSchema, TenantNetworkBindingUpsertRequest, TenantNetworkBindingListResponse, ValidatorHealthSnapshotSchema, ValidatorHealthListResponse } from '../schemas/index.js';
 
 export type Account = z.infer<typeof AccountSchema>;
 export type AccountCreate = z.infer<typeof AccountCreateRequest>;
@@ -69,3 +69,18 @@ export type PricingPlanList = z.infer<typeof PricingPlanListResponse>;
 export type PricingPlanPublish = z.infer<typeof PricingPlanPublishRequest>;
 export type CustomerBilling = z.infer<typeof CustomerBilling>;
 export type PortalUrl = z.infer<typeof PortalUrlResponse>;
+export type Network = z.infer<typeof NetworkSchema>;
+export type NetworkPublic = z.infer<typeof NetworkPublicSchema>;
+export type NetworkList = z.infer<typeof NetworkListResponse>;
+export type NetworkPublicList = z.infer<typeof NetworkPublicListResponse>;
+export type ValidatorProvider = z.infer<typeof ValidatorProviderSchema>;
+export type ValidatorProviderCreate = z.infer<typeof ValidatorProviderCreateRequest>;
+export type ValidatorProviderList = z.infer<typeof ValidatorProviderListResponse>;
+export type Validator = z.infer<typeof ValidatorSchema>;
+export type ValidatorCreate = z.infer<typeof ValidatorCreateRequest>;
+export type ValidatorList = z.infer<typeof ValidatorListResponse>;
+export type TenantNetworkBinding = z.infer<typeof TenantNetworkBindingSchema>;
+export type TenantNetworkBindingUpsert = z.infer<typeof TenantNetworkBindingUpsertRequest>;
+export type TenantNetworkBindingList = z.infer<typeof TenantNetworkBindingListResponse>;
+export type ValidatorHealthSnapshot = z.infer<typeof ValidatorHealthSnapshotSchema>;
+export type ValidatorHealthList = z.infer<typeof ValidatorHealthListResponse>;

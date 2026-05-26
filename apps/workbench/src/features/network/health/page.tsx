@@ -1,0 +1,1 @@
+export default function NetworkValidatorHealthPage(){ return <main><h1>Validator health</h1><table><thead><tr><th>Validator</th><th>Status</th><th>Latency</th><th>Sequencer lag</th></tr></thead><tbody><tr><td>val_dev</td><td>healthy</td><td>12ms</td><td>0s</td></tr></tbody></table></main>; }

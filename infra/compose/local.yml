@@ -8,6 +8,11 @@ services:
       STREAM_BACKEND: redis
       REDIS_URL: redis://redis-streams:6379
     depends_on: [redis-streams]
+  validator-registry:
+    build: ../../services/validator-registry
+    ports: ["8094:8094"]
+    environment:
+      PORT: "8094"
   billing-adapter:
     build: ../../services/billing-adapter
     environment:

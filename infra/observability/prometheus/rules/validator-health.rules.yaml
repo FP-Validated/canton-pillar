@@ -1,0 +1,18 @@
+groups:
+  - name: validator-health
+    rules:
+      - alert: PillarValidatorUnhealthy
+        expr: pillar_validator_health_status == 0
+        for: 5m
+        labels: { severity: critical }
+        annotations: { summary: Validator route is unhealthy }
+      - alert: PillarValidatorHighLatency
+        expr: pillar_validator_latency_ms > 1000
+        for: 10m
+        labels: { severity: warning }
+        annotations: { summary: Validator readiness latency is high }
+      - alert: PillarValidatorSequencerLag
+        expr: pillar_validator_sequencer_lag_seconds > 60
+        for: 10m
+        labels: { severity: warning }
+        annotations: { summary: Validator sequencer lag is high }

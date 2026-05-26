@@ -1,0 +1,9 @@
+{{- if and .Values.validatorRegistry.enabled .Values.validatorRegistry.hpa.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata: { name: {{ include "pillar.fullname" . }}-validator-registry }
+spec:
+  scaleTargetRef: { apiVersion: apps/v1, kind: Deployment, name: {{ include "pillar.fullname" . }}-validator-registry }
+  minReplicas: 1
+  maxReplicas: {{ .Values.validatorRegistry.hpa.maxReplicas | default 3 }}
+{{- end }}

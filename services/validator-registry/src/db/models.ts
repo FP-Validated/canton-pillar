@@ -1,0 +1,10 @@
+export type NetworkSlug = 'dev'|'testnet'|'mainnet'|'custom';
+export type ProviderStatus = 'pending_verification'|'verified'|'paused'|'disabled';
+export type ValidatorStatus = 'active'|'degraded'|'disabled';
+export type BindingStatus = 'active'|'paused'|'disabled';
+export type Provider = { id:string; slug:string; display_name:string; deployment_modes:string[]; status:ProviderStatus };
+export type Validator = { id:string; provider_id:string; network:string; display_name:string; participant_endpoint_ref:string; jwt_issuer?:string; tls_profile?:string; capacity_tier:string; regions:string[]; status:ValidatorStatus };
+export type Binding = { id:string; tenant_id:string; network:NetworkSlug; default_validator_id:string; fallback_validator_id?:string; livemode:boolean; status:BindingStatus };
+export type Health = { validator_id:string; health_status:'healthy'|'degraded'|'unhealthy'|'unknown'; latency_ms?:number; sequencer_offset_lag_seconds?:number; package_visibility_status:'visible'|'missing'|'unknown'; sampled_at:string };
+export type Store = { providers:Provider[]; validators:Validator[]; bindings:Binding[]; health:Health[]; audit:any[] };
+export const memoryStore = (): Store => ({ providers:[], validators:[], bindings:[], health:[], audit:[] });
