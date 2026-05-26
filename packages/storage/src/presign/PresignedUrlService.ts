@@ -1,0 +1,2 @@
+import type { ObjectStorageProvider } from '../index.js';
+export class PresignedUrlService { constructor(private provider: ObjectStorageProvider, private maxTtlSeconds = 900) {} upload(key:string, ttlSeconds=300){ return this.provider.presignUpload(key, Math.min(ttlSeconds,this.maxTtlSeconds)); } download(key:string, ttlSeconds=300){ return this.provider.presignDownload(key, Math.min(ttlSeconds,this.maxTtlSeconds)); } }
