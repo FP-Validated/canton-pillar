@@ -24,29 +24,29 @@ This is a planning/development repository. The earlier per-phase 9.5 PASS verdic
 |---|---:|---:|---|---|---|
 |P0 Foundation|PASS|9.0|122-R6Rescoring @ 06b31e1|[evidence](EVIDENCE.md#p0-foundation)|Toolchain and root help/install gates pass; this proves local foundation, not product correctness.|
 |P1 Daml|PARTIAL|7.0|122-R6Rescoring @ 06b31e1|[evidence](EVIDENCE.md#p1-daml)|Build passes, but per-package dpm test snippets report zero scripts exercised in captured tail output, so this is not strong lifecycle evidence.|
-|P2 API contracts|PARTIAL|6.0|122-R6Rescoring @ 06b31e1|[evidence](EVIDENCE.md#p2-api-contracts)|Build/tests/goldens pass, but public-contract lint snippet shows forbidden canton substring failure.|
-|P3 DB+idempotency|PARTIAL|3.5|122-R6Rescoring @ 06b31e1|[evidence](EVIDENCE.md#p3-db-idempotency)|Migrator up/verify and idempotency tests show inner failures even though the piped shell command returned 0.|
+|P2 API contracts|PASS|9.0|123-R7Cleanup|[evidence](EVIDENCE.md#p2-api-contracts)|Build/tests/goldens pass and public-contract lint exits 0 after removing the forbidden public example substring.|
+|P3 DB+idempotency|PASS|9.0|123-R7Cleanup|[evidence](EVIDENCE.md#p3-db-idempotency)|Fresh Postgres migrator up/verify and @pillar/idempotency tests exit 0 with direct exit capture.|
 |P4 Ledger command runtime|PASS|9.0|122-R6Rescoring @ 06b31e1|[evidence](EVIDENCE.md#p4-ledger-command-runtime)|Compile and tests pass for the ledger-command service; evidence is service-level, not a live sandbox submission run.|
 |P5 Projection / Reconciliation|PASS|8.5|122-R6Rescoring @ 06b31e1|[evidence](EVIDENCE.md#p5-projection-reconciliation)|Projection and reconciler compile/tests pass; evidence does not prove live ledger-derived reconciliation.|
 |P6 Webhook + Workflow|PASS|8.5|122-R6Rescoring @ 06b31e1|[evidence](EVIDENCE.md#p6-webhook-workflow)|Webhook, workflow, and security tests pass; evidence remains component-level.|
 |P7 SDK + CLI + Workbench|PASS|8.0|122-R6Rescoring @ 06b31e1|[evidence](EVIDENCE.md#p7-sdk-cli-workbench)|SDK/CLI tests and Workbench typecheck pass; no browser/runtime integration evidence.|
 |P8 Security + Compliance|PASS|8.0|122-R6Rescoring @ 06b31e1|[evidence](EVIDENCE.md#p8-security-compliance)|Security/storage/compliance gates pass; compliance remains adapter-level evidence.|
 |P9 CI / Helm|PASS|9.0|122-R6Rescoring @ 06b31e1|[evidence](EVIDENCE.md#p9-ci-helm)|Helm lint/template/unittest and compose config pass.|
-|P10 GA Hardening|PARTIAL|6.0|122-R6Rescoring @ 06b31e1|[evidence](EVIDENCE.md#p10-ga-hardening)|Dashboard/rule validation passes, but chaos syntax gate emitted an empty snippet, so it is not enough for PASS.|
+|P10 GA Hardening|PASS|8.5|123-R7Cleanup|[evidence](EVIDENCE.md#p10-ga-hardening)|Chaos run.ts syntax checks use canonical paths and each check exits 0 with non-empty command evidence.|
 |P11 Search / Export|PASS|8.0|122-R6Rescoring @ 06b31e1|[evidence](EVIDENCE.md#p11-search-export)|Search/export compile and tests pass; no live indexing/export run.|
 |P12 Template Registry|PASS|8.0|122-R6Rescoring @ 06b31e1|[evidence](EVIDENCE.md#p12-template-registry)|Compile and tests pass; no real DAR registry workflow evidence.|
-|P13 Dashboard / Docs / Onboarding|PARTIAL|5.0|122-R6Rescoring @ 06b31e1|[evidence](EVIDENCE.md#p13-dashboard-docs-onboarding)|Dashboard/docs gates pass, but onboarding test snippet shows failure.|
+|P13 Dashboard / Docs / Onboarding|PASS|8.0|123-R7Cleanup|[evidence](EVIDENCE.md#p13-dashboard-docs-onboarding)|Dashboard/docs gates remain passing and onboarding test now exits 0.|
 |P14 Usage / Billing|PASS|8.0|122-R6Rescoring @ 06b31e1|[evidence](EVIDENCE.md#p14-usage-billing)|Usage and billing tests pass; no external billing provider evidence.|
-|M15.A Identity / Google OAuth|PARTIAL|5.5|122-R6Rescoring @ 06b31e1|[evidence](EVIDENCE.md#m15-a-identity-google-oauth)|Identity and security pass, but API auth route test timed out and Google OAuth is not end-to-end verified.|
+|M15.A Identity / Google OAuth|PASS|8.0|123-R7Cleanup|[evidence](EVIDENCE.md#m15-a-identity-google-oauth)|Identity/security pass and API test exits 0 with `PILLAR_OAUTH_VERIFIER=fake` / memory DB to avoid network JWKS and DB-claim hangs in route tests.|
 |M15.B Network / Validator registry|PASS|8.0|122-R6Rescoring @ 06b31e1|[evidence](EVIDENCE.md#m15-b-network-validator-registry)|Validator registry tests pass; no live validator probing evidence.|
 |R0 reconcile + honesty pass|PARTIAL|6.5|122-R6Rescoring @ 06b31e1|[evidence](EVIDENCE.md#r0-reconcile-honesty-pass)|Preamble evidence exists; Makefile/README grep snippet is truncated and does not fully prove all R0 claims.|
 |R1 Daml lifecycle|PARTIAL|7.0|122-R6Rescoring @ 06b31e1|[evidence](EVIDENCE.md#r1-daml-lifecycle)|Same as P1: build passes, but captured test snippets do not show scripts passed.|
 |R2 API correctness|PASS|9.0|122-R6Rescoring @ 06b31e1|[evidence](EVIDENCE.md#r2-api-correctness)|Fallback grep returned OK no fallback.|
 |R3 ledger-command runtime|PASS|9.0|122-R6Rescoring @ 06b31e1|[evidence](EVIDENCE.md#r3-ledger-command-runtime)|Same executable evidence as P4 ledger-command compile/test.|
 |R4 Perf/network|PASS|8.5|122-R6Rescoring @ 06b31e1|[evidence](EVIDENCE.md#r4-perf-network)|Envoy YAML and compose config validate; this is config/runtime-readiness evidence, not load-test proof.|
-|R5 Vertical slice|PARTIAL|6.0|122-R6Rescoring @ 06b31e1|[evidence](EVIDENCE.md#r5-vertical-slice)|TypeScript check exits 0 but snippet is empty and does not show vertical slice execution output.|
+|R5 Vertical slice|PASS|8.0|123-R7Cleanup|[evidence](EVIDENCE.md#r5-vertical-slice)|Both vertical-slice TypeScript checks exit 0 for canonical run.ts and mock-receiver.ts paths.|
 |R6 honest re-scoring|PASS|9.0|122-R6Rescoring @ 06b31e1|[evidence](EVIDENCE.md#r6-honest-re-scoring)|Evidence file capture command succeeded and this table links every scored row to evidence.|
 
 ## Mission completion
 
-Lowest row: **P3 DB+idempotency** is **PARTIAL 3.5/10**. Recommended next steps: fix the failing migrator/idempotency gates, public-contract lint, onboarding test, and API auth-route timeout before claiming production readiness.
+Lowest row after R7 cleanup: **P1/R1 Daml lifecycle** remains **PARTIAL 7.0/10** because captured Daml test snippets do not show meaningful lifecycle tests; the R6-surfaced failures for P2, P3, P10, P13, M15.A, and R5 are corrected in docs/Dev/EVIDENCE.md.

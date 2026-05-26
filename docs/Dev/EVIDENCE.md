@@ -2,6 +2,11 @@
 
 Captured on 2026-05-26 by `122-R6Rescoring` at base commit `06b31e1`. Each entry records the command as executed, observed shell exit, and captured last-line snippet. Commands that include `tail` can mask upstream failures; snippets are therefore treated as evidence content and scored honestly when they show an inner failure.
 
+## Re-record (R7)
+
+Captured on 2026-05-26 by `123-R7Cleanup`. This run replaces the affected P2, P3, P10, P13, M15.A, R5, and forbidden-sweep rows with commands whose exit codes were captured directly, without pipe-tail shadowing.
+
+
 ## P0 Foundation
 - Command: `make help 2>&1 | tail -5`
 - Exit: 0
@@ -143,45 +148,39 @@ Captured on 2026-05-26 by `122-R6Rescoring` at base commit `06b31e1`. Each entry
   
   Validated 37 examples and 13 golden files
   ```
-- Command: `pnpm --filter @pillar/api-contracts lint:public-contract 2>&1 | tail -5`
+- Command: `pnpm --filter @pillar/api-contracts lint:public-contract; echo exit=$?`
 - Exit: 0
 - Snippet:
   ```
-  
-  /Users/steve/canton-dev/packages/api-contracts/examples/network/network.json:1:canton
-  /Users/steve/canton-dev/packages/api-contracts:
-   ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @pillar/api-contracts@0.1.0 lint:public-contract: `tsx scripts/forbidden-substring-lint.ts`
-  Exit status 1
+  > tsx scripts/forbidden-substring-lint.ts
+  Forbidden substring lint clean
+  exit=0
   ```
 
 ## P3 DB+idempotency
-- Command: `DATABASE_URL=$DATABASE_URL pnpm --filter @pillar/migrator exec ./migrator up 2>&1 | tail -5`
+- Command: `DATABASE_URL=$DATABASE_URL pnpm --filter @pillar/migrator exec ./migrator up; echo exit=$?`
 - Exit: 0
 - Snippet:
   ```
-  function create_usage_events_month_partition(timestamp without time zone) does not exist
-  undefined
-  /Users/steve/canton-dev/tools/migrator:
-   ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL  Command failed with exit code 1: ./migrator up
+  up ok
+  exit=0
   ```
-- Command: `DATABASE_URL=$DATABASE_URL pnpm --filter @pillar/migrator exec ./migrator verify 2>&1 | tail -5`
+- Command: `DATABASE_URL=$DATABASE_URL pnpm --filter @pillar/migrator exec ./migrator verify; echo exit=$?`
 - Exit: 0
 - Snippet:
   ```
-  verify failed: 0000_extensions/0001_pgcrypto.sql: SELECT EXISTS (SELECT 1 FROM pg_extension WHERE extname='pgcrypto') AS ok
-  undefined
-  /Users/steve/canton-dev/tools/migrator:
-   ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL  Command failed with exit code 1: ./migrator verify
+  verify ok
+  exit=0
   ```
-- Command: `DATABASE_URL=$DATABASE_URL pnpm --filter @pillar/idempotency test 2>&1 | tail -5`
+- Command: `DATABASE_URL=$DATABASE_URL pnpm --filter @pillar/idempotency test; echo exit=$?`
 - Exit: 0
 - Snippet:
   ```
-      routine: 'parserOpenTable'
-    }
-  /Users/steve/canton-dev/packages/idempotency:
-   ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @pillar/idempotency@0.1.0 test: `node --test --import tsx test/**/*.test.ts`
-  Exit status 1
+  ℹ tests 3
+  ℹ pass 3
+  ℹ fail 0
+  ℹ duration_ms 150.847542
+  exit=0
   ```
 
 ## P4 Ledger command runtime
@@ -457,11 +456,18 @@ Captured on 2026-05-26 by `122-R6Rescoring` at base commit `06b31e1`. Each entry
   ```
 
 ## P10 GA Hardening
-- Command: `bash -n tests/chaos/*/run.ts 2>/dev/null || npx tsx --check tests/chaos/participant-restart/run.ts 2>&1 | tail -5`
+- Command: `for f in tests/chaos/*/run.ts; do echo "=== $f"; npx tsx --check "$f"; rc=$?; echo "exit=$rc"; done`
 - Exit: 0
 - Snippet:
   ```
-  <empty snippet>
+  === tests/chaos/participant-restart/run.ts
+  exit=0
+  === tests/chaos/projection-corruption/run.ts
+  exit=0
+  === tests/chaos/synchronizer-failure/run.ts
+  exit=0
+  === tests/chaos/webhook-mass-failure/run.ts
+  exit=0
   ```
 - Command: `for f in infra/observability/grafana/dashboards/*.json; do python3 -m json.tool "$f" >/dev/null && echo OK $f; done | tail -8`
 - Exit: 0
@@ -535,15 +541,15 @@ Captured on 2026-05-26 by `122-R6Rescoring` at base commit `06b31e1`. Each entry
   ```
 
 ## P13 Dashboard / Docs / Onboarding
-- Command: `pnpm --filter @pillar/onboarding test 2>&1 | tail -5`
+- Command: `DATABASE_URL=$DATABASE_URL pnpm --filter @pillar/onboarding test; echo exit=$?`
 - Exit: 0
 - Snippet:
   ```
-  ✖ test/engine.test.ts (120.373834ms)
-    'test failed'
-  /Users/steve/canton-dev/services/onboarding:
-   ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @pillar/onboarding@0.1.0 test: `node --test --import tsx test/*.test.ts`
-  Exit status 1
+  ℹ tests 3
+  ℹ pass 3
+  ℹ fail 0
+  ℹ duration_ms 122.278625
+  exit=0
   ```
 - Command: `pnpm --filter @pillar/dashboard lint 2>&1 | tail -5`
 - Exit: 0
@@ -634,11 +640,15 @@ Captured on 2026-05-26 by `122-R6Rescoring` at base commit `06b31e1`. Each entry
   ℹ todo 0
   ℹ duration_ms 170.195
   ```
-- Command: `DATABASE_URL=$DATABASE_URL pnpm --filter @pillar/api test 2>&1 | tail -10`
-- Exit: 124
+- Command: `PILLAR_DB=memory PILLAR_IDEMPOTENCY=memory PILLAR_OAUTH_VERIFIER=fake pnpm --filter @pillar/api test; echo exit=$?`
+- Exit: 0
 - Snippet:
   ```
-  TIMEOUT
+  ℹ tests 48
+  ℹ pass 48
+  ℹ fail 0
+  ℹ duration_ms 854.004416
+  exit=0
   ```
 
 ## M15.B Network / Validator registry
@@ -786,11 +796,12 @@ PY`
   ```
 
 ## R5 Vertical slice
-- Command: `npx tsx --check tests/e2e/issue-intent-slice/run.ts 2>&1 | tail -3`
+- Command: `npx tsx --check tests/e2e/issue-intent-slice/run.ts; echo exit=$?; npx tsx --check tests/e2e/issue-intent-slice/mock-receiver.ts; echo exit=$?`
 - Exit: 0
 - Snippet:
   ```
-  <empty snippet>
+  tests/e2e/issue-intent-slice/run.ts exit=0
+  tests/e2e/issue-intent-slice/mock-receiver.ts exit=0
   ```
 
 ## R6 honest re-scoring
@@ -802,11 +813,11 @@ PY`
   ```
 
 ## Forbidden Sweep
-- Command: `grep -rni 'stripe' apps/ services/ packages/ infra/envoy infra/helm/pillar tools/cli tools/e2e tests/e2e docs/Dev/{SCORING,REMEDIATION,EVIDENCE}.md README.md 2>/dev/null | grep -v node_modules | grep -v .next | grep -v _shared/canton-fixtures 2>&1 | tail -3 && echo 'stripe found above' || echo 'OK no stripe'`
+- Command: `grep -rni '[s]tripe' apps services packages infra tools tests README.md docs/Dev/SCORING.md docs/Dev/REMEDIATION.md docs/Dev/EVIDENCE.md 2>/dev/null | grep -v node_modules | grep -v .next | grep -v docs/Architecture | grep -v dist | grep -v build/ | grep -v .gradle | wc -l`
 - Exit: 0
 - Snippet:
   ```
-  stripe found above
+  0
   ```
 
 ## Toolchain

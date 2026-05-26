@@ -2,7 +2,7 @@ create extension if not exists citext;
 create schema if not exists identity;
 create table if not exists identity.tenants (
   id text primary key check (id ~ '^ten_[0-9A-HJKMNP-TV-Z]{26}$'),
-  config_tenant_id text references config.tenants(id),
+  config_tenant_id text references tenants(id),
   slug citext not null unique,
   display_name text not null,
   plan_id text,

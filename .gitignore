@@ -25,3 +25,12 @@ __pycache__/
 
 
 .tmp-gradle-dist/
+
+apps/workbench/tsconfig.tsbuildinfo
+apps/*/tsconfig.tsbuildinfo
+packages/sdk-node/dist-test/
+packages/sdk-node/dist-test/**
+tools/cli/dist-test/
+tools/cli/dist-test/**
+tests/perf/reports/
+tests/e2e/issue-intent-slice/reports/

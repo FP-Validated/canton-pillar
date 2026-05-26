@@ -18,7 +18,7 @@ export async function balancesRoutes(s: FastifyInstance) {
       if (!q.operation) throw s.httpErrors.badRequest('operation is required for wait_for_operation');
       const op = await getOperationProjection(r.accountId, q.operation);
       if (!op) throw s.httpErrors.notFound('Resource not found.');
-      if (q.simulate_lag === 'true') return reply.code(202).send({ object: 'projection_pending', operation: q.operation, projection_lag: { seconds: 31, status: 'behind' } });
+      if (q.simulate_lag === 'true') return reply.code(202).send({ object: 'balance_pending', operation: q.operation, projection_lag: { seconds: 31, status: 'behind' } });
       if (op.status !== 'projected') return reply.code(202).send({ object: 'projection_pending', operation: q.operation, projection_lag: { seconds: 1, status: 'pending' } });
     }
     const rows = await listBalances(r.accountId, { account: q.account, asset: q.asset, limit: q.limit ? Number(q.limit) : undefined, startingAfter: q.starting_after, endingBefore: q.ending_before });

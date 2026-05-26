@@ -19,7 +19,7 @@ returns void language plpgsql as $$
 declare i integer;
 begin
   for i in 0..months_ahead loop
-    perform create_usage_events_month_partition(date_trunc('month', now())::date + (i || ' months')::interval);
+    perform create_usage_events_month_partition((date_trunc('month', now())::date + (i || ' months')::interval)::date);
   end loop;
 end;
 $$;
