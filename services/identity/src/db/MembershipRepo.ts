@@ -1,0 +1,5 @@
+import { ulid } from 'ulid';
+export class MemoryRepo<T extends {id:string}>{rows=new Map<string,T>(); async get(id:string){return this.rows.get(id)} async list(){return [...this.rows.values()]} async save(row:T){this.rows.set(row.id,row);return row}}
+export const makeId=(prefix:string)=>`${prefix}_${ulid()}`;
+import type { Membership } from '../types.js'; import type { Role } from '@pillar/security';
+export class MembershipRepo extends MemoryRepo<Membership>{async forUser(user_id:string){return [...this.rows.values()].filter(m=>m.user_id===user_id&&m.status==='active')} async find(tenant_id:string,user_id:string){return [...this.rows.values()].find(m=>m.tenant_id===tenant_id&&m.user_id===user_id)} async add(tenant_id:string,user_id:string,role:Role,status:'active'|'invited'='active'){const n=new Date();const existing=await this.find(tenant_id,user_id); if(existing)return existing; return this.save({id:makeId('mem'),tenant_id,user_id,role,status,created_at:n,updated_at:n,accepted_at:status==='active'?n:undefined})}}

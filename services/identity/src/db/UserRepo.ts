@@ -1,0 +1,5 @@
+import { ulid } from 'ulid';
+export class MemoryRepo<T extends {id:string}>{rows=new Map<string,T>(); async get(id:string){return this.rows.get(id)} async list(){return [...this.rows.values()]} async save(row:T){this.rows.set(row.id,row);return row}}
+export const makeId=(prefix:string)=>`${prefix}_${ulid()}`;
+import type { User } from '../types.js';
+export class UserRepo extends MemoryRepo<User>{async findByGoogleSub(sub:string){return [...this.rows.values()].find(u=>u.google_sub===sub)} async findByEmail(email:string){return [...this.rows.values()].find(u=>u.email.toLowerCase()===email.toLowerCase())} async upsertGoogle(profile:{sub:string;email:string;name?:string;picture?:string}){let u=await this.findByGoogleSub(profile.sub);const t=new Date();if(!u){u={id:makeId('usr'),google_sub:profile.sub,email:profile.email,display_name:profile.name,picture_url:profile.picture,status:'active',last_login_at:t,created_at:t,updated_at:t};}else{u.last_login_at=t;u.updated_at=t;u.email=profile.email;u.display_name=profile.name;u.picture_url=profile.picture;}return this.save(u)}}

@@ -1,0 +1,9 @@
+import { z } from 'zod';
+export const RoleEnum = z.enum(['super_admin','tenant_owner','tenant_admin','tenant_developer','tenant_viewer']);
+export const IdentityUser = z.object({ id:z.string().startsWith('usr_'), email:z.string().email(), display_name:z.string().optional(), picture_url:z.string().url().optional(), status:z.enum(['active','disabled','deleted']), last_login_at:z.string().datetime().optional(), created_at:z.string().datetime(), updated_at:z.string().datetime() });
+export const IdentityTenant = z.object({ id:z.string().startsWith('ten_'), slug:z.string(), display_name:z.string(), plan_id:z.string().nullable().optional(), billing_status:z.enum(['active','past_due','paused','disabled']), default_environment:z.enum(['dev','testnet','mainnet']), created_at:z.string().datetime(), updated_at:z.string().datetime() });
+export const IdentityMembership = z.object({ id:z.string().startsWith('mem_'), tenant_id:z.string(), user_id:z.string(), role:RoleEnum, status:z.enum(['active','invited','disabled']), invited_at:z.string().datetime().optional(), accepted_at:z.string().datetime().optional(), created_at:z.string().datetime(), updated_at:z.string().datetime() });
+export const IdentitySession = z.object({ user: IdentityUser, memberships: z.array(z.object({ tenant: IdentityTenant, role: RoleEnum })), active_tenant_id:z.string() });
+export const IdentityInvitation = z.object({ id:z.string().startsWith('inv_'), tenant_id:z.string(), email:z.string().email(), role:RoleEnum.exclude(['super_admin']), status:z.enum(['pending','accepted','expired','revoked']), expires_at:z.string().datetime(), created_at:z.string().datetime() });
+export const OAuthStartResponse = z.object({ authorization_url:z.string().url(), state:z.string().min(16) });
+export const identitySchemas = { RoleEnum, IdentityUser, IdentityTenant, IdentityMembership, IdentitySession, IdentityInvitation, OAuthStartResponse };

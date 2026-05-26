@@ -1,0 +1,7 @@
+export const roles=['super_admin','tenant_owner','tenant_admin','tenant_developer','tenant_viewer'] as const; export type Role=typeof roles[number];
+const rank:Record<Role,number>={tenant_viewer:1,tenant_developer:2,tenant_admin:3,tenant_owner:4,super_admin:5};
+type Resource='tenants'|'members'|'api_keys'|'billing'|'admin.network'|'admin.validator'; type Action='read'|'update'|'delete'|'invite'|'role.update'|'create'|'revoke'|'portal'|'write';
+const policy:Record<string,Role[]>={'tenants.read':roles.slice(),'tenants.update':['tenant_admin','tenant_owner','super_admin'],'tenants.delete':['tenant_owner','super_admin'],'members.read':['tenant_developer','tenant_admin','tenant_owner','super_admin'],'members.invite':['tenant_admin','tenant_owner','super_admin'],'members.role.update':['tenant_owner','super_admin'],'api_keys.create':['tenant_developer','tenant_admin','tenant_owner','super_admin'],'api_keys.revoke':['tenant_admin','tenant_owner','super_admin'],'billing.read':['tenant_developer','tenant_admin','tenant_owner','super_admin'],'billing.portal':['tenant_owner','super_admin'],'admin.network.write':['super_admin'],'admin.validator.write':['super_admin']};
+export function can(role:Role,resource:Resource,action:Action){return (policy[`${resource}.${action}`]??[]).includes(role)}
+export function requireRole(role:Role,resource:Resource,action:Action){if(!can(role,resource,action))throw new Error('permission_denied');return true}
+export function roleAtLeast(role:Role,min:Role){return rank[role]>=rank[min]}

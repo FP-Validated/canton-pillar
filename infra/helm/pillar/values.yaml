@@ -15,6 +15,15 @@ externalSecrets:
     name: pillar-cluster-secret-store
     kind: ClusterSecretStore
   remotePrefix: /pillar/dev
+identity:
+  enabled: true
+  secretStoreRef:
+    name: pillar-cluster-secret-store
+    kind: ClusterSecretStore
+  secrets:
+    googleClientId: /pillar/dev/identity/google-client-id
+    googleClientSecret: /pillar/dev/identity/google-client-secret
+    sessionPepper: /pillar/dev/identity/session-pepper
 ingress:
   enabled: true
   className: nginx

@@ -1,0 +1,3 @@
+import { cookies } from 'next/headers';
+export type DashboardSession={user:{id:string;email:string;display_name?:string};memberships:{tenant:{id:string;slug:string;display_name:string};role:string}[];active_tenant_id:string};
+export async function getDashboardSession():Promise<DashboardSession|null>{const cookie=cookies().toString();if(!cookie)return null;const base=process.env.PILLAR_API_URL??'http://localhost:3001/v1';const r=await fetch(`${base}/auth/session`,{headers:{cookie},cache:'no-store'});if(r.status===401)return null;if(!r.ok)throw new Error('session_lookup_failed');return r.json()}

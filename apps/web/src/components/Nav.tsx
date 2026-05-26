@@ -32,10 +32,10 @@ export function Nav() {
             );
           })}
           <Link
-            href="/get-api-keys"
+            href="/dashboard/login"
             className="rounded-full bg-accent px-4 py-2 font-semibold text-white shadow-sm hover:bg-accentDark"
           >
-            Get API keys
+            Sign in
           </Link>
         </div>
       </nav>
