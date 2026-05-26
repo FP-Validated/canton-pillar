@@ -4,20 +4,21 @@ MAKEFLAGS += --no-print-directory
 
 .DEFAULT_GOAL := help
 
-.PHONY: help bootstrap daml-build codegen test dev-up dev-down lint format typecheck verify clean reset-ledger reset-db seed dpm-version-check
+.PHONY: help bootstrap daml-build codegen test dev-up dev-down lint format typecheck verify state clean reset-ledger reset-db seed dpm-version-check
 
 help:
 	@echo "Pillar Make targets:"
 	@echo "  bootstrap          - install Node, Gradle, Daml deps"
 	@echo "  daml-build         - dpm build all Daml packages"
 	@echo "  codegen            - run all codegen stubs"
-	@echo "  test               - run pnpm test + gradle test (placeholders ok in P0)"
+	@echo "  test               - run pnpm test + gradle test"
 	@echo "  dev-up             - docker compose up local stack"
 	@echo "  dev-down           - docker compose down local stack"
 	@echo "  lint               - lint all workspaces"
 	@echo "  format             - format all workspaces"
 	@echo "  typecheck          - typecheck TS workspaces"
 	@echo "  verify             - run P0 verify gate checks"
+	@echo "  state              - print honest phase status"
 	@echo "  reset-ledger       - reset local sandbox ledger (dry-run by default)"
 	@echo "  reset-db           - reset local Postgres (dry-run by default)"
 	@echo "  seed               - seed local fixtures (no-op in P0)"
@@ -37,8 +38,7 @@ codegen:
 	bash tools/codegen/generate-all.sh
 
 test:
-	pnpm -w test
-	./gradlew test --no-daemon || true
+	pnpm -w test && ./gradlew test --no-daemon
 
 dev-up:
 	docker compose -f infra/compose/local.yml up -d
@@ -47,21 +47,23 @@ dev-down:
 	docker compose -f infra/compose/local.yml down
 
 lint:
-	pnpm -w lint || true
-	pnpm exec prettier --check . --ignore-unknown
+	pnpm -w lint && pnpm exec prettier --check . --ignore-unknown
 
 format:
 	pnpm exec prettier --write . --ignore-unknown
 
 typecheck:
-	pnpm -w typecheck || true
+	pnpm -w typecheck
 
 verify:
 	@echo "P0 verify gate"
-	bash tools/dev/dpm-version-check.sh || true
+	bash tools/dev/dpm-version-check.sh
 	test -f package.json -a -f pnpm-workspace.yaml -a -f settings.gradle.kts -a -f daml/multi-package.yaml
 	test -f Makefile -a -f .editorconfig -a -f CODEOWNERS -a -f SECURITY.md -a -f CONTRIBUTING.md -a -f LICENSE -a -f .tool-versions
 	docker compose -f infra/compose/local.yml config >/dev/null
+
+state:
+	cat docs/Dev/SCORING.md
 
 reset-ledger:
 	bash tools/dev/reset-ledger.sh

@@ -4,7 +4,19 @@ The payments runtime for Canton-backed assets. A Canton-native runtime exposing 
 
 ## Status
 
-Phase 1 (Daml Source-of-Truth Model) complete and verified. See `docs/Dev/SCORING.md` for per-phase scores.
+This repository is in active development. It contains:
+
+- A complete Daml package model (pillar-core/pillar-assets/pillar-intents/pillar-ops/pillar-token-adapter/pillar-test) with `dpm build --all` passing on Daml SDK 3.4.11.
+- A broad TypeScript/Kotlin scaffolding for API, projection, webhook, identity, validator-registry, compliance, and supporting services.
+- A complete OpenAPI 3.1 contract at `packages/api-contracts/openapi/pillar-v1.yaml`.
+- A migration tree under `packages/db/migrations/0000_*..0130_*` covering config, audit, idempotency, intents/operations, projections, events/webhooks, reconciliation, security/compliance, search/reporting, template-registry, usage/billing, identity, and networks/validators.
+
+It is NOT yet a production-ready Canton-backed runtime. The next milestones (R0..R6 in `docs/Dev/REMEDIATION.md`) deliver:
+- Daml lifecycle atomicity (Hold/Holding).
+- A real ledger-command worker (Canton sandbox submission, completion correlation).
+- Projection fallback removal.
+- DB-only idempotency.
+- A working vertical slice issue_intent → projection → event → webhook.
 
 ## Repository layout
 
