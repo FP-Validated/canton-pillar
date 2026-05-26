@@ -467,6 +467,6 @@ This matrix expands Section 3 into the exact payload obligations receivers can r
 
 - Invariant 1: ledger-derived business events are emitted from projected ledger state.
 - Invariant 2: event storage is projection/audit/config, not economic truth.
-- Invariant 3: public payloads are Stripe-like and Canton-invisible.
+- Invariant 3: public payloads are developer-friendly and Canton-invisible.
 - Invariant 8: asynchronous completion is event/webhook-first.
 - Regression clauses IC-06 and IC-07 are directly covered by `P5.G05`, `P6.H02`, `P6.H03`, `P6.H04`, and `P6.H05`.

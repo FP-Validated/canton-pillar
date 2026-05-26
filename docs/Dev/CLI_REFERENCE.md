@@ -1,6 +1,6 @@
 # Pillar CLI Reference
 
-`pillar` is the user-facing CLI contract for Pillar's Stripe-grade `/v1` API. It complements [Phase 07](./Phase_07_SDK_CLI_Workbench.md), keeps Canton internals out of normal UX, and follows release/signing guarantees from [Phase 09](./Phase_09_CICD_Helm_Deployment.md).
+`pillar` is the user-facing CLI contract for Pillar's polished `/v1` API. It complements [Phase 07](./Phase_07_SDK_CLI_Workbench.md), keeps Canton internals out of normal UX, and follows release/signing guarantees from [Phase 09](./Phase_09_CICD_Helm_Deployment.md).
 
 ## 1. Installation
 

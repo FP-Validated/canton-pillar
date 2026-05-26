@@ -1,7 +1,7 @@
 # Pillar Mission Control — Development Plan
 
-> **Mission:** Ship Pillar as the _Stripe for Canton-backed assets_.
-> Canton Ledger is the only source of truth. The public API is Stripe-grade and Canton-invisible. The internal runtime is Canton-native. Everything ledger-traceable.
+> **Mission:** Ship Pillar as the _The payments runtime for Canton-backed assets_.
+> Canton Ledger is the only source of truth. The public API is polished and Canton-invisible. The internal runtime is Canton-native. Everything ledger-traceable.
 
 This directory is the **operational plan** that turns `docs/Architecture/` into agent-executable work.
 Architecture docs answer **what** Pillar is. Phase docs answer **how, in what order, and with what gate**.

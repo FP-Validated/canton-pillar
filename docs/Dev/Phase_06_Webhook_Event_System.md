@@ -1,6 +1,6 @@
 # Phase 06 — Webhook-first Event System
 
-> Build Pillar's Stripe-grade asynchronous event layer: projected ledger changes become immutable `evt_*` records, signed webhook deliveries, retry/DLQ state, and replayable integration history.
+> Build Pillar's polished asynchronous event layer: projected ledger changes become immutable `evt_*` records, signed webhook deliveries, retry/DLQ state, and replayable integration history.
 
 ## 1. Executive Summary
 
@@ -31,13 +31,13 @@ The phase preserves the ten Pillar invariants:
 | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | Canton Ledger is the source of truth                  | Events are generated only from ledger-confirmed projection changes or explicit API/system events; webhook success never changes ledger state. |
 | Pillar DB stores only Projection / Audit / Config     | `event_log`, `webhook_endpoints`, `webhook_deliveries`, and `webhook_attempts` are integration/audit/config state, not asset truth.           |
-| External API must be Stripe-like and Canton-invisible | Customers see `/v1/events`, `/v1/webhook_endpoints`, `evt_*`, `we_*`, `wdlv_*`, not contract IDs or offsets.                                  |
+| External API must be developer-friendly and Canton-invisible | Customers see `/v1/events`, `/v1/webhook_endpoints`, `evt_*`, `we_*`, `wdlv_*`, not contract IDs or offsets.                                  |
 | Internal runtime must be Canton-native                | Event creation keeps `operation_id`, `request_id`, idempotency key, and ledger trace links internally.                                        |
 | Operations must be ledger-traceable                   | `request_id -> idempotency_key -> operation_id -> ledger update -> event_id -> delivery_id -> attempt_id` is queryable.                       |
 | Balance/Holding-first, not contract-first             | Event types and payloads describe balances, holdings, transfers, allocations, settlements, and intents.                                       |
 | Intent-first, not transaction-first                   | Mutation completion is surfaced through intent/resource lifecycle events rather than synchronous ledger transaction exposure.                 |
 | Webhook-first for async workflow                      | Final async workflow outcomes are events first, then API/CLI/Workbench inspection.                                                            |
-| API grammar must be Stripe-grade from day one         | Cursor pagination, object IDs, endpoint version pinning, signature verification, retry, DLQ, and replay are first-class.                      |
+| API grammar must be polished from day one         | Cursor pagination, object IDs, endpoint version pinning, signature verification, retry, DLQ, and replay are first-class.                      |
 | Deployment model changes, API experience does not     | Local sandbox, hosted Canton, customer validator, and multi-validator deployments emit the same `/v1` event grammar.                          |
 
 Exit condition: a real e2e flow creates an intent, observes projection, writes an event, sends a signed webhook to a mock receiver, retries a failing receiver into DLQ, and manually replays without minting a new event.
@@ -206,7 +206,7 @@ POST /v1/events/:id/resend
 POST /v1/events/replay
 ```
 
-List response uses Stripe-style cursor pagination:
+List response uses REST-style cursor pagination:
 
 ```json
 {
@@ -760,7 +760,7 @@ created_at
 
 | Question                                                                     | Current resolution for Phase 06                                                                                                                                                                                                                                                                                                                    |
 | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Event retention window: 30 days like Stripe vs longer for regulated assets?  | Implement external event payload retrieval with a 30-day default retention compatible with Stripe/idempotency expectations. Keep internal audit/ledger trace retention separately configurable for regulated assets. This is a policy decision to finalize before production GA; Phase 06 must not hard-code irreversible deletion of audit trace. |
+| Event retention window: 30 days like billing vs longer for regulated assets?  | Implement external event payload retrieval with a 30-day default retention compatible with billing/idempotency expectations. Keep internal audit/ledger trace retention separately configurable for regulated assets. This is a policy decision to finalize before production GA; Phase 06 must not hard-code irreversible deletion of audit trace. |
 | Table naming conflict: `webhook_attempts` vs `webhook_delivery_attempts`     | The assignment requires `webhook_attempts`; Architecture 10 uses `webhook_delivery_attempts`. Follow the repo migration convention chosen by `0063_webhook_attempts.sql`, but keep API/object semantics as delivery attempts.                                                                                                                      |
 | `packages/security/src/webhook` vs `packages/security/src/webhook-signature` | Assignment scope names `packages/security/src/webhook`; Implementation Plan line names `webhook-signature`. Use `packages/security/src/webhook` and expose a stable module path; avoid duplicate signer packages.                                                                                                                                  |
 | DLQ table in migration set                                                   | Assignment names four tables; Architecture 10 defines `webhook_dlq_entries`. If no separate DLQ table is created in Phase 06, represent DLQ via `webhook_deliveries.status='dlq'` and add a view/API shape. If a table is added, keep it in `0060_events_webhooks` and document it as an implementation extension.                                 |

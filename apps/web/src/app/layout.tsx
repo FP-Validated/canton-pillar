@@ -4,7 +4,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'Canton Pillar',
-  description: 'Stripe for Canton-backed assets'
+  description: 'The payments runtime for Canton-backed assets'
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -1,6 +1,6 @@
 # Phase 02 — API Contract and Object Grammar
 
-> Define the public `/v1` contract so Pillar is Stripe-like externally, Canton-native internally, and free of contract-first leakage.
+> Define the public `/v1` contract so Pillar is developer-friendly externally, Canton-native internally, and free of contract-first leakage.
 
 ## 1. Executive Summary
 
@@ -27,13 +27,13 @@ Core principles embedded in this phase:
 | ------------------------------------------------ | ----------------------------------------------------------------------------- |
 | Canton Ledger is the source of truth             | Mutation responses expose intent/operation state, not final ledger state.     |
 | Pillar DB stores Projection / Audit / Config     | Account/asset CRUD-lite is DB-only config; balances/holdings are projections. |
-| External API is Stripe-like and Canton-invisible | `/v1` resources, IDs, metadata, pagination, idempotency, events.              |
+| External API is developer-friendly and Canton-invisible | `/v1` resources, IDs, metadata, pagination, idempotency, events.              |
 | Internal runtime is Canton-native                | Operation IDs later map to stable ledger command identity in Phase 04.        |
 | Operations are ledger-traceable                  | Every mutation object includes `operation` or `latest_operation`.             |
 | Balance/Holding-first                            | Reads expose `balance` and `holding`, never fragments.                        |
 | Intent-first                                     | Writes create `*_intent` objects or config objects.                           |
 | Webhook-first                                    | Async completion is represented by `event` and webhook endpoint contracts.    |
-| API grammar is Stripe-grade from day one         | Golden examples and OpenAPI validation are required gates.                    |
+| API grammar is polished from day one         | Golden examples and OpenAPI validation are required gates.                    |
 | Deployment changes do not change API             | `/v1` grammar is independent of hosted/customer/self-hosted deployment.       |
 
 ## 2. Goals / Non-goals

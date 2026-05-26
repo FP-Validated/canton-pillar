@@ -1,0 +1,9 @@
+import type { Metadata } from 'next';
+import { CodePane } from '@/components/apiref/CodePane';
+import { ParamTable } from '@/components/apiref/ParamTable';
+
+export const metadata: Metadata = { title: 'Pagination API | Canton Pillar' };
+
+export default function PaginationPage() {
+  return <article className="space-y-10"><header className="space-y-4"><p className="text-sm font-semibold uppercase tracking-[0.2em] text-accent">Getting started</p><h1 className="text-4xl font-bold text-ink">Pagination</h1><p className="text-lg text-slateMuted">List endpoints use cursor pagination ordered by created desc by default.</p></header><section className="space-y-3"><h2 className="text-2xl font-bold text-ink">Cursor parameters</h2><ParamTable params={[{name:'limit',type:'integer',description:'Default 10, minimum 1, maximum 100.'},{name:'starting_after',type:'string',description:'Exclusive cursor ID after which to start.'},{name:'ending_before',type:'string',description:'Exclusive cursor ID before which to end.'}]} /></section><section className="space-y-3"><h2 className="text-2xl font-bold text-ink">List envelope</h2><CodePane code={{ object: 'list', url: '/v1/holdings', has_more: true, data: [] }} /></section><section className="space-y-3"><h2 className="text-2xl font-bold text-ink">Example</h2><CodePane language="bash" code={'curl https://api.pillar.example/v1/holdings?limit=10&starting_after=hldg_01J0F8P4A2B3C4D5E6F7G8H9J3 \\\n  -H "Authorization: Bearer plr_sk_test_51HY..." \\\n  -H "Pillar-Version: 2026-05-26"'} /><CodePane code={{ object: 'list', url: '/v1/holdings', has_more: false, data: [{ id: 'hldg_01J0F8P4A2B3C4D5E6F7G8H9J3', object: 'holding', created: '2026-05-26T08:10:00.000Z', livemode: false, account: 'acct_01J0F8P1A2B3C4D5E6F7G8H9J0', asset: 'asst_01J0F8P2A2B3C4D5E6F7G8H9J1', amount: '500.00', status: 'active', restrictions: [], source_intent: 'issint_01J0F8P5A2B3C4D5E6F7G8H9J4', metadata: {} }] }} /></section></article>;
+}

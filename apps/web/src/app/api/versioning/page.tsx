@@ -1,0 +1,9 @@
+import type { Metadata } from 'next';
+import { CodePane } from '@/components/apiref/CodePane';
+import { ObjectSchema } from '@/components/apiref/ObjectSchema';
+
+export const metadata: Metadata = { title: 'Versioning API | Canton Pillar' };
+
+export default function VersioningPage() {
+  return <article className="space-y-10"><header className="space-y-4"><p className="text-sm font-semibold uppercase tracking-[0.2em] text-accent">Getting started</p><h1 className="text-4xl font-bold text-ink">Versioning</h1><p className="text-lg text-slateMuted">API behavior is pinned by explicit request and endpoint versions.</p></header><section className="space-y-3"><h2 className="text-2xl font-bold text-ink">Request header</h2><CodePane language="http" code="Pillar-Version: 2026-05-26" /></section><section className="space-y-3"><h2 className="text-2xl font-bold text-ink">Resolution order</h2><ObjectSchema fields={[{name:'1',type:'header',required:true,description:'Pillar-Version request header wins.'},{name:'2',type:'account default',required:true,description:'Account default version is used when no header is present.'},{name:'3',type:'SDK pinned',required:true,description:'Official SDK pinned version is the final fallback.'}]} /></section><section className="space-y-3"><h2 className="text-2xl font-bold text-ink">Webhook pins and errors</h2><p className="text-slateMuted">Webhook endpoints pin their event payload version at creation time. Unsupported request versions fail with version_error and code api_version_unsupported.</p><CodePane code={{ error: { type: 'version_error', code: 'api_version_unsupported', message: 'Unsupported API version.', request_id: 'req_01J0F8Q4Y6B7C8D9E0F1G2H3J4', doc_url: 'https://docs.pillar.example/errors/api_version_unsupported' } }} /></section></article>;
+}

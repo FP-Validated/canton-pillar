@@ -1,6 +1,6 @@
 # Pillar API Matrix
 
-This catalog is the `/v1` endpoint control surface for Pillar Mission Control. It aligns the Stripe-like public API grammar in [Architecture 03](../Architecture/03_Pillar%20API%20Grammar%20v1.md), public objects in [Architecture 04](../Architecture/04_Object%20Model.md), webhook semantics in [Architecture 10](../Architecture/10_Event_Webhook%20System.md), security scopes in [Architecture 12](../Architecture/12_Security.md), and phase ownership in the Dev plan.
+This catalog is the `/v1` endpoint control surface for Pillar Mission Control. It aligns the developer-friendly public API grammar in [Architecture 03](../Architecture/03_Pillar%20API%20Grammar%20v1.md), public objects in [Architecture 04](../Architecture/04_Object%20Model.md), webhook semantics in [Architecture 10](../Architecture/10_Event_Webhook%20System.md), security scopes in [Architecture 12](../Architecture/12_Security.md), and phase ownership in the Dev plan.
 
 Invariant: deployment mode (`hosted`, `customer-validator`, `self-hosted`) changes infrastructure wiring only; it must not change any `/v1` request grammar, response grammar, scope, idempotency, event, ledger operation, pagination, or expansion behavior.
 

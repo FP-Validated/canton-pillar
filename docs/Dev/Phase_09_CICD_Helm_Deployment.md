@@ -19,13 +19,13 @@ Core principles embedded in this phase:
 | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | Canton Ledger is the source of truth                  | Helm wiring points services at a participant; deployment never creates API-side business truth.                      |
 | Pillar DB stores only Projection / Audit / Config     | Migrator applies `packages/db` migrations only; no deployment-owned business tables.                                 |
-| External API must be Stripe-like and Canton-invisible | Deployment mode does not expose `contract_id`, `template_id`, `party_id`, or participant internals.                  |
+| External API must be developer-friendly and Canton-invisible | Deployment mode does not expose `contract_id`, `template_id`, `party_id`, or participant internals.                  |
 | Internal runtime must be Canton-native                | DAR upload, participant connectivity, command runtime, and projection workers are first-class release gates.         |
 | Operations must be ledger-traceable                   | Release metadata, image digest, chart version, DAR checksum, migration version, and operation IDs remain correlated. |
 | Balance/Holding-first, not contract-first             | Health and rollout checks verify projection readiness, not contract-first user APIs.                                 |
 | Intent-first, not transaction-first                   | Deployment supports the services that convert external intents into ledger commands.                                 |
 | Webhook-first for async workflow                      | Webhook dispatcher, signing keys, outbox dependencies, and retry configuration are deployed with the platform.       |
-| API grammar must be Stripe-grade from day one         | `/v1/health`, `/v1/operations/:id`, object errors, idempotency, and SDK behavior are deployment-neutral.             |
+| API grammar must be polished from day one         | `/v1/health`, `/v1/operations/:id`, object errors, idempotency, and SDK behavior are deployment-neutral.             |
 | Deployment model changes, API experience does not     | Hosted, customer-validator, and self-hosted differ only in ownership, network, and secret references.                |
 
 Phase output:

@@ -8,7 +8,7 @@ This atlas is the canonical Dev data-model reference for public objects, interna
 | ------- | ------------------ | --------------------------------------------------------------------------------- | ---------------------------------------------- | ----------------------------------- |
 | Plane A | Canton Ledger      | Daml templates, active contract set, command completions, updates, ledger offsets | Economic source of truth                       | Never raw by default                |
 | Plane B | Pillar Postgres    | Projection, Audit, Config, webhook delivery, reconciliation checkpoints           | Serving cache and durable operational evidence | Only rendered through `/v1` objects |
-| Plane C | Public API objects | Stripe-grade objects returned by `/v1`, SDKs, CLI, Workbench, webhooks            | Contracted customer grammar                    | Public, Canton-invisible            |
+| Plane C | Public API objects | polished objects returned by `/v1`, SDKs, CLI, Workbench, webhooks            | Contracted customer grammar                    | Public, Canton-invisible            |
 
 Rules:
 

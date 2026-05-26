@@ -256,7 +256,7 @@ P0.A01/A02/A03/A04
 | Canton release        | P0, P1, P4, P5, P9, P10, P12 | P1 Daml compile and P4/P5 runtime correctness                  | Short: pin before P0 toolchain freeze; re-pin only through ADR/release decision                                     | Select SDK/Canton version during P0; validate sandbox, codegen, Ledger API, PQS behavior              | Freeze on last validated version; defer upgrade to P12/P10 hardening lane                        |
 | DPM release           | P0, P1, P9, P12              | Daml package build, DAR artifact, registry ingest              | Short: must be stable before P1 templates and P9 DAR job                                                            | Pin DPM in P0; record checksum and build command; test multi-package workspace                        | Use pinned prior release; block template registry upgrade features that require new DPM behavior |
 | KYC vendor onboarding | P8, P13, P14                 | Compliance flows, onboarding screens, billed compliance events | Medium: mock-free contract design can proceed; live integration blocks production launch for KYC-required customers | Start vendor legal/API onboarding by Wave 2; define adapter boundary and evidence fields in P8        | Ship non-KYC sandbox/demo only; mark production compliance gate red for KYC-required assets      |
-| Stripe account        | P14, P13                     | Billing payment collection, invoices, customer account ops     | Medium: metering can proceed from usage events before live Stripe credentials                                       | Create test and live account early; define restricted keys, webhook endpoint, billing product catalog | Keep usage ledger and invoice preview internal; block external billing collection                |
+| Billing account        | P14, P13                     | Billing payment collection, invoices, customer account ops     | Medium: metering can proceed from usage events before live billing credentials                                       | Create test and live account early; define restricted keys, webhook endpoint, billing product catalog | Keep usage ledger and invoice preview internal; block external billing collection                |
 | cosign/SLSA tooling   | P9, P10, P12                 | Image/chart/DAR signing, provenance, release packet            | Medium-short: must be ready before P9 release automation and P10 readiness                                          | Choose keyless/keyed signing mode in Wave 2; integrate in CI skeleton before P9                       | Do not promote release candidate; unsigned artifacts fail GA readiness                           |
 
 | Dependency            | Tracking field                             | Owner pool               | Review cadence                    | Gate affected                 |
@@ -264,7 +264,7 @@ P0.A01/A02/A03/A04
 | Canton release        | `external_dependency=CANTON_RELEASE`       | Daml/Canton JVM          | Each phase promotion P0-P5/P9/P10 | Build, Verify                 |
 | DPM release           | `external_dependency=DPM_RELEASE`          | Platform + Daml          | P0, P1, P9, P12 gates             | Build, Verify                 |
 | KYC vendor onboarding | `external_dependency=KYC_VENDOR`           | Security/Compliance      | Wave 2 onward                     | Security/Compliance readiness |
-| Stripe account        | `external_dependency=STRIPE_ACCOUNT`       | Product/Billing/Security | Wave 4 onward                     | P14 verify, P13 onboarding    |
+| Billing account        | `external_dependency=BILLING_ACCOUNT`       | Product/Billing/Security | Wave 4 onward                     | P14 verify, P13 onboarding    |
 | cosign/SLSA tooling   | `external_dependency=SUPPLY_CHAIN_SIGNING` | Platform/SRE/Security    | Wave 2 onward                     | P9/P10 release gate           |
 
 ## 8. Risk-weighted scheduling adjustments
@@ -288,7 +288,7 @@ P0.A01/A02/A03/A04
 | Freeze public grammar early            | Lock P2 OpenAPI/golden snapshots before SDK, dashboard, billing.                  | P2/P7/P13/P14 | Prevents fan-out churn.                        |
 | Run security review before P9          | P8 reviews API/DB/runtime before Helm packaging.                                  | P8/P9         | Avoids reworking deployment artifacts.         |
 | Keep customer polish off critical path | P13 runs parallel after P7, but cannot change API grammar.                        | P13           | Protects core correctness.                     |
-| Maintain external dependency slack     | Track Canton/DPM/KYC/Stripe/signing as metadata, not informal notes.              | All waves     | Makes blocked tickets visible before gate day. |
+| Maintain external dependency slack     | Track Canton/DPM/KYC/billing/signing as metadata, not informal notes.              | All waves     | Makes blocked tickets visible before gate day. |
 
 ## 9. Tooling required to track this
 

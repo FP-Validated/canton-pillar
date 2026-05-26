@@ -18,7 +18,7 @@ export default function HomePage() {
       <section className="mx-auto grid max-w-6xl gap-12 px-6 py-20 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
         <div>
           <p className="mb-4 text-sm font-bold tracking-[0.24em] text-accent">CANTON-NATIVE PAYMENTS RUNTIME</p>
-          <h1 className="text-5xl font-bold tracking-tight text-ink md:text-6xl">Stripe for Canton-backed assets.</h1>
+          <h1 className="text-5xl font-bold tracking-tight text-ink md:text-6xl">The payments runtime for Canton-backed assets.</h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-slateMuted">
             Canton Pillar gives product teams a clean `/v1` API for issuing, transferring, redeeming, and observing ledger-backed assets without exposing Canton internals to customers.
           </p>
@@ -52,7 +52,7 @@ export default function HomePage() {
       <section className="mx-auto max-w-6xl px-6 py-20">
         <div className="grid gap-6 md:grid-cols-3">
           {[
-            ['Intent-first API', 'Stripe-style verbs over Canton workflows.'],
+            ['Intent-first API', 'REST-style verbs over Canton workflows.'],
             ['Ledger-of-truth', 'Pillar never invents balances; every state mutation is rooted on the Canton ledger.'],
             ['Webhook-first', 'HMAC-signed thin events with idempotent retries.']
           ].map(([title, body]) => (

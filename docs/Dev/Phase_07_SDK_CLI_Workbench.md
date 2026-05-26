@@ -1,22 +1,22 @@
 # Phase 07 — SDK / CLI / Workbench
 
-> Ship the developer surface for Pillar: generated SDKs with ergonomic wrappers, a Stripe-grade `pillar` CLI, and Workbench panels that make Canton-backed operations inspectable without exposing Canton as the public API.
+> Ship the developer surface for Pillar: generated SDKs with ergonomic wrappers, a polished `pillar` CLI, and Workbench panels that make Canton-backed operations inspectable without exposing Canton as the public API.
 
 ## 1. Executive Summary
 
 Phase 07 turns the Phase 0–6 runtime into a usable developer product.
 
-Pillar remains **Stripe for Canton-backed assets**:
+Pillar remains **The payments runtime for Canton-backed assets**:
 
 1. Canton Ledger is the source of truth.
 2. Pillar DB stores only Projection / Audit / Config.
-3. External API must be Stripe-like and Canton-invisible.
+3. External API must be developer-friendly and Canton-invisible.
 4. Internal runtime must be Canton-native.
 5. Operations must be ledger-traceable.
 6. Balance/Holding-first, not contract-first.
 7. Intent-first, not transaction-first.
 8. Webhook-first for async workflow.
-9. API grammar must be Stripe-grade from day one.
+9. API grammar must be polished from day one.
 10. Deployment model changes, API experience does not.
 
 Phase 07 implements M7 from [23 Implementation Plan](../Architecture/23_Implementation%20Plan.md):
@@ -52,7 +52,7 @@ Architecture sources:
 | Goal                        | Phase 07 outcome                                                                                                                        | Source                                                                  |
 | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
 | SDK family consistency      | Node, Python, Java SDKs generated from OpenAPI and wrapped with handwritten ergonomics                                                  | [15 SDK Design](../Architecture/15_SDK%20Design.md)                     |
-| Stripe-grade CLI grammar    | `pillar` exposes login, sandbox, events, webhooks, balances, and traces workflows                                                       | [14 CLI Design](../Architecture/14_CLI%20Design.md)                     |
+| polished CLI grammar    | `pillar` exposes login, sandbox, events, webhooks, balances, and traces workflows                                                       | [14 CLI Design](../Architecture/14_CLI%20Design.md)                     |
 | Workbench for debugging     | API Explorer, Event Inspector, Webhook Delivery, Ledger Trace, Projection Health panels                                                 | [16 Pillar Workbench UX](../Architecture/16_Pillar%20Workbench%20UX.md) |
 | Canton-invisible public UX  | SDK/CLI/Workbench default views show `acct_`, `asset_`, `hld_`, `bal_`, `tr_`, `evt_`, `op_`, `ltr_`; no raw contract-first identifiers | [15 SDK Design](../Architecture/15_SDK%20Design.md)                     |
 | Webhook-first workflow      | CLI local listener and SDK webhook verifier work across all supported SDKs                                                              | [14 CLI Design](../Architecture/14_CLI%20Design.md)                     |

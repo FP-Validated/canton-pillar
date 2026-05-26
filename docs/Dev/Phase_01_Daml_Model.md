@@ -6,19 +6,19 @@
 
 Phase 01 delivers the Daml model for Pillar's first ledger-backed product surface. It maps to Phase 1 and milestone M2 in [23 Implementation Plan](../Architecture/23_Implementation%20Plan.md): asset, holding, issue, transfer, hold, and redeem workflows with Daml Script coverage.
 
-The output is not a public API. The Daml packages are internal source-of-truth packages consumed by later phases through generated bindings, ledger command runtime, projection workers, and Workbench-only trace views. `/v1` remains Stripe-like and Canton-invisible.
+The output is not a public API. The Daml packages are internal source-of-truth packages consumed by later phases through generated bindings, ledger command runtime, projection workers, and Workbench-only trace views. `/v1` remains developer-friendly and Canton-invisible.
 
 | Principle                                             | Phase 01 application                                                                                       |
 | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | Canton Ledger is the source of truth                  | `AssetRules`, `Holding`, `Hold`, intent templates, and `OperationTrace` define canonical state.            |
 | Pillar DB stores only Projection / Audit / Config     | No Phase 01 DB schema. Later projections mirror ledger state.                                              |
-| External API must be Stripe-like and Canton-invisible | Daml `ContractId`, `Party`, package id, template id, and choice names are internal only.                   |
+| External API must be developer-friendly and Canton-invisible | Daml `ContractId`, `Party`, package id, template id, and choice names are internal only.                   |
 | Internal runtime must be Canton-native                | Templates, choices, signatories, observers, controllers, DARs, and package ids are first-class internally. |
 | Operations must be ledger-traceable                   | Every intent path creates or updates `Pillar.Ops.OperationTrace`.                                          |
 | Balance/Holding-first, not contract-first             | `Holding` and `Hold` model rights and locks; external reads aggregate later.                               |
 | Intent-first, not transaction-first                   | issue, redeem, and transfer begin as intent contracts and progress through choices.                        |
 | Webhook-first for async workflow                      | Daml events feed projections and webhooks in later phases; Phase 01 emits ledger facts only.               |
-| API grammar must be Stripe-grade from day one         | Daml uses stable external object ids in metadata, never contract ids as public ids.                        |
+| API grammar must be polished from day one         | Daml uses stable external object ids in metadata, never contract ids as public ids.                        |
 | Deployment model changes, API experience does not     | DAR/package selection is internal and tenant-pinned later; object grammar does not change.                 |
 
 Architecture sources:
@@ -200,7 +200,7 @@ Every template created in this phase must include a common metadata envelope wit
 
 ## 4. API / Object Model
 
-Phase 01 has no public `/v1` API. It defines internal Daml-visible templates/interfaces that later services bind to Stripe-like public objects.
+Phase 01 has no public `/v1` API. It defines internal Daml-visible templates/interfaces that later services bind to developer-friendly public objects.
 
 ### Daml-visible templates and interfaces
 

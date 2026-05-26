@@ -4,7 +4,7 @@
 
 ## 1. Executive Summary
 
-Phase 08 implements the security and compliance production gate for Pillar, the Stripe for Canton-backed assets.
+Phase 08 implements the security and compliance production gate for Pillar, the The payments runtime for Canton-backed assets.
 
 This phase maps to M8 in [23 Implementation Plan](../Architecture/23_Implementation%20Plan.md#security--compliance), but is separated as its own development phase because no production deploy may proceed until authentication, audit, compliance, and evidence controls pass in staging.
 
@@ -22,13 +22,13 @@ Phase 08 turns the previous public API, ledger-command, projection, webhook, and
 
 1. Canton Ledger remains the source of truth for asset state and workflow finality.
 2. Pillar DB stores only Projection / Audit / Config.
-3. External API remains Stripe-like and Canton-invisible.
+3. External API remains developer-friendly and Canton-invisible.
 4. Internal runtime remains Canton-native.
 5. Every operation is ledger-traceable.
 6. Balance/Holding-first APIs are preserved; no contract-first leakage.
 7. Intent-first workflow is preserved; compliance advances intents, not raw transactions.
 8. Webhook-first async workflow remains the customer notification model; webhook signing is owned by Phase 06.
-9. API grammar remains Stripe-grade from day one.
+9. API grammar remains polished from day one.
 10. Deployment model may change, but `/v1` grammar must not.
 
 The phase is not a generic compliance product. It wires the minimum production controls required for regulated Canton-backed asset issuance and movement:
@@ -162,7 +162,7 @@ Canton participant
 
 ### `/v1/api_keys` lifecycle
 
-Phase 08 exposes key management through Stripe-like resource APIs.
+Phase 08 exposes key management through developer-friendly resource APIs.
 
 ```http
 POST /v1/api_keys

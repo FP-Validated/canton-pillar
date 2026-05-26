@@ -1,6 +1,6 @@
 # Canton Pillar
 
-Stripe for Canton-backed assets. A Canton-native runtime exposing a Stripe-grade `/v1` REST API over a ledger-of-truth model.
+The payments runtime for Canton-backed assets. A Canton-native runtime exposing a polished `/v1` REST API over a ledger-of-truth model.
 
 ## Status
 
@@ -40,11 +40,11 @@ pnpm --filter @pillar/web dev    # http://localhost:3000
 
 1. Canton Ledger is the source of truth.
 2. Pillar DB stores only Projection / Audit / Config.
-3. External API must be Stripe-like and Canton-invisible.
+3. External API must be developer-friendly and Canton-invisible.
 4. Internal runtime must be Canton-native.
 5. Operations must be ledger-traceable.
 6. Balance/Holding-first, not contract-first.
 7. Intent-first, not transaction-first.
 8. Webhook-first for async workflow.
-9. API grammar must be Stripe-grade from day one.
+9. API grammar must be polished and developer-grade from day one.
 10. Deployment model changes, API experience does not.

@@ -1,6 +1,6 @@
 # Contributing to Canton Pillar
 
-Canton Pillar is a Canton-native runtime for Stripe-grade asset APIs; contributions must preserve the ledger-of-truth model, Stripe-like external grammar, and Canton-invisible product experience.
+Canton Pillar is a Canton-native runtime for developer-friendly asset APIs; contributions must preserve the ledger-of-truth model, the polished external grammar, and the Canton-invisible product experience.
 
 Pillar is built phase-by-phase. See `docs/Dev/README.md` and `docs/Dev/PARALLELIZATION_PLAN.md`.
 

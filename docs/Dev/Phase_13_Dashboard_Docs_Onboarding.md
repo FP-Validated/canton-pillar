@@ -75,7 +75,7 @@ Primary architecture sources:
 | Non-goal                                     | Reason                                                                                                                    |
 | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | Re-implement Workbench                       | Workbench already owns API Explorer, ledger trace, webhook inspector, request replay, and projection health.              |
-| Expose Canton internals                      | Dashboard, docs, and onboarding must preserve Stripe-like, Canton-invisible public grammar.                               |
+| Expose Canton internals                      | Dashboard, docs, and onboarding must preserve developer-friendly, Canton-invisible public grammar.                               |
 | Host customer marketing site                 | Phase 13 builds product docs, dashboard, and onboarding, not homepage/SEO/marketing CMS.                                  |
 | Build a billing ledger                       | Dashboard billing summary consumes Phase 14 usage/billing APIs once available; it does not create billing economic state. |
 | Add new balance/holding/event resources      | Dashboard consumes existing `/v1` resources.                                                                              |

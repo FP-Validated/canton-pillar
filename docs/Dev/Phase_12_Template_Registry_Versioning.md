@@ -34,13 +34,13 @@ Core principles embedded in this phase:
 | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
 | Canton Ledger is the source of truth                  | Registry only selects package/template bindings; economic state remains active ledger contracts.                    |
 | Pillar DB stores only Projection / Audit / Config     | `template_registry` is configuration/control-plane metadata, not asset state.                                       |
-| External API must be Stripe-like and Canton-invisible | Public `/v1` surfaces do not expose `package_id`, `template_id`, DAR, or participant internals.                     |
+| External API must be developer-friendly and Canton-invisible | Public `/v1` surfaces do not expose `package_id`, `template_id`, DAR, or participant internals.                     |
 | Internal runtime must be Canton-native                | Registry records Daml package IDs, DAR manifests, Ledger API upload evidence, and command-builder bindings.         |
 | Operations must be ledger-traceable                   | Registry mutations, package uploads, pin changes, upgrade states, and rollback decisions are audited.               |
 | Balance/Holding-first, not contract-first             | Template compatibility is evaluated against object mappings for holdings, balances, intents, and events.            |
 | Intent-first, not transaction-first                   | Command-version mapping is keyed by intent operation type and template family, not raw transaction recipes.         |
 | Webhook-first for async workflow                      | Upgrade windows preserve endpoint-pinned event schema and prevent webhook shape drift.                              |
-| API grammar must be Stripe-grade from day one         | Optional admin API is scoped under `/v1/admin/template_registry/*`; no public customer grammar changes.             |
+| API grammar must be polished from day one         | Optional admin API is scoped under `/v1/admin/template_registry/*`; no public customer grammar changes.             |
 | Deployment model changes, API experience does not     | Hosted, customer-validator, and self-hosted use the same registry semantics and different distribution wiring only. |
 
 Cross-phase invariants directly enforced:
@@ -289,7 +289,7 @@ The registry owns four canonical object families plus DAR upload records.
 
 ### 4.6 Optional admin endpoints
 
-Admin endpoints are optional in Phase 12 and never customer-facing. If implemented, they use the existing Stripe-like route shape under admin scope:
+Admin endpoints are optional in Phase 12 and never customer-facing. If implemented, they use the existing developer-friendly route shape under admin scope:
 
 | Endpoint                                                    | Method | Purpose                                                        | Scope                                                        |
 | ----------------------------------------------------------- | ------ | -------------------------------------------------------------- | ------------------------------------------------------------ |

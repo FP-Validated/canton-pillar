@@ -1,6 +1,6 @@
 {
   "name": "canton-pillar",
-  "description": "Canton Pillar: Stripe for Canton-backed assets",
+  "description": "Canton Pillar: the payments runtime for Canton-backed assets",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@9.12.3",

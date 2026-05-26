@@ -4,19 +4,19 @@
 
 ## 1. Executive Summary
 
-Phase 04 implements `services/ledger-command`, the first runtime that touches Canton directly. The public API remains Stripe-like; the worker consumes durable command requests from Postgres, resolves party and package configuration, submits Daml commands through the Canton Ledger API, and records the outcome in `operations` and `ledger_command_attempts`.
+Phase 04 implements `services/ledger-command`, the first runtime that touches Canton directly. The public API remains developer-friendly; the worker consumes durable command requests from Postgres, resolves party and package configuration, submits Daml commands through the Canton Ledger API, and records the outcome in `operations` and `ledger_command_attempts`.
 
 Core principles embedded in this phase:
 
 1. **Canton Ledger is the source of truth.** Command submission is only a request to change ledger state; committed updates and projection confirm final state.
 2. **Pillar DB stores only Projection / Audit / Config.** `operations`, `ledger_command_requests`, and `ledger_command_attempts` are trace and queue state, not asset truth.
-3. **External API must be Stripe-like and Canton-invisible.** Customers see intents, holds, balances, events, and operation traces, not parties, contracts, choices, or packages by default.
+3. **External API must be developer-friendly and Canton-invisible.** Customers see intents, holds, balances, events, and operation traces, not parties, contracts, choices, or packages by default.
 4. **Internal runtime must be Canton-native.** The worker uses Daml Java bindings, Ledger API command envelopes, `act_as`, `read_as`, `command_id`, `submission_id`, completions, `update_id`, and participant routing.
 5. **Operations must be ledger-traceable.** Every mutation has a stable `operation_id`, stable `command_id`, per-attempt `submission_id`, and completion/update correlation.
 6. **Balance/Holding-first, not contract-first.** The command builder receives external account/asset/holding intent payloads and compiles to contract-native commands internally.
 7. **Intent-first, not transaction-first.** API requests create durable intents and command requests before any ledger attempt is made.
 8. **Webhook-first for async workflow.** Phase 04 marks command lifecycle; Phase 05 projection and Phase 06 webhooks publish final customer-visible state.
-9. **API grammar must be Stripe-grade from day one.** Retry and duplicate safety must work before exposing mutation endpoints broadly.
+9. **API grammar must be polished from day one.** Retry and duplicate safety must work before exposing mutation endpoints broadly.
 10. **Deployment model changes, API experience does not.** Sandbox, staging, and production differ in participant auth and topology, not `/v1` grammar.
 
 Primary architecture sources:
@@ -26,7 +26,7 @@ Primary architecture sources:
 | [07 Canton-native runtime](../Architecture/07_Canton-native%20runtime.md)                             | Intent compiler boundary, party mapping, command envelope, dedup distinction. |
 | [09 Pillar Ledger Sync Layer](../Architecture/09_Pillar%20Ledger%20Sync%20Layer.md)                   | Completion/update trace, projection handoff, command submission lifecycle.    |
 | [23 Implementation Plan](../Architecture/23_Implementation%20Plan.md)                                 | Phase 4 deliverables, F01-F06 task breakdown, DB schema, internal runtime.    |
-| [24 Business Judgment Pillar Complete](../Architecture/24_Business%20Judgment%20Pillar%20Complete.md) | Stripe-grade idempotency plus Canton command deduplication constraints.       |
+| [24 Business Judgment Pillar Complete](../Architecture/24_Business%20Judgment%20Pillar%20Complete.md) | polished idempotency plus Canton command deduplication constraints.       |
 
 Exit condition: `services/ledger-command` can submit issue, transfer, hold, release, and redeem commands against `dpm sandbox`; duplicate retries preserve economic intent by reusing `command_id` while changing `submission_id` per attempt.
 
@@ -63,7 +63,7 @@ Exit condition: `services/ledger-command` can submit issue, transfer, hold, rele
 
 ```text
 Phase 02 API Contract
-    │ Stripe-like mutation grammar and operation trace object
+    │ developer-friendly mutation grammar and operation trace object
     ▼
 Phase 03 DB + Idempotency
     │ api_requests, idempotency_keys, intents, operations, ledger_command_requests

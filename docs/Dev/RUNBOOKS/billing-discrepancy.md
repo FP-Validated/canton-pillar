@@ -57,7 +57,7 @@ Customer dispute or mismatch alert received
 | Invoice already charged?                                 | Finance Ops decides credit memo/refund path; preserve provider evidence.                                   | Hold invoice and prevent auto-charge until verified.     |
 | Raw usage events disagree with expected source counters? | Diagnose P14.Q01/P14.Q02 emission or stream ingestion.                                                     | Compare rollups and provider invoice lines.              |
 | Rollups disagree with raw usage events?                  | Rebuild rollup idempotently from raw events and fix P14.Q03.                                               | Compare provider export/import.                          |
-| Stripe/provider invoice lines disagree with rollups?     | Check P14.Q05 adapter, provider webhook lag, idempotency keys, plan/tax mapping.                           | Check customer expectation/contract plan interpretation. |
+| Billing/provider invoice lines disagree with rollups?     | Check P14.Q05 adapter, provider webhook lag, idempotency keys, plan/tax mapping.                           | Check customer expectation/contract plan interpretation. |
 | Deployment mode is customer-validator/self-hosted?       | Apply advisory/license-only branch; do not promise hosted usage invoice semantics unless contract says so. | Hosted branch owns provider invoice correction.          |
 
 ## Pre-checks (commands to run first)
@@ -81,7 +81,7 @@ Customer dispute or mismatch alert received
 | Invoice snapshot        |                                 Yes | Local `inv_*` object, provider invoice, line items, status, tax, currency, timestamps. |
 | Raw usage events        |                                 Yes | Export tenant+period rows or aggregate evidence before backfill/rebuild.               |
 | Usage rollups           |                                 Yes | Capture hourly/daily/monthly rollups before recompute.                                 |
-| Provider records        |                                 Yes | Stripe invoice, usage records, subscription item, tax profile, webhook event IDs.      |
+| Provider records        |                                 Yes | Billing invoice, usage records, subscription item, tax profile, webhook event IDs.      |
 | Audit rows              |                                 Yes | Include billing close, adapter exports/imports, provider webhook, admin actions.       |
 | Customer communications |                                 Yes | Support claim, notice, line-item breakdown, credit memo/refund record.                 |
 
@@ -105,7 +105,7 @@ Customer dispute or mismatch alert received
 | --------------------------------------------------- | ----------------------------------------------------------------------------- | ---------------------------------- | ------------------------------------------------------------------------------------- |
 | Dropped `usage_event`                               | Under-billing or missing usage dashboard line                                 | P14.Q01/P14.Q02                    | Fix emission/stream/fallback, backfill from audit/projection source if recoverable.   |
 | Duplicate event                                     | Over-billing                                                                  | P14.Q02/P14.Q03                    | Fix dedupe key/idempotency, rebuild rollup from raw unique events, credit if charged. |
-| Stripe webhook reconciliation lag                   | Local invoice stale or status mismatch                                        | P14.Q05/P14.Q09                    | Poll provider, replay webhook, import canonical provider invoice.                     |
+| Billing webhook reconciliation lag                   | Local invoice stale or status mismatch                                        | P14.Q05/P14.Q09                    | Poll provider, replay webhook, import canonical provider invoice.                     |
 | Plan change mid-period not handled                  | Wrong price/quantity split                                                    | P14.Q04/P14.Q10                    | Apply effective-period split; correct provider invoice or credit memo.                |
 | Tax misclassification                               | Wrong tax amount/jurisdiction                                                 | Finance Ops + Compliance + P14.Q05 | Correct tax profile/provider config; issue tax-compliant correction.                  |
 | Customer-validator/self-hosted expectation mismatch | Customer expects hosted metered invoice but contract is advisory/license-only | Billing/Product                    | Send contract-specific explanation and dashboard export.                              |
@@ -128,13 +128,13 @@ Customer dispute or mismatch alert received
 | Customer safety      | Send acknowledgement and expected breakdown timeline; provide current line-item evidence.                       | Admit fault or promise credit before evidence/Finance Ops review.                         |
 | Runtime safety       | Freeze billing adapter export for affected period, pause provider invoice finalization, retry provider imports. | Modify raw usage events or rollups without evidence snapshot and audit.                   |
 | Data correction      | Rebuild rollups from raw usage events; backfill missing events only from auditable source events.               | Invent usage events from customer claim alone or use projection as economic truth.        |
-| Financial correction | Finance Ops issues Stripe credit memo/refund/void/reissue when Pillar is at fault.                              | Engineering manually edits provider invoice totals outside approved Finance Ops workflow. |
+| Financial correction | Finance Ops issues Billing credit memo/refund/void/reissue when Pillar is at fault.                              | Engineering manually edits provider invoice totals outside approved Finance Ops workflow. |
 
 ### Deployment-mode mitigation branches
 
 | Deployment mode      | Immediate hold                                                                                         | Owner boundary                                                                                              | Customer-facing stance                                                                                       |
 | -------------------- | ------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `hosted`             | Hold provider invoice/auto-charge in Stripe or equivalent.                                             | Pillar owns usage emission, rollup, billing adapter, invoice correction.                                    | Provide detailed line-item breakdown and correction/credit if Pillar fault.                                  |
+| `hosted`             | Hold provider invoice/auto-charge in Billing or equivalent.                                             | Pillar owns usage emission, rollup, billing adapter, invoice correction.                                    | Provide detailed line-item breakdown and correction/credit if Pillar fault.                                  |
 | `customer-validator` | Hold Pillar-managed commercial invoice if applicable; advisory usage may need customer validator logs. | Shared responsibility; customer-operated validator data may be needed.                                      | Explain advisory vs contractual billable usage; request customer evidence if off-platform usage is relevant. |
 | `self-hosted`        | Hold license/control-plane invoice if Pillar generated it; local usage invoice usually not v1.         | Customer operates data plane; Pillar supports signed license/entitlement records and local evidence export. | Clarify license-only semantics; do not claim hosted usage invoice reconciliation unless contracted.          |
 
@@ -154,7 +154,7 @@ Customer dispute or mismatch alert received
 | Recovery step                                      | Required checks                                                                                                                       |
 | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | Explain customer-valid invoice                     | Line-item breakdown reconciles usage events, rollups, provider lines, taxes, and plan periods.                                        |
-| Issue credit memo if Pillar at fault               | Finance Ops creates Stripe credit memo/refund/void/reissue with audit reference and customer notice.                                  |
+| Issue credit memo if Pillar at fault               | Finance Ops creates Billing credit memo/refund/void/reissue with audit reference and customer notice.                                  |
 | Fix root cause in emission/rollup/provider adapter | P14.Q01/P14.Q02/P14.Q03/P14.Q05/P14.Q10 fix merged and covered by targeted regression.                                                |
 | Backfill if recoverable                            | Missing usage backfilled only from source audit/projection events with deterministic dedupe; customer impact reviewed before billing. |
 | Rebuild rollups                                    | Rebuild is idempotent and byte-equal on repeated run; provider export idempotency keys preserved.                                     |
@@ -232,7 +232,7 @@ We are investigating a potential billing/compliance issue affecting <scope>. We 
 
 - SLOs: [SLO_CATALOG.md](../SLO_CATALOG.md) `pillar_usage_event_emission_rate`, `pillar_invoice_generation_success`, `pillar_audit_log_completeness`.
 - Phase tickets: [P14.Q01-Q10](../Phase_14_Usage_Metering_Billing.md#9-implementation-plan), [P10.L06](../Phase_10_GA_Hardening.md#9-implementation-plan), [P11.M10](../Phase_11_Search_Export_Reporting.md#9-implementation-plan).
-- ADRs: [ADR-0001](../DECISIONS.md#adr-0001-canton-ledger-as-sole-source-of-truth), [ADR-0002](../DECISIONS.md#adr-0002-stripe-style-external-api-surface-canton-internals-hidden), [ADR-0005](../DECISIONS.md#adr-0005-projection--audit--config-split-for-pillar-postgres), [ADR-0010](../DECISIONS.md#adr-0010-deployment-mode-independence-hosted--customer-validator--self-hosted-share-identical-v1-grammar). [ADR-0014](../DECISIONS.md#adr-0014-event-payload-mode) is not applicable because it governs webhook payload mode, not billing provider choice; billing-provider choice remains open question Q14 in [Phase 14](../Phase_14_Usage_Metering_Billing.md).
-- Risks: [RISK_REGISTER.md](../RISK_REGISTER.md) R-015 Stripe API breakage, R-037 pricing model rejection, R-043 billing usage meter divergence.
+- ADRs: [ADR-0001](../DECISIONS.md#adr-0001-canton-ledger-as-sole-source-of-truth), [ADR-0002](../DECISIONS.md#adr-0002-billing-style-external-api-surface-canton-internals-hidden), [ADR-0005](../DECISIONS.md#adr-0005-projection--audit--config-split-for-pillar-postgres), [ADR-0010](../DECISIONS.md#adr-0010-deployment-mode-independence-hosted--customer-validator--self-hosted-share-identical-v1-grammar). [ADR-0014](../DECISIONS.md#adr-0014-event-payload-mode) is not applicable because it governs webhook payload mode, not billing provider choice; billing-provider choice remains open question Q14 in [Phase 14](../Phase_14_Usage_Metering_Billing.md).
+- Risks: [RISK_REGISTER.md](../RISK_REGISTER.md) R-015 Billing API breakage, R-037 pricing model rejection, R-043 billing usage meter divergence.
 - Release policy: [RELEASE_PLAN.md](../RELEASE_PLAN.md) release packet and customer-facing changelog policy for billing-impacting hotfixes.
 - Threats: [THREAT_MODEL.md](../THREAT_MODEL.md) billing provider integration, audit integrity, tenant isolation, and metadata/PII handling entries where applicable.

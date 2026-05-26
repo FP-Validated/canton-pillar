@@ -20,13 +20,13 @@ Phase 10 is not a feature expansion phase. It is a proof phase:
 | ----------------------------------------------------- | -------------------------------------------------------------------------------- |
 | Canton Ledger is the source of truth                  | every chaos/perf/rebuild test reconciles against ledger-derived state            |
 | Pillar DB stores only Projection / Audit / Config     | no source-of-truth state is introduced for hardening                             |
-| External API must be Stripe-like and Canton-invisible | `/v1` remains stable and public status is customer-readable                      |
+| External API must be developer-friendly and Canton-invisible | `/v1` remains stable and public status is customer-readable                      |
 | Internal runtime must be Canton-native                | command/completion/update/projection traces are observable                       |
 | Operations must be ledger-traceable                   | incidents and runbook actions retain request-to-ledger-to-webhook trace evidence |
 | Balance/Holding-first, not contract-first             | SLOs focus on API, projection freshness, webhook delivery, reconciliation        |
 | Intent-first, not transaction-first                   | acceptance success and command outcome are measured separately                   |
 | Webhook-first for async workflow                      | webhook delivery success, DLQ, replay, and fan-out are GA gates                  |
-| API grammar must be Stripe-grade from day one         | no GA-only grammar changes; only status semantics are clarified                  |
+| API grammar must be polished from day one         | no GA-only grammar changes; only status semantics are clarified                  |
 | Deployment model changes, API experience does not     | Hosted/Dedicated/Hybrid/self-hosted expose the same `/v1` behavior               |
 
 GA hardening delivers:

@@ -6,7 +6,7 @@
 
 Phase 05 implements M5: Projection + Reconciliation.
 
-Pillar’s public read experience is Stripe-like, but the source of truth is Canton. The projection layer exists to make `/v1/balances`, `/v1/holdings`, `/v1/events`, and operation status fast and stable without exposing contracts, templates, parties, participants, synchronizers, or raw ledger offsets in the default API.
+Pillar’s public read experience is developer-friendly, but the source of truth is Canton. The projection layer exists to make `/v1/balances`, `/v1/holdings`, `/v1/events`, and operation status fast and stable without exposing contracts, templates, parties, participants, synchronizers, or raw ledger offsets in the default API.
 
 Implemented scope:
 
@@ -32,13 +32,13 @@ Core principles embedded in this phase:
 
 1. Canton Ledger is the source of truth.
 2. Pillar DB stores only Projection / Audit / Config.
-3. External API must be Stripe-like and Canton-invisible.
+3. External API must be developer-friendly and Canton-invisible.
 4. Internal runtime must be Canton-native.
 5. Operations must be ledger-traceable.
 6. Balance/Holding-first, not contract-first.
 7. Intent-first, not transaction-first.
 8. Webhook-first for async workflow.
-9. API grammar must be Stripe-grade from day one.
+9. API grammar must be polished from day one.
 10. Deployment model changes, API experience does not.
 
 ## 2. Goals / Non-goals
@@ -152,7 +152,7 @@ The reconciler is a separate worker. It may reuse decoder and projector librarie
 | Checkpoint manager    | `services/projection-worker/src/main/kotlin/ledger`                  | Lease checkpoint rows, fence stale workers, advance offsets after row commit.            |
 | Rebuild command       | `services/reconciler/src/main/kotlin`                                | Wipe projection rows in controlled scope, replay, compare byte-equal output.             |
 | Reconciliation alerts | `services/reconciler/src/main/kotlin`                                | Detect gaps/mismatches, persist diffs, emit metrics/alerts.                              |
-| Public read routes    | `apps/api/src/routes/v1/balances`, `apps/api/src/routes/v1/holdings` | Read projection rows, enforce consistency mode, return Stripe-like objects.              |
+| Public read routes    | `apps/api/src/routes/v1/balances`, `apps/api/src/routes/v1/holdings` | Read projection rows, enforce consistency mode, return developer-friendly objects.              |
 
 ### Checkpoint model
 

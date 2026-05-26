@@ -4,7 +4,7 @@
 
 ## 1. Executive Summary
 
-Phase 14 fills the commercial operating gap for Pillar as the Stripe for Canton-backed assets.
+Phase 14 fills the commercial operating gap for Pillar as the The payments runtime for Canton-backed assets.
 
 Pillar SaaS pricing requires per-tenant usage metering for:
 
@@ -31,7 +31,7 @@ Primary source inputs:
 
 | Source                                                                   | Phase 14 dependency                                                                    |
 | ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------- |
-| [01 Product Strategy](../Architecture/01_Pillar%20Product%20Strategy.md) | Stripe-grade commercial product positioning and SaaS expectations                      |
+| [01 Product Strategy](../Architecture/01_Pillar%20Product%20Strategy.md) | polished commercial product positioning and SaaS expectations                      |
 | [18 Deployment](../Architecture/18_Deployment.md)                        | deployment-mode separation, control/data plane boundaries, license/entitlement concept |
 | [19 Compliance](../Architecture/19_Compliance.md)                        | audit retention, invoicing evidence, tax/provider responsibility boundaries            |
 | [23 Implementation Plan](../Architecture/23_Implementation%20Plan.md)    | service boundaries, DB migration style, API/service patterns                           |
@@ -45,7 +45,7 @@ Phase 14 is not an economic ledger feature. Usage and invoices are commercial/ac
 | ------------------------------------- | ------------------------------------------------------------------------------------------------ |
 | Metered hosted SaaS                   | Every accepted hosted mutation emits usage without blocking the response path.                   |
 | Customer usage transparency           | Admin users can retrieve usage rollups and invoices through `/v1`.                               |
-| External billing provider integration | Hosted invoices are generated through Stripe or an equivalent provider.                          |
+| External billing provider integration | Hosted invoices are generated through billing or an equivalent provider.                          |
 | Deployment-aware billing              | Hosted bills by usage; customer-validator and self-hosted defer to license/control-plane models. |
 | Dashboard handoff                     | Phase 13 dashboard consumes usage and invoice APIs without inventing a second billing model.     |
 
@@ -79,10 +79,10 @@ Phase 14 is not an economic ledger feature. Usage and invoices are commercial/ac
 | Emit usage events from runtime services | Ledger command, webhook dispatcher, projection/search/export services emit per-operation usage | [23 Implementation Plan](../Architecture/23_Implementation%20Plan.md) |
 | Persist raw usage events                | Migration `0110_usage_metering` creates monthly-partitioned `usage_events`                     | Shared migration registry                                             |
 | Aggregate billable usage                | `usage_rollups` stores hourly, daily, and monthly rollups by tenant/meter/deployment mode      | Product SaaS requirement                                              |
-| Expose customer usage API               | `/v1/usage` returns paginated rollups and current-period summaries                             | Stripe-grade API grammar                                              |
+| Expose customer usage API               | `/v1/usage` returns paginated rollups and current-period summaries                             | polished API grammar                                              |
 | Expose invoice API                      | `/v1/invoices` returns provider-backed invoice objects with stable `inv_*` IDs                 | Commercial SaaS requirement                                           |
-| Provide billing portal endpoint         | `/v1/billing/portal_url` creates a Stripe-hosted portal link for admin keys                    | PCI scope reduction                                                   |
-| Integrate billing provider              | `services/billing-adapter` reconciles rollups with Stripe or equivalent nightly                | Hosted billing model                                                  |
+| Provide billing portal endpoint         | `/v1/billing/portal_url` creates a billing-hosted portal link for admin keys                    | PCI scope reduction                                                   |
+| Integrate billing provider              | `services/billing-adapter` reconciles rollups with billing or equivalent nightly                | Hosted billing model                                                  |
 | Support dashboard panel                 | Phase 13 consumes usage summary, invoice list, and current-period forecast                     | Dashboard handoff                                                     |
 | Preserve hot-path latency               | Usage event emission is asynchronous and must not block API responses                          | Runtime invariant                                                     |
 
@@ -91,7 +91,7 @@ Phase 14 is not an economic ledger feature. Usage and invoices are commercial/ac
 | Non-goal                                                            | Reason                                                                                                                              |
 | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | Replacing the customer's accounting system                          | Pillar produces invoices and usage evidence, not ERP/general-ledger accounting.                                                     |
-| Multi-currency tax calculation in v1                                | Tax determination and jurisdictional rules are delegated to Stripe Tax, Chargebee, or equivalent.                                   |
+| Multi-currency tax calculation in v1                                | Tax determination and jurisdictional rules are delegated to billing Tax, Chargebee, or equivalent.                                   |
 | Enforcing credit limits in v1                                       | Credit limit checks are advisory only; they must not reject asset-moving ledger workflows.                                          |
 | Making invoices Canton ledger records                               | Invoices are commercial SaaS records, not Canton-backed asset events.                                                               |
 | Billing all customer-validator/self-hosted usage by raw meter in v1 | These modes use contracts/license entitlements because data-plane locality and offline operation change trust boundaries.           |
@@ -120,8 +120,8 @@ Phase 14 adds two services and one API surface extension:
 | Component         | Path                                                                                                   | Responsibility                                                                      |
 | ----------------- | ------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
 | Usage meter       | `services/usage-meter/`                                                                                | Consume usage stream, validate event contract, write raw events, aggregate rollups. |
-| Billing adapter   | `services/billing-adapter/`                                                                            | Map rollups/plans/customers to Stripe or equivalent provider, reconcile invoices.   |
-| Public API routes | `apps/api/src/routes/v1/usage*`, `apps/api/src/routes/v1/invoices*`, `apps/api/src/routes/v1/billing*` | Serve usage, invoices, and portal URLs using Stripe-like grammar.                   |
+| Billing adapter   | `services/billing-adapter/`                                                                            | Map rollups/plans/customers to billing or equivalent provider, reconcile invoices.   |
+| Public API routes | `apps/api/src/routes/v1/usage*`, `apps/api/src/routes/v1/invoices*`, `apps/api/src/routes/v1/billing*` | Serve usage, invoices, and portal URLs using developer-friendly grammar.                   |
 
 ### 3.1 Topology
 
@@ -140,7 +140,7 @@ apps/api
         |                              |
         v                              v
 Usage Stream                    Billing Provider API
-Kafka / Redis Stream            Stripe or equivalent
+Kafka / Redis Stream            billing or equivalent
         |                              ^
         v                              |
 services/usage-meter             services/billing-adapter
@@ -202,7 +202,7 @@ Postgres
 
 ### 3.5 Provider boundary
 
-`services/billing-adapter` talks to Stripe or equivalent. The adapter boundary hides provider-specific products, prices, usage records, invoices, customer portal sessions, tax objects, and webhook signatures from the rest of Pillar.
+`services/billing-adapter` talks to billing or equivalent. The adapter boundary hides provider-specific products, prices, usage records, invoices, customer portal sessions, tax objects, and webhook signatures from the rest of Pillar.
 
 | Adapter input                              | Adapter output                               |
 | ------------------------------------------ | -------------------------------------------- |
@@ -223,7 +223,7 @@ Usage data is operational/commercial telemetry. It is not customer business payl
 | Canton internals               | Internal-only if needed for diagnostics; never public | command/update references must not appear in `/v1` billing APIs     |
 | Business payload               | No                                                    | transfer amount details, recipient identity, asset payload metadata |
 | PII                            | No                                                    | names, emails, addresses, payment method details                    |
-| Billing provider IDs           | Internal and admin-only                               | Stripe customer/subscription/invoice IDs                            |
+| Billing provider IDs           | Internal and admin-only                               | billing customer/subscription/invoice IDs                            |
 
 ## 4. API / Object Model
 
@@ -334,7 +334,7 @@ Public ID prefix: `cb_*`.
 | `deployment_mode` | enum      | Canonical mode.                                             |
 | `pricing_plan`    | string    | `plan_*`.                                                   |
 | `billing_status`  | enum      | `active`, `past_due`, `paused`, `license_only`, `disabled`. |
-| `provider`        | string    | `stripe`, `chargebee`, or configured adapter key.           |
+| `provider`        | string    | `billing`, `chargebee`, or configured adapter key.           |
 | `portal_enabled`  | boolean   | Whether portal URL can be created.                          |
 
 ### 4.6 Public APIs
@@ -558,7 +558,7 @@ tenant_id + environment_id + deployment_mode + meter + granularity + period_star
 | `deployment_modes`    | text[]        | Allowed modes.                                          |
 | `currency`            | text          | Plan currency; multi-currency tax is provider-owned.    |
 | `meter_config`        | jsonb         | Meter price references, included usage, billable flags. |
-| `provider`            | text          | `stripe`, `chargebee`, or adapter key.                  |
+| `provider`            | text          | `billing`, `chargebee`, or adapter key.                  |
 | `provider_product_id` | text nullable | External product ID.                                    |
 | `provider_price_map`  | jsonb         | Meter to provider price/item mapping.                   |
 | `created_at`          | timestamptz   | Required.                                               |
@@ -624,7 +624,7 @@ tenant_id + environment_id + deployment_mode + meter + granularity + period_star
 | Lost usage event                       | Under-billing and incomplete usage dashboard  | Non-blocking emit metrics, bounded fallback queue, reconciliation against source counters           | P14.Q01, P14.Q02, P14.Q09 |
 | Duplicate usage event                  | Over-billing                                  | Deterministic dedupe key, unique constraints, rollup rebuild idempotency                            | P14.Q02, P14.Q03          |
 | Usage stream outage                    | Under-billing or delayed dashboard            | Emit health metric, DLQ/fallback, alert, never block API response path                              | P14.Q01, P14.Q02          |
-| Stripe/provider API outage             | Invoice generation delay                      | Retry with idempotency keys, mark billing sync degraded, do not mutate usage rollups                | P14.Q05, P14.Q09          |
+| billing/provider API outage             | Invoice generation delay                      | Retry with idempotency keys, mark billing sync degraded, do not mutate usage rollups                | P14.Q05, P14.Q09          |
 | Provider webhook missed                | Stale invoice status                          | Polling fallback and provider reconciliation                                                        | P14.Q05, P14.Q09          |
 | Currency/tax misclassification         | Incorrect invoice/tax record                  | Delegate tax to provider, store tax profile reference, compliance review before go-live             | P14.Q04, P14.Q05          |
 | Retroactive plan change                | Customer dispute or incorrect invoice         | Version pricing plans, apply changes from effective period only unless adjustment workflow approved | P14.Q04, P14.Q10          |
@@ -672,7 +672,7 @@ Forbidden in usage event `attributes`:
 
 ### 8.3 PCI scope
 
-Pillar must not collect, transmit, store, or render card data. Billing portal sessions are hosted by Stripe or equivalent. Pillar stores only provider customer/subscription/invoice references and provider-hosted URLs.
+Pillar must not collect, transmit, store, or render card data. Billing portal sessions are hosted by billing or equivalent. Pillar stores only provider customer/subscription/invoice references and provider-hosted URLs.
 
 ### 8.4 Tax/invoicing compliance
 
@@ -702,7 +702,7 @@ Pillar must not collect, transmit, store, or render card data. Billing portal se
 | P14.Q02 | Build usage stream consumer                               | `services/usage-meter/`, `infra/compose/`, `infra/helm/pillar/`                                                                    | TypeScript `usage-meter` service consuming Kafka/Redis stream, validating meter registry, deduping, and writing `usage_events`          | P14.Q01, P3.D05, P9.J03            | Consumer integration test inserts event once, ignores duplicate `dedupe_key`, rejects unknown meter, and writes to current monthly partition               | high   |
 | P14.Q03 | Implement rollup worker                                   | `services/usage-meter/src/rollups/`, `services/usage-meter/test/`                                                                  | Hourly/daily/monthly aggregation into `usage_rollups` with rebuild-safe idempotency                                                     | P14.Q02                            | Rollup test aggregates raw events into exact hourly/daily/monthly totals and repeated run produces byte-equal rows                                         | high   |
 | P14.Q04 | Add pricing plan registry                                 | `apps/api/src/routes/v1/pricing*`, `packages/api-contracts/schemas/`, `db/migrations/0110_usage_metering*`                         | `pricing_plans` schema, `plan_*` object presenter, meter config validation, deployment-mode applicability                               | P14.Q03, P8.K04, P9.J04            | Unit tests reject unregistered meter, invalid deployment mode, retroactive plan mutation without effective period, and prefix collision                    | medium |
-| P14.Q05 | Integrate billing adapter with Stripe-compatible provider | `services/billing-adapter/`, `infra/helm/pillar/`, `packages/api-contracts/schemas/`                                               | Provider adapter boundary for customers, usage records, invoices, webhook verification, and reconciliation imports                      | P14.Q03, P14.Q04, P8.K05           | Provider sandbox test or contract test exports closed monthly rollup with idempotency key and imports provider invoice into `invoices`                     | high   |
+| P14.Q05 | Integrate billing adapter with billing-compatible provider | `services/billing-adapter/`, `infra/helm/pillar/`, `packages/api-contracts/schemas/`                                               | Provider adapter boundary for customers, usage records, invoices, webhook verification, and reconciliation imports                      | P14.Q03, P14.Q04, P8.K05           | Provider sandbox test or contract test exports closed monthly rollup with idempotency key and imports provider invoice into `invoices`                     | high   |
 | P14.Q06 | Add `/v1/usage` API                                       | `apps/api/src/routes/v1/usage.ts`, `packages/api-contracts/openapi/pillar-v1.yaml`, `packages/api-contracts/examples/usage/`       | Paginated usage rollup list/current-period summary returning `usage_rollup` objects                                                     | P14.Q03, P14.Q04, P2.C02, P2.C03   | API tests verify tenant scoping, cursor pagination, date filtering, no raw usage events, and no forbidden Canton fields                                    | medium |
 | P14.Q07 | Add `/v1/invoices` API                                    | `apps/api/src/routes/v1/invoices.ts`, `packages/api-contracts/openapi/pillar-v1.yaml`, `packages/api-contracts/examples/invoices/` | Paginated invoice list and invoice retrieve returning `inv_*` objects                                                                   | P14.Q05, P2.C02, P8.K02            | API tests verify invoice tenant scoping, status filtering, hosted URL policy, and no provider secret leakage                                               | medium |
 | P14.Q08 | Add `/v1/billing/portal_url` endpoint                     | `apps/api/src/routes/v1/billing.ts`, `services/billing-adapter/src/portal/`, `packages/api-contracts/openapi/pillar-v1.yaml`       | Admin-only endpoint creating short-lived hosted billing portal URL                                                                      | P14.Q05, P14.Q07, P8.K02           | Route tests prove non-admin key is rejected, hosted tenant receives portal URL, self-hosted license-only tenant receives structured unsupported error      | medium |
@@ -732,17 +732,17 @@ P14.Q06 + P14.Q07 + P14.Q09
 1. `0110_usage_metering` lands before service code that writes usage tables.
 2. Middleware lands with a no-blocking stream abstraction and tests before rollups exist.
 3. `services/usage-meter/` owns raw event validation and rollup computation; API routes only read rollups.
-4. `services/billing-adapter/` owns provider integration; API routes never call Stripe directly except through adapter client.
+4. `services/billing-adapter/` owns provider integration; API routes never call billing directly except through adapter client.
 5. P14.Q10 is the Phase 13 handoff point for customer-visible usage panel behavior.
 
 ## 10. Open Questions
 
 | Question                               | Options                                                                                                            | Blocks design freeze?                        | Notes                                                                                                        |
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| Billing provider                       | Stripe, Chargebee, Maxio, in-house provider adapter                                                                | Yes                                          | v1 should choose one primary hosted provider while preserving adapter boundary.                              |
+| Billing provider                       | billing, Chargebee, Maxio, in-house provider adapter                                                                | Yes                                          | v1 should choose one primary hosted provider while preserving adapter boundary.                              |
 | Pricing model                          | Per-API-call, per-intent, per-ledger-command, per-balance-volume, per-webhook-delivery, per-storage, bundled tiers | Yes                                          | Pricing model is explicitly open; plan registry must support multiple meters before final prices are chosen. |
 | Self-hosted license metering mechanism | Offline license file, signed usage summaries, control-plane heartbeat, customer-attested reporting                 | Yes for self-hosted commercial launch        | Must not require hot-path control-plane dependency.                                                          |
-| Tax provider integration               | Stripe Tax, provider-native tax, Avalara, manual enterprise invoicing                                              | Yes for paid hosted launch                   | v1 must not implement in-house multi-currency tax logic.                                                     |
+| Tax provider integration               | billing Tax, provider-native tax, Avalara, manual enterprise invoicing                                              | Yes for paid hosted launch                   | v1 must not implement in-house multi-currency tax logic.                                                     |
 | Currency representation                | Major-unit decimal strings vs minor-unit integers                                                                  | Yes for API freeze                           | Must align with existing API decimal conventions.                                                            |
 | Read request billing                   | Unbilled sampled analytics vs billable API call meter                                                              | No                                           | Can be configured per pricing plan.                                                                          |
 | Failed ledger command billing          | Bill accepted API/intent only vs also bill submitted command attempts                                              | Yes for fairness policy                      | Rollups must distinguish meter types either way.                                                             |

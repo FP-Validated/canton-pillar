@@ -4,7 +4,7 @@
 
 ## 1. Executive Summary
 
-Phase 00 maps to M0/M1 in the implementation plan: architecture freeze plus monorepo bootstrap. It creates the repository shape and local developer runtime for Pillar, a Stripe-like API surface backed by Canton-native execution, while deliberately avoiding service logic, schema migrations, ledger templates, and public API behavior.
+Phase 00 maps to M0/M1 in the implementation plan: architecture freeze plus monorepo bootstrap. It creates the repository shape and local developer runtime for Pillar, a developer-friendly API surface backed by Canton-native execution, while deliberately avoiding service logic, schema migrations, ledger templates, and public API behavior.
 
 Implemented architecture references:
 
@@ -22,13 +22,13 @@ Core principles embedded from day one:
 | ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
 | Canton Ledger is the source of truth.                  | Local runtime centers on `dpm sandbox`; no DB-backed asset truth is introduced.                                             |
 | Pillar DB stores only Projection / Audit / Config.     | No DB schema exists in this phase; compose only provisions Postgres for later migrations.                                   |
-| External API must be Stripe-like and Canton-invisible. | API grammar is not implemented here, but scaffolding must not leak Canton concepts into public package names or sample env. |
+| External API must be developer-friendly and Canton-invisible. | API grammar is not implemented here, but scaffolding must not leak Canton concepts into public package names or sample env. |
 | Internal runtime must be Canton-native.                | Daml/DPM workspace and Canton sandbox are first-class bootstrap targets.                                                    |
 | Operations must be ledger-traceable.                   | Tooling prepares for ledger-backed flows instead of mocks.                                                                  |
 | Balance/Holding-first, not contract-first.             | No contract-first public object is scaffolded.                                                                              |
 | Intent-first, not transaction-first.                   | No transaction endpoints are scaffolded.                                                                                    |
 | Webhook-first for async workflow.                      | Local compose includes a webhook receiver test surface.                                                                     |
-| API grammar must be Stripe-grade from day one.         | M0 architecture freeze keeps API grammar separate from scaffolding.                                                         |
+| API grammar must be polished from day one.         | M0 architecture freeze keeps API grammar separate from scaffolding.                                                         |
 | Deployment model changes, API experience does not.     | Compose/Dockerfiles are local-only precursors to P9 Helm/CI without changing `/v1` grammar.                                 |
 
 ## 2. Goals / Non-goals
