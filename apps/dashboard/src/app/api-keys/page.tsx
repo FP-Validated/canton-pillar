@@ -1,2 +1,3 @@
-import { KpiCard } from '../../components/KpiCard';
-export default function Page() { return <KpiCard title="API keys">Customer dashboard panel</KpiCard>; }
+import { loadApiKeys } from '../../server/loaders/apiKeys';
+import { ResultView } from '../../components/StateViews';
+export default async function Page(){ return <main><h1>API keys</h1><ResultView result={await loadApiKeys()}/></main>; }

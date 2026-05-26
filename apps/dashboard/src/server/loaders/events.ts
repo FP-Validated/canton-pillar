@@ -1,2 +1,3 @@
-import { pillarApi } from '../pillar-api-proxy';
-export async function loadEvents() { try { return await pillarApi('/events'); } catch { return { object:'list', data:[], has_more:false, url:'/events', capability_enabled:false }; } }
+import { loadList, qs } from './common';
+export function loadEvents(filters: { types?: string; 'created.gte'?: string; limit?: number } = {}) { return loadList(`/events${qs(filters)}`); }
+export function loadEvent(id: string) { return loadList(`/events/${encodeURIComponent(id)}`); }

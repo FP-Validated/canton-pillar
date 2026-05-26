@@ -1,2 +1,3 @@
-import { KpiCard } from '../../components/KpiCard';
-export default function Page() { return <KpiCard title="Billing">Customer dashboard panel</KpiCard>; }
+import { loadBilling } from '../../server/loaders/billing';
+import { BillingUnavailable, ErrorState, ResultView } from '../../components/StateViews';
+export default async function Page(){ const b=await loadBilling(); if(!b.usage.ok&&b.usage.status===404) return <BillingUnavailable reason="Tenant has no billing configuration yet."/>; if(!b.portal.ok&&b.portal.error.code==='unsupported_in_deployment_mode') return <BillingUnavailable reason="Billing portal is not available in this deployment mode."/>; if(!b.usage.ok) return <ErrorState message={b.usage.error.message}/>; return <main><h1>Billing</h1><ResultView result={b.usage} pick={(v:any)=>v?.totals??v?.data??[]}/><ResultView result={b.invoices}/></main>; }

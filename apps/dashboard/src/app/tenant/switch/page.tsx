@@ -1,2 +1,8 @@
-import { getDashboardSession } from '../../../server/session';
-export default async function SwitchTenantPage(){const session=await getDashboardSession();return <main className='p-8'><h1 className='text-2xl font-semibold'>Switch tenant</h1><ul className='mt-6 space-y-3'>{session?.memberships.map(m=><li key={m.tenant.id} className='rounded-lg border p-4'>{m.tenant.display_name} <span className='text-slate-500'>{m.role}</span></li>)}</ul></main>}
+import { pillarFetch } from '../../../server/pillar-client';
+import { ErrorState, EmptyState } from '../../../components/StateViews';
+export default async function Page({ searchParams }: { searchParams: { tenant_id?: string } }) {
+  if (!searchParams.tenant_id) return <EmptyState title="Choose a tenant" />;
+  const r = await pillarFetch(undefined, '/auth/switch_tenant', { method: 'POST', body: JSON.stringify({ tenant_id: searchParams.tenant_id }), idempotencyKey: `switch-${searchParams.tenant_id}` });
+  if (!r.ok) return <ErrorState message={r.error.message} />;
+  return <main><h1>Tenant switched</h1></main>;
+}
