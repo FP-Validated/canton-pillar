@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const Livemode = z.boolean();
 export const Timestamp = z.string().datetime({ offset: true });
-export const DecimalString = z.string().regex(/^-?\d+(\.\d+)?$/);
+export const DecimalString = z.string().regex(/^-?\d+(\.\d{1,18})?$/);
 
 export const Metadata = z.record(z.string(), z.string()).superRefine((value, ctx) => {
   const entries = Object.entries(value);

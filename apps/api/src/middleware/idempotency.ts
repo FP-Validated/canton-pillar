@@ -20,7 +20,14 @@ export async function registerIdempotency(server: FastifyInstance) {
   });
   server.addHook('onSend', async (request, reply, payload) => {
     const key = (request as any).idempotencyStoreKey;
-    if (key && reply.statusCode < 400) idempotencyStore.set(key, { ...(idempotencyStore.get(key)!), statusCode: reply.statusCode, body: JSON.parse(String(payload)), expiresAt: Date.now()+300000 });
+    if (key && reply.statusCode < 400) {
+      try {
+        const body = typeof payload === 'string' ? JSON.parse(payload) : payload;
+        idempotencyStore.set(key, { ...(idempotencyStore.get(key)!), statusCode: reply.statusCode, body, expiresAt: Date.now() + 300000 });
+      } catch {
+        // Non-JSON payloads are not idempotency-safe to replay.
+      }
+    }
     return payload;
   });
 }

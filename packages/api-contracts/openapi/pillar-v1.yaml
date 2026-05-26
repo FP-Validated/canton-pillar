@@ -546,7 +546,7 @@ components:
                 pattern: ^asst_[A-Za-z0-9_-]{4,80}$
                 type: string
               available:
-                pattern: ^-?\d+(\.\d+)?$
+                pattern: ^-?\d+(\.\d{1,18})?$
                 type: string
               created:
                 format: date-time
@@ -565,13 +565,13 @@ components:
                   - balance
                 type: string
               pending:
-                pattern: ^-?\d+(\.\d+)?$
+                pattern: ^-?\d+(\.\d{1,18})?$
                 type: string
               reserved:
-                pattern: ^-?\d+(\.\d+)?$
+                pattern: ^-?\d+(\.\d{1,18})?$
                 type: string
               settled:
-                pattern: ^-?\d+(\.\d+)?$
+                pattern: ^-?\d+(\.\d{1,18})?$
                 type: string
             required:
               - id
@@ -617,7 +617,7 @@ components:
           pattern: ^asst_[A-Za-z0-9_-]{4,80}$
           type: string
         available:
-          pattern: ^-?\d+(\.\d+)?$
+          pattern: ^-?\d+(\.\d{1,18})?$
           type: string
         created:
           format: date-time
@@ -636,13 +636,13 @@ components:
             - balance
           type: string
         pending:
-          pattern: ^-?\d+(\.\d+)?$
+          pattern: ^-?\d+(\.\d{1,18})?$
           type: string
         reserved:
-          pattern: ^-?\d+(\.\d+)?$
+          pattern: ^-?\d+(\.\d{1,18})?$
           type: string
         settled:
-          pattern: ^-?\d+(\.\d+)?$
+          pattern: ^-?\d+(\.\d{1,18})?$
           type: string
       required:
         - id
@@ -861,7 +861,7 @@ components:
           pattern: ^acct_[A-Za-z0-9_-]{4,80}$
           type: string
         amount:
-          pattern: ^-?\d+(\.\d+)?$
+          pattern: ^-?\d+(\.\d{1,18})?$
           type: string
         asset:
           pattern: ^asst_[A-Za-z0-9_-]{4,80}$
@@ -891,7 +891,7 @@ components:
                 pattern: ^acct_[A-Za-z0-9_-]{4,80}$
                 type: string
               amount:
-                pattern: ^-?\d+(\.\d+)?$
+                pattern: ^-?\d+(\.\d{1,18})?$
                 type: string
               asset:
                 pattern: ^asst_[A-Za-z0-9_-]{4,80}$
@@ -967,7 +967,7 @@ components:
           pattern: ^acct_[A-Za-z0-9_-]{4,80}$
           type: string
         amount:
-          pattern: ^-?\d+(\.\d+)?$
+          pattern: ^-?\d+(\.\d{1,18})?$
           type: string
         asset:
           pattern: ^asst_[A-Za-z0-9_-]{4,80}$
@@ -1031,7 +1031,7 @@ components:
                 pattern: ^acct_[A-Za-z0-9_-]{4,80}$
                 type: string
               amount:
-                pattern: ^-?\d+(\.\d+)?$
+                pattern: ^-?\d+(\.\d{1,18})?$
                 type: string
               asset:
                 pattern: ^asst_[A-Za-z0-9_-]{4,80}$
@@ -1099,6 +1099,9 @@ components:
       type: object
     HoldReleaseRequest:
       properties:
+        hold_id:
+          pattern: ^hold_[A-Za-z0-9_-]{4,80}$
+          type: string
         metadata:
           additionalProperties:
             type: string
@@ -1110,7 +1113,7 @@ components:
           pattern: ^acct_[A-Za-z0-9_-]{4,80}$
           type: string
         amount:
-          pattern: ^-?\d+(\.\d+)?$
+          pattern: ^-?\d+(\.\d{1,18})?$
           type: string
         asset:
           pattern: ^asst_[A-Za-z0-9_-]{4,80}$
@@ -1167,7 +1170,7 @@ components:
           pattern: ^acct_[A-Za-z0-9_-]{4,80}$
           type: string
         amount:
-          pattern: ^-?\d+(\.\d+)?$
+          pattern: ^-?\d+(\.\d{1,18})?$
           type: string
         asset:
           pattern: ^asst_[A-Za-z0-9_-]{4,80}$
@@ -1192,7 +1195,7 @@ components:
                 pattern: ^acct_[A-Za-z0-9_-]{4,80}$
                 type: string
               amount:
-                pattern: ^-?\d+(\.\d+)?$
+                pattern: ^-?\d+(\.\d{1,18})?$
                 type: string
               asset:
                 pattern: ^asst_[A-Za-z0-9_-]{4,80}$
@@ -1263,7 +1266,7 @@ components:
           pattern: ^acct_[A-Za-z0-9_-]{4,80}$
           type: string
         amount:
-          pattern: ^-?\d+(\.\d+)?$
+          pattern: ^-?\d+(\.\d{1,18})?$
           type: string
         asset:
           pattern: ^asst_[A-Za-z0-9_-]{4,80}$
@@ -1467,7 +1470,7 @@ components:
           pattern: ^acct_[A-Za-z0-9_-]{4,80}$
           type: string
         amount:
-          pattern: ^-?\d+(\.\d+)?$
+          pattern: ^-?\d+(\.\d{1,18})?$
           type: string
         asset:
           pattern: ^asst_[A-Za-z0-9_-]{4,80}$
@@ -1495,7 +1498,7 @@ components:
                 pattern: ^acct_[A-Za-z0-9_-]{4,80}$
                 type: string
               amount:
-                pattern: ^-?\d+(\.\d+)?$
+                pattern: ^-?\d+(\.\d{1,18})?$
                 type: string
               asset:
                 pattern: ^asst_[A-Za-z0-9_-]{4,80}$
@@ -1569,7 +1572,7 @@ components:
           pattern: ^acct_[A-Za-z0-9_-]{4,80}$
           type: string
         amount:
-          pattern: ^-?\d+(\.\d+)?$
+          pattern: ^-?\d+(\.\d{1,18})?$
           type: string
         asset:
           pattern: ^asst_[A-Za-z0-9_-]{4,80}$
@@ -1645,7 +1648,7 @@ components:
     TransferIntentCreateRequest:
       properties:
         amount:
-          pattern: ^-?\d+(\.\d+)?$
+          pattern: ^-?\d+(\.\d{1,18})?$
           type: string
         asset:
           pattern: ^asst_[A-Za-z0-9_-]{4,80}$
@@ -1674,7 +1677,7 @@ components:
           items:
             properties:
               amount:
-                pattern: ^-?\d+(\.\d+)?$
+                pattern: ^-?\d+(\.\d{1,18})?$
                 type: string
               asset:
                 pattern: ^asst_[A-Za-z0-9_-]{4,80}$
@@ -1749,7 +1752,7 @@ components:
     TransferIntentSchema:
       properties:
         amount:
-          pattern: ^-?\d+(\.\d+)?$
+          pattern: ^-?\d+(\.\d{1,18})?$
           type: string
         asset:
           pattern: ^asst_[A-Za-z0-9_-]{4,80}$

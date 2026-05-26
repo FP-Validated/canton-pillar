@@ -14,6 +14,9 @@ dependencyResolutionManagement {
 
 rootProject.name = "pillar"
 
+include(":packages:ledger-types")
+project(":packages:ledger-types").projectDir = file("packages/ledger-types")
+
 val kotlinServices = listOf(
     "ledger-command",
     "projection-worker",
