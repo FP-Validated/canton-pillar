@@ -1,0 +1,2 @@
+const incidents = [{ id: "inc_20260526_projection", title: "Projection lag elevated", status: "degraded", action: "publish update" }];
+export default function StatusFeaturePage() { return <main className="space-y-6"><h1 className="text-2xl font-semibold">Status administration</h1>{incidents.map((incident) => <section key={incident.id} className="rounded-xl border p-4"><h2 className="font-semibold">{incident.title}</h2><p>Status: {incident.status}</p><button className="mt-3 rounded bg-slate-900 px-3 py-2 text-white">{incident.action}</button></section>)}</main>; }

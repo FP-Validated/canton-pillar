@@ -1,0 +1,40 @@
+{{- if .Values.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ include "pillar.fullname" . }}-slo
+  labels:
+{{ include "pillar.labels" . | indent 4 }}
+    app.kubernetes.io/component: prometheus-rule
+spec:
+  groups:
+    - name: pillar-slo-recording
+      interval: 30s
+      rules:
+        - record: pillar:slo_api_availability:ratio_rate5m
+          expr: sum(rate(pillar_api_requests_total{status!~"5.."}[5m])) / clamp_min(sum(rate(pillar_api_requests_total[5m])), 1)
+        - record: pillar:slo_api_latency:p95_5m
+          expr: histogram_quantile(0.95, sum by (le) (rate(pillar_api_request_duration_seconds_bucket[5m])))
+        - record: pillar:slo_projection_freshness:ratio
+          expr: sum(pillar_projection_lag_seconds < 60) / clamp_min(count(pillar_projection_lag_seconds), 1)
+    - name: pillar-alerts
+      rules:
+        - alert: PillarApiAvailabilityBurnP0
+          expr: pillar:slo_api_availability:ratio_rate5m < 0.95
+          for: 5m
+          labels:
+            severity: P0
+            service: api
+          annotations:
+            summary: API availability burn
+            runbook_url: docs/Dev/RUNBOOKS/api-5xx-latency-surge.md
+        - alert: PillarProjectionLagP1
+          expr: pillar:slo_projection_freshness:ratio < 0.98
+          for: 10m
+          labels:
+            severity: P1
+            service: projection
+          annotations:
+            summary: Projection lag exceeded
+            runbook_url: docs/Dev/RUNBOOKS/projection-rebuild.md
+{{- end }}

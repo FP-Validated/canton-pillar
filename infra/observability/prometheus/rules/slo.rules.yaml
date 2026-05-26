@@ -1,0 +1,12 @@
+groups:
+  - name: pillar-slo-recording
+    interval: 30s
+    rules:
+      - record: pillar:slo_api_availability:ratio_rate5m
+        expr: sum(rate(pillar_api_requests_total{status!~"5.."}[5m])) / clamp_min(sum(rate(pillar_api_requests_total[5m])), 1)
+      - record: pillar:slo_api_latency:p95_5m
+        expr: histogram_quantile(0.95, sum by (le) (rate(pillar_api_request_duration_seconds_bucket[5m])))
+      - record: pillar:slo_projection_freshness:ratio
+        expr: sum(pillar_projection_lag_seconds < 60) / clamp_min(count(pillar_projection_lag_seconds), 1)
+      - record: pillar:slo_webhook_delivery:ratio_rate5m
+        expr: sum(rate(pillar_webhook_delivery_total{status="delivered"}[5m])) / clamp_min(sum(rate(pillar_webhook_delivery_total[5m])), 1)

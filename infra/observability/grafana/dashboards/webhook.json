@@ -1,0 +1,17 @@
+{
+  "title": "Webhook",
+  "schemaVersion": 39,
+  "version": 1,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "pillar_webhook_delivery_total",
+      "targets": [
+        {
+          "expr": "sum(rate(pillar_webhook_delivery_total[5m]))",
+          "refId": "A"
+        }
+      ]
+    }
+  ]
+}

@@ -9,6 +9,17 @@ receivers:
 processors:
   batch:
     timeout: 5s
+  attributes/slo_normalize:
+    actions:
+      - key: pillar.service
+        from_attribute: service.name
+        action: upsert
+      - key: slo.window
+        value: 30d
+        action: insert
+      - key: slo.environment
+        from_attribute: deployment.environment
+        action: upsert
   memory_limiter:
     check_interval: 1s
     limit_mib: 256
@@ -30,11 +41,11 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      processors: [memory_limiter, batch]
+      processors: [memory_limiter, attributes/slo_normalize, batch]
       exporters: [debug]
     metrics:
       receivers: [otlp]
-      processors: [memory_limiter, batch]
+      processors: [memory_limiter, attributes/slo_normalize, batch]
       exporters: [debug]
     logs:
       receivers: [otlp]

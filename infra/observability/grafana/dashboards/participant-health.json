@@ -1,0 +1,17 @@
+{
+  "title": "Participant Health",
+  "schemaVersion": 39,
+  "version": 1,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "pillar_participant_health",
+      "targets": [
+        {
+          "expr": "pillar_participant_health",
+          "refId": "A"
+        }
+      ]
+    }
+  ]
+}

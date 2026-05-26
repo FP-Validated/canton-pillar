@@ -1,0 +1,17 @@
+{
+  "title": "Capacity",
+  "schemaVersion": 39,
+  "version": 1,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "pillar_queue_depth",
+      "targets": [
+        {
+          "expr": "pillar_queue_depth",
+          "refId": "A"
+        }
+      ]
+    }
+  ]
+}

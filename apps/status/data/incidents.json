@@ -1,0 +1,20 @@
+{
+  "current_status": "degraded",
+  "incidents": [
+    {
+      "id": "inc_20260526_projection",
+      "title": "Projection lag elevated",
+      "status": "degraded",
+      "started_at": "2026-05-26T00:00:00.000Z",
+      "updated_at": "2026-05-26T00:20:00.000Z",
+      "summary": "Projection lag exceeded the P1 threshold during a game-day drill.",
+      "updates": [
+        {
+          "at": "2026-05-26T00:20:00.000Z",
+          "status": "degraded",
+          "message": "Projection workers are rebuilding from ledger updates."
+        }
+      ]
+    }
+  ]
+}

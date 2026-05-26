@@ -240,3 +240,27 @@
 | Architecture | [18 Deployment](../../Architecture/18_Deployment.md)                                                   | Deployment-mode DR responsibilities.                                                |
 | Architecture | [22 Observability](../../Architecture/22_Pillar%20Observability.md)                                    | SRE control surfaces, DR, projection metrics.                                       |
 | Data model   | [DATA_MODEL.md](../DATA_MODEL.md)                                                                      | Table responsibility and projection/audit/config classification.                    |
+
+## Action steps
+1. Triage alert scope and affected environment.
+2. Capture dashboard, logs, and command/projection evidence.
+3. Apply the documented recovery action with incident commander approval.
+4. Validate no duplicate ledger commands and attach evidence.
+
+## Exit criteria
+- Alert cleared or downgraded.
+- Affected SLO is back within burn-rate policy.
+- Evidence is attached to the incident record.
+
+## Evidence checklist
+- Alert ID and timestamps.
+- Dashboard or log excerpt.
+- Owner decision record.
+- Validation command output.
+
+## Cross-links
+- SLO catalog: `infra/observability/slo/catalog.yaml`.
+- Dashboards: `infra/observability/grafana/dashboards/`.
+
+## Last reviewed
+2026-05-26

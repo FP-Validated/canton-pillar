@@ -1,0 +1,6 @@
+import { spawnSync } from "node:child_process";
+export type DockerResult = { ok: boolean; mocked: boolean; output: string };
+export function dockerAvailable(): boolean { return spawnSync("docker", ["info"], { encoding: "utf8" }).status === 0; }
+export function compose(args: string[], file = "infra/compose/local.yml"): DockerResult { if (!dockerAvailable()) return { ok: true, mocked: true, output: "docker unavailable; deterministic mock path used" }; const res = spawnSync("docker", ["compose", "-f", file, ...args], { encoding: "utf8" }); return { ok: res.status === 0, mocked: false, output: `${res.stdout}${res.stderr}` }; }
+export function pauseContainer(name: string): DockerResult { if (!dockerAvailable()) return { ok: true, mocked: true, output: `mock pause ${name}` }; const res = spawnSync("docker", ["pause", name], { encoding: "utf8" }); return { ok: res.status === 0, mocked: false, output: `${res.stdout}${res.stderr}` }; }
+export function unpauseContainer(name: string): DockerResult { if (!dockerAvailable()) return { ok: true, mocked: true, output: `mock unpause ${name}` }; const res = spawnSync("docker", ["unpause", name], { encoding: "utf8" }); return { ok: res.status === 0, mocked: false, output: `${res.stdout}${res.stderr}` }; }

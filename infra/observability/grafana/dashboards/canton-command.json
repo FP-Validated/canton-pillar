@@ -1,0 +1,17 @@
+{
+  "title": "Canton Command",
+  "schemaVersion": 39,
+  "version": 1,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "pillar_ledger_command_total",
+      "targets": [
+        {
+          "expr": "sum(rate(pillar_ledger_command_total[5m]))",
+          "refId": "A"
+        }
+      ]
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 packages:
   - "apps/*"
+  - "tests"
   - "packages/*"
   - "services/*"
   - "tools/cli"

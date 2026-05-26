@@ -215,3 +215,27 @@ We are investigating a potential security or compliance event affecting <scope>.
 - Phase tickets: `<Phase ticket links, e.g. ../Phase_10_GA_Hardening.md>`
 - ADRs: [ADR-0001](../DECISIONS.md#adr-0001-canton-ledger-as-sole-source-of-truth), [ADR-0002](../DECISIONS.md#adr-0002-billing-style-external-api-surface-canton-internals-hidden), [ADR-0003](../DECISIONS.md#adr-0003-intent-first-write-path), [ADR-0004](../DECISIONS.md#adr-0004-stable-operation_id--stable-command_id-unique-submission_id-per-attempt), [ADR-0005](../DECISIONS.md#adr-0005-projection--audit--config-split-for-pillar-postgres), [ADR-0006](../DECISIONS.md#adr-0006-webhook-first-async-with-hmac-sha256-signing-and-per-endpoint-version-pinning), [ADR-0010](../DECISIONS.md#adr-0010-deployment-mode-independence-hosted--customer-validator--self-hosted-share-identical-v1-grammar)
 - Threats: [THREAT_MODEL.md](../THREAT_MODEL.md) `<specific threat IDs>`
+
+## Action steps
+1. Triage alert scope and affected environment.
+2. Capture dashboard, logs, and command/projection evidence.
+3. Apply the documented recovery action with incident commander approval.
+4. Validate no duplicate ledger commands and attach evidence.
+
+## Exit criteria
+- Alert cleared or downgraded.
+- Affected SLO is back within burn-rate policy.
+- Evidence is attached to the incident record.
+
+## Evidence checklist
+- Alert ID and timestamps.
+- Dashboard or log excerpt.
+- Owner decision record.
+- Validation command output.
+
+## Cross-links
+- SLO catalog: `infra/observability/slo/catalog.yaml`.
+- Dashboards: `infra/observability/grafana/dashboards/`.
+
+## Last reviewed
+2026-05-26

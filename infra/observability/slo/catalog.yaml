@@ -1,0 +1,25 @@
+slos:
+  - id: api-availability
+    target: 99.9
+    window: 30d
+    sli_promql: pillar:slo_api_availability:ratio_rate5m
+    exclusions: [maintenance]
+    dashboard_url: /d/executive-slo
+    alert_ids: [PillarApiAvailabilityBurnP0]
+    runbook_url: docs/Dev/RUNBOOKS/api-5xx-latency-surge.md
+  - id: projection-freshness
+    target: 99.5
+    window: 30d
+    sli_promql: pillar:slo_projection_freshness:ratio
+    exclusions: [planned-rebuild]
+    dashboard_url: /d/projection
+    alert_ids: [PillarProjectionLagP1]
+    runbook_url: docs/Dev/RUNBOOKS/projection-rebuild.md
+  - id: webhook-delivery
+    target: 99.0
+    window: 30d
+    sli_promql: pillar:slo_webhook_delivery:ratio_rate5m
+    exclusions: [customer-endpoint-maintenance]
+    dashboard_url: /d/webhook
+    alert_ids: [PillarWebhookDeliveryP1]
+    runbook_url: docs/Dev/RUNBOOKS/webhook-dlq-drain.md

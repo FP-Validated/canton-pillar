@@ -1,0 +1,17 @@
+{
+  "title": "Dr Security",
+  "schemaVersion": 39,
+  "version": 1,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "pillar_dr_failover_seconds",
+      "targets": [
+        {
+          "expr": "pillar_dr_failover_seconds",
+          "refId": "A"
+        }
+      ]
+    }
+  ]
+}

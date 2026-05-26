@@ -1,0 +1,17 @@
+{
+  "title": "Projection",
+  "schemaVersion": 39,
+  "version": 1,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "pillar_projection_lag_seconds",
+      "targets": [
+        {
+          "expr": "pillar_projection_lag_seconds",
+          "refId": "A"
+        }
+      ]
+    }
+  ]
+}

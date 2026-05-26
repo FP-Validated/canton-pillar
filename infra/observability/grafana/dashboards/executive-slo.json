@@ -1,0 +1,17 @@
+{
+  "title": "Executive Slo",
+  "schemaVersion": 39,
+  "version": 1,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "pillar_api_requests_total",
+      "targets": [
+        {
+          "expr": "sum(rate(pillar_api_requests_total[5m]))",
+          "refId": "A"
+        }
+      ]
+    }
+  ]
+}

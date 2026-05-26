@@ -340,3 +340,27 @@ Pillar onboarding for <tenant> is blocked on customer-validator sandbox readines
 | Architecture | [16 Pillar Workbench UX](../../Architecture/16_Pillar%20Workbench%20UX.md)                                                           | Workbench/dashboard split and support-grade diagnostics.                                |
 | Architecture | [18 Deployment](../../Architecture/18_Deployment.md)                                                                                 | Hosted/customer-validator/self-hosted ownership and Kubernetes/Helm branches.           |
 | Architecture | [23 Implementation Plan](../../Architecture/23_Implementation%20Plan.md)                                                             | Phase 13 onboarding milestone and sandbox integration expectations.                     |
+
+## Action steps
+1. Triage alert scope and affected environment.
+2. Capture dashboard, logs, and command/projection evidence.
+3. Apply the documented recovery action with incident commander approval.
+4. Validate no duplicate ledger commands and attach evidence.
+
+## Exit criteria
+- Alert cleared or downgraded.
+- Affected SLO is back within burn-rate policy.
+- Evidence is attached to the incident record.
+
+## Evidence checklist
+- Alert ID and timestamps.
+- Dashboard or log excerpt.
+- Owner decision record.
+- Validation command output.
+
+## Cross-links
+- SLO catalog: `infra/observability/slo/catalog.yaml`.
+- Dashboards: `infra/observability/grafana/dashboards/`.
+
+## Last reviewed
+2026-05-26

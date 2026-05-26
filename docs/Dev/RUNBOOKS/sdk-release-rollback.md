@@ -225,3 +225,27 @@ We are investigating whether the SDK regression affected request integrity or we
 - ADRs: [ADR-0002](../DECISIONS.md#adr-0002-billing-style-external-api-surface-canton-internals-hidden), [ADR-0004](../DECISIONS.md#adr-0004-stable-operation_id--stable-command_id-unique-submission_id-per-attempt), [ADR-0006](../DECISIONS.md#adr-0006-webhook-first-async-with-hmac-sha256-signing-and-per-endpoint-version-pinning), [ADR-0010](../DECISIONS.md#adr-0010-deployment-mode-independence-hosted--customer-validator--self-hosted-share-identical-v1-grammar), [ADR-0013](../DECISIONS.md#adr-0013-initial-sdk-scope).
 - Risks: [RISK_REGISTER.md](../RISK_REGISTER.md) R-039 runbook drift, R-044 public API grammar leak.
 - Threats: [THREAT_MODEL.md](../THREAT_MODEL.md) SDK supply-chain, webhook signature, API contract drift entries where applicable.
+
+## Action steps
+1. Triage alert scope and affected environment.
+2. Capture dashboard, logs, and command/projection evidence.
+3. Apply the documented recovery action with incident commander approval.
+4. Validate no duplicate ledger commands and attach evidence.
+
+## Exit criteria
+- Alert cleared or downgraded.
+- Affected SLO is back within burn-rate policy.
+- Evidence is attached to the incident record.
+
+## Evidence checklist
+- Alert ID and timestamps.
+- Dashboard or log excerpt.
+- Owner decision record.
+- Validation command output.
+
+## Cross-links
+- SLO catalog: `infra/observability/slo/catalog.yaml`.
+- Dashboards: `infra/observability/grafana/dashboards/`.
+
+## Last reviewed
+2026-05-26

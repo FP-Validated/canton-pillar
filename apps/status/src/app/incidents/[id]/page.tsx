@@ -1,0 +1,3 @@
+import { notFound } from "next/navigation";
+import { getIncident } from "../../../lib/incidents";
+export default function IncidentPage({ params }: { params: { id: string } }) { const incident = getIncident(params.id); if (!incident) notFound(); return <main className="mx-auto max-w-3xl p-8"><a href="/" className="text-sm text-blue-700">Back to status</a><h1 className="mt-4 text-3xl font-bold">{incident.title}</h1><p className="mt-2 text-slate-600">{incident.summary}</p><ol className="mt-8 space-y-4">{incident.updates.map((update) => <li key={update.at} className="rounded-xl bg-white p-5 shadow"><div className="font-semibold">{update.status}</div><time className="text-sm text-slate-500">{update.at}</time><p className="mt-2">{update.message}</p></li>)}</ol></main>; }

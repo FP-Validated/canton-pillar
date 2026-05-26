@@ -324,3 +324,27 @@ Secret exposure alert/manual report received
 | Architecture | [12 Security](../../Architecture/12_Security.md)                                                                                     | Credential taxonomy, least privilege, and layered controls.                                        |
 | Architecture | [18 Deployment](../../Architecture/18_Deployment.md)                                                                                 | Secret references, KMS, ExternalSecrets, and deployment ownership.                                 |
 | Architecture | [22 Pillar Observability](../../Architecture/22_Pillar%20Observability.md)                                                           | Audit, trace, SLO, and incident evidence surfaces.                                                 |
+
+## Action steps
+1. Triage alert scope and affected environment.
+2. Capture dashboard, logs, and command/projection evidence.
+3. Apply the documented recovery action with incident commander approval.
+4. Validate no duplicate ledger commands and attach evidence.
+
+## Exit criteria
+- Alert cleared or downgraded.
+- Affected SLO is back within burn-rate policy.
+- Evidence is attached to the incident record.
+
+## Evidence checklist
+- Alert ID and timestamps.
+- Dashboard or log excerpt.
+- Owner decision record.
+- Validation command output.
+
+## Cross-links
+- SLO catalog: `infra/observability/slo/catalog.yaml`.
+- Dashboards: `infra/observability/grafana/dashboards/`.
+
+## Last reviewed
+2026-05-26

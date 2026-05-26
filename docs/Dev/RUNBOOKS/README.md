@@ -58,3 +58,27 @@ Operational runbooks for Pillar Mission Control. Every runbook MUST follow [\_te
 | Deployment modes | Hosted, customer-validator, and self-hosted runbooks may differ in ownership and commands, not in public `/v1` behavior.                                                    |
 | Evidence         | Preserve request IDs, operation IDs, audit records, logs, metrics, traces, command attempt records, projection checkpoints, and communications before destructive recovery. |
 | Communication    | Prefer status-page facts: impact, scope, mitigation, next update. Do not speculate about root cause before evidence review.                                                 |
+
+## Action steps
+1. Triage alert scope and affected environment.
+2. Capture dashboard, logs, and command/projection evidence.
+3. Apply the documented recovery action with incident commander approval.
+4. Validate no duplicate ledger commands and attach evidence.
+
+## Exit criteria
+- Alert cleared or downgraded.
+- Affected SLO is back within burn-rate policy.
+- Evidence is attached to the incident record.
+
+## Evidence checklist
+- Alert ID and timestamps.
+- Dashboard or log excerpt.
+- Owner decision record.
+- Validation command output.
+
+## Cross-links
+- SLO catalog: `infra/observability/slo/catalog.yaml`.
+- Dashboards: `infra/observability/grafana/dashboards/`.
+
+## Last reviewed
+2026-05-26

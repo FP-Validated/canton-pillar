@@ -1,0 +1,45 @@
+{{- if .Values.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: {{ include "pillar.fullname" . }}
+  labels:
+{{ include "pillar.labels" . | indent 4 }}
+    app.kubernetes.io/component: alertmanager-config
+spec:
+  route:
+    groupBy: [alertname, service, severity]
+    groupWait: 30s
+    groupInterval: 5m
+    repeatInterval: 4h
+    receiver: digest
+    routes:
+      - matchers:
+          - name: severity
+            value: P0
+        receiver: pager
+        repeatInterval: 15m
+      - matchers:
+          - name: severity
+            value: P1
+        receiver: pager-slack
+        repeatInterval: 30m
+      - matchers:
+          - name: severity
+            value: P2
+        receiver: slack
+  inhibitRules:
+    - sourceMatch:
+        - name: severity
+          value: P0
+      targetMatch:
+        - name: severity
+          matchType: =~
+          value: P1|P2|P3
+      equal: [service]
+  receivers:
+    - name: pager
+    - name: pager-slack
+    - name: slack
+    - name: digest
+{{- end }}

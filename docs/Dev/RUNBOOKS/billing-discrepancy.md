@@ -236,3 +236,27 @@ We are investigating a potential billing/compliance issue affecting <scope>. We 
 - Risks: [RISK_REGISTER.md](../RISK_REGISTER.md) R-015 Billing API breakage, R-037 pricing model rejection, R-043 billing usage meter divergence.
 - Release policy: [RELEASE_PLAN.md](../RELEASE_PLAN.md) release packet and customer-facing changelog policy for billing-impacting hotfixes.
 - Threats: [THREAT_MODEL.md](../THREAT_MODEL.md) billing provider integration, audit integrity, tenant isolation, and metadata/PII handling entries where applicable.
+
+## Action steps
+1. Triage alert scope and affected environment.
+2. Capture dashboard, logs, and command/projection evidence.
+3. Apply the documented recovery action with incident commander approval.
+4. Validate no duplicate ledger commands and attach evidence.
+
+## Exit criteria
+- Alert cleared or downgraded.
+- Affected SLO is back within burn-rate policy.
+- Evidence is attached to the incident record.
+
+## Evidence checklist
+- Alert ID and timestamps.
+- Dashboard or log excerpt.
+- Owner decision record.
+- Validation command output.
+
+## Cross-links
+- SLO catalog: `infra/observability/slo/catalog.yaml`.
+- Dashboards: `infra/observability/grafana/dashboards/`.
+
+## Last reviewed
+2026-05-26

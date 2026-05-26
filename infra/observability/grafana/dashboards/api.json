@@ -1,0 +1,17 @@
+{
+  "title": "Api",
+  "schemaVersion": 39,
+  "version": 1,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "pillar_api_request_duration_seconds_bucket",
+      "targets": [
+        {
+          "expr": "sum(rate(pillar_api_request_duration_seconds_bucket[5m]))",
+          "refId": "A"
+        }
+      ]
+    }
+  ]
+}

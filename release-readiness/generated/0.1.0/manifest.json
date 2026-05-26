@@ -1,0 +1,201 @@
+{
+  "generated_at": "2026-05-26T12:19:13Z",
+  "dry_run": true,
+  "artifacts": [
+    {
+      "path": "infra/observability/alertmanager/config.yaml",
+      "sha256": "d91a6c65954175385813ebfd36958f6d767c23b6cb52094b63e5dd644c016c03",
+      "bytes": 616
+    },
+    {
+      "path": "infra/observability/grafana/dashboards/api.json",
+      "sha256": "cc171a2ee1f4bf5fed67b5bc0c5759f962570b978e4b0009ab583ffab248cd3c",
+      "bytes": 328
+    },
+    {
+      "path": "infra/observability/grafana/dashboards/canton-command.json",
+      "sha256": "fb4a2a24a382b01735a3c4a1dd6e7f7480af97f9e5b7eb66e97ce5abd9edcaf4",
+      "bytes": 309
+    },
+    {
+      "path": "infra/observability/grafana/dashboards/capacity.json",
+      "sha256": "0d75675dc07e4048c4375504ba20f1dae37e46d60714fadfa0dee2ee3f621f92",
+      "bytes": 270
+    },
+    {
+      "path": "infra/observability/grafana/dashboards/dr-security.json",
+      "sha256": "f5d1cb4da4f0612ee8c52f28d98187cac0cd6848c1890acbcfaf9c3b99d8270c",
+      "bytes": 289
+    },
+    {
+      "path": "infra/observability/grafana/dashboards/executive-slo.json",
+      "sha256": "7a1a80fbf34e6c88e43b2a9ee788776238f429fb183f3cdf84963bd321f116d7",
+      "bytes": 304
+    },
+    {
+      "path": "infra/observability/grafana/dashboards/participant-health.json",
+      "sha256": "a35f6fcf561f3225b2134e2edf2af1b962998cb0528c55e272da4b61fda5ab7a",
+      "bytes": 294
+    },
+    {
+      "path": "infra/observability/grafana/dashboards/projection.json",
+      "sha256": "3280fd3aa76e24141b75d519fd7bb9d926a3bb4df91dae2274d566e76946f96a",
+      "bytes": 294
+    },
+    {
+      "path": "infra/observability/grafana/dashboards/webhook.json",
+      "sha256": "842860ef2983435946950cb4eea745d8d3a292f2a3ccea5370dfef07bb527823",
+      "bytes": 306
+    },
+    {
+      "path": "infra/observability/otel-collector.yaml",
+      "sha256": "cade38b7c00a587bc8cd68b523d09015ce27299e21b425f3fd82f552d1cf6679",
+      "bytes": 1096
+    },
+    {
+      "path": "infra/observability/prometheus/rules/alert.rules.yaml",
+      "sha256": "134470060b7a4713ea0e17c2c8054d3ad6ae983d84fa3d0b3eae940f0c97c94f",
+      "bytes": 1451
+    },
+    {
+      "path": "infra/observability/prometheus/rules/slo.rules.yaml",
+      "sha256": "a9a45ea5bb1496bc6637091fab87198bd824ca15f6a08f9e2ef2c016a739948c",
+      "bytes": 763
+    },
+    {
+      "path": "infra/observability/slo/catalog.yaml",
+      "sha256": "14b65ca6149015770e1b6c65ff3325d7ef81f58c9893057cc7b28b7d9f1378fc",
+      "bytes": 861
+    },
+    {
+      "path": "tests/chaos/api-db-partition/assert.ts",
+      "sha256": "7d3fa6063372f0593fce3f56bb350fc64e916dc874f76f1b629d1a56ae1d67c1",
+      "bytes": 258
+    },
+    {
+      "path": "tests/chaos/api-db-partition/run.ts",
+      "sha256": "3f6e1524ac880676d5336491f45ca3395e66086d210b9c7e24db9466ab9ff501",
+      "bytes": 1724
+    },
+    {
+      "path": "tests/chaos/api-db-partition/scenario.md",
+      "sha256": "1bc5ffe5c666a1ce4db2fcb9436396a6c7d56e3b5a7317229e626f94495c8597",
+      "bytes": 603
+    },
+    {
+      "path": "tests/chaos/customer-validator-outage/assert.ts",
+      "sha256": "7d3fa6063372f0593fce3f56bb350fc64e916dc874f76f1b629d1a56ae1d67c1",
+      "bytes": 258
+    },
+    {
+      "path": "tests/chaos/customer-validator-outage/run.ts",
+      "sha256": "a82e528049522814e017cc3d526fc29680b7f125702f573c6990a683beda13e9",
+      "bytes": 1733
+    },
+    {
+      "path": "tests/chaos/customer-validator-outage/scenario.md",
+      "sha256": "0036b64412efa0017d525e1dce3c866bc3cdfe0e01c9aa186a72708389765e9c",
+      "bytes": 612
+    },
+    {
+      "path": "tests/chaos/dar-rollback/assert.ts",
+      "sha256": "7d3fa6063372f0593fce3f56bb350fc64e916dc874f76f1b629d1a56ae1d67c1",
+      "bytes": 258
+    },
+    {
+      "path": "tests/chaos/dar-rollback/run.ts",
+      "sha256": "4e6e9eb580c29085a096b14c607a021d52a3313643706531c96bb74f1c338975",
+      "bytes": 1720
+    },
+    {
+      "path": "tests/chaos/dar-rollback/scenario.md",
+      "sha256": "b7e4ae5e7b8c22e28c89283d9a114ddbddc1a5420556f689cbd0992537a2b116",
+      "bytes": 599
+    },
+    {
+      "path": "tests/chaos/participant-restart/assert.ts",
+      "sha256": "7d3fa6063372f0593fce3f56bb350fc64e916dc874f76f1b629d1a56ae1d67c1",
+      "bytes": 258
+    },
+    {
+      "path": "tests/chaos/participant-restart/run.ts",
+      "sha256": "5aedd36e031f7cecbd115772c2e7142dc159184a206df9f9c89cd0eecfa19de4",
+      "bytes": 1727
+    },
+    {
+      "path": "tests/chaos/participant-restart/scenario.md",
+      "sha256": "867a7682b9542599909c16d2838c97e5742e935f2f447bb6c7a1b2df6f97af7a",
+      "bytes": 606
+    },
+    {
+      "path": "tests/chaos/projection-corruption/assert.ts",
+      "sha256": "7d3fa6063372f0593fce3f56bb350fc64e916dc874f76f1b629d1a56ae1d67c1",
+      "bytes": 258
+    },
+    {
+      "path": "tests/chaos/projection-corruption/run.ts",
+      "sha256": "b2bba615674e991c03f0fb426fdb895126dea4906ed65f0bcf002129c07dec87",
+      "bytes": 1728
+    },
+    {
+      "path": "tests/chaos/projection-corruption/scenario.md",
+      "sha256": "ddccd4aef95990a07c147222637caf30802de36efe4f7021ff3c040eae8c952e",
+      "bytes": 608
+    },
+    {
+      "path": "tests/chaos/synchronizer-failure/assert.ts",
+      "sha256": "7d3fa6063372f0593fce3f56bb350fc64e916dc874f76f1b629d1a56ae1d67c1",
+      "bytes": 258
+    },
+    {
+      "path": "tests/chaos/synchronizer-failure/run.ts",
+      "sha256": "e710d4ce6a4536f99631393b8e3adc733b69b2c69f4c7d1a7d53296bfc88b213",
+      "bytes": 1728
+    },
+    {
+      "path": "tests/chaos/synchronizer-failure/scenario.md",
+      "sha256": "eff13312e0afd326c06873e6cc2a68468f6d5dd0aa17aa2889f4880ede2209a1",
+      "bytes": 607
+    },
+    {
+      "path": "tests/chaos/webhook-mass-failure/assert.ts",
+      "sha256": "7d3fa6063372f0593fce3f56bb350fc64e916dc874f76f1b629d1a56ae1d67c1",
+      "bytes": 258
+    },
+    {
+      "path": "tests/chaos/webhook-mass-failure/run.ts",
+      "sha256": "520d5ccd2bcbe37c32e6e89b14c5808cbfaa11086a21658cd2d162cdc4ee26c0",
+      "bytes": 1727
+    },
+    {
+      "path": "tests/chaos/webhook-mass-failure/scenario.md",
+      "sha256": "e161300c41421bcfdc4c4a369ec6e45c9d25ebe7b0284d54910c76b3112c39e9",
+      "bytes": 607
+    },
+    {
+      "path": "tests/perf/k6/mutation-mix.k6.ts",
+      "sha256": "91551001119f11e76e9fcfefee5ee90711e182e52e1cacbedeac6a1c43d005ae",
+      "bytes": 810
+    },
+    {
+      "path": "tests/perf/k6/projection-lag.k6.ts",
+      "sha256": "f017dc5ab2c28762371a550033ca8f44616e72d7c9626a5c465114e673cd2ccd",
+      "bytes": 674
+    },
+    {
+      "path": "tests/perf/k6/read-mix.k6.ts",
+      "sha256": "fffae74ae89128cc69cf4d2d646d94220032f8bee6e538e0d6df0a069a6be85a",
+      "bytes": 643
+    },
+    {
+      "path": "tests/perf/k6/webhook-fanout.k6.ts",
+      "sha256": "c9734f2b0ce5f4aa35d3d563f9e03b33089964600d4a056c21df1bed8698c731",
+      "bytes": 703
+    },
+    {
+      "path": "tests/perf/reconciliation-stress/run.ts",
+      "sha256": "014f132b20d0482a49369521eac08c60901a5f013fb87775e1fa35b25a816d5f",
+      "bytes": 675
+    }
+  ]
+}
