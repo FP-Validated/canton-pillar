@@ -1,4 +1,4 @@
-# Pillar Security Disclosure Policy
+# Canton Pillar Security Policy
 
 Pillar handles Canton-backed financial assets. We take security reports seriously.
 
