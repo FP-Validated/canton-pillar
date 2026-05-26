@@ -1,18 +1,4 @@
-import Link from 'next/link';
-import { notFound } from 'next/navigation';
-import { DataTable, FilterRow } from '@/components/dashboard/DataTable';
-import { DetailHeader, AttributeList } from '@/components/dashboard/DetailHeader';
-import { CodeBlock } from '@/components/dashboard/CodeBlock';
-import { Timeline } from '@/components/dashboard/Timeline';
-import { StatusPill } from '@/components/StatusPill';
-import { holdings, balances, holds, webhookDeliveries, getHoldingById, getDeliveriesForEndpoint } from '@/lib/mockData';
-
-export const metadata = { title: 'holding detail – Canton Pillar' };
-export function generateStaticParams() { return holdings.map((item) => ({ id: item.id })); }
-export default function Detail({ params }: { params: { id: string } }) {
-  const item = getHoldingById(params.id);
-  if (!item) notFound();
-  const activeHolds = holds.filter((hold) => hold.holding_id === item.id);
-  const rows = Object.entries(item).filter(([, v]) => typeof v !== 'object').map(([k, v]) => [k, String(v)] as [string, string]);
-  return <div className="space-y-6"><Link className="text-sm font-semibold text-accent" href="/dashboard/holdings">Back to holdings</Link><DetailHeader object={item.object} id={item.id} status={'status' in item ? item.status : undefined} /><div className="grid gap-6 lg:grid-cols-2"><AttributeList rows={rows} /><CodeBlock value={item} /></div><section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"><h2 className="text-lg font-bold text-ink">Active holds</h2><div className="mt-4 space-y-2">{activeHolds.map((hold) => <Link key={hold.id} className="block font-mono text-sm text-accent" href={`/dashboard/holds/${hold.id}`}>{hold.id} · {hold.status}</Link>)}</div></section></div>;
-}
+import { ResourceDetailShell } from '@/components/dashboard/ResourceDetailShell';
+import { getAccountById, getAssetById, getHoldingById, holdings } from '@/lib/mockData';
+export function generateStaticParams(){return holdings.map((item)=>({id:item.id}));}
+export default function Page({params}:{params:{id:string}}){const item=getHoldingById(params.id); if(!item) return null; const account=getAccountById(item.account_id); const asset=getAssetById(item.asset_id); return <ResourceDetailShell section="Holdings" id={item.id} status={item.status} record={item} attributes={[{label:'ID',value:item.id,copy:item.id},{label:'Account',value:item.account_id,copy:item.account_id},{label:'Asset',value:item.asset_id,copy:item.asset_id},{label:'Quantity',value:item.quantity},{label:'Reserved quantity',value:item.reserved_quantity},{label:'Updated',value:item.updated}]} related={[...(account?[{label:account.display_name,href:`/dashboard/accounts/${account.id}`,meta:'account'}]:[]),...(asset?[{label:asset.display_name,href:`/dashboard/assets/${asset.id}`,meta:asset.code}]:[])]} />;}

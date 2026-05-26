@@ -1,8 +1,4 @@
-import Link from 'next/link';
-import { DataTable, FilterRow } from '@/components/dashboard/DataTable';
-import { StatusPill } from '@/components/StatusPill';
+import { ResourceListShell } from '@/components/dashboard/ResourceListShell';
 import { operations } from '@/lib/mockData';
-
-export const metadata = { title: 'Operations – Canton Pillar' };
-const rows = [...operations].sort((a, b) => b.updated.localeCompare(a.updated));
-export default function Page() { return <div className="space-y-6"><div className="flex items-center justify-between gap-3"><h1 className="text-3xl font-bold text-ink">Operations</h1><span className="rounded-full bg-bgSoft px-3 py-1 text-xs font-semibold text-slateMuted">{rows.length} records</span></div><FilterRow /><DataTable rows={rows} columns={[{ key: 'id', header: 'ID', render: (row) => <Link className="font-mono font-semibold text-accent" href={`/dashboard/operations/${row.id}`}>{row.id}</Link> }, { key: 'status', header: 'Status', render: (row) => <StatusPill status={row.status} /> }, { key: 'kind', header: 'Type', render: (row) => <span className="font-mono text-xs">{row.object}</span> }, { key: 'date', header: 'Updated', render: (row) => row.updated }]} /></div>; }
+const rows=operations.map((item)=>({id:item.id,status:item.status,type:item.resource_type,primary:item.resource_id,amount:`${item.latency_ms}ms`,updated:item.updated,href:`/dashboard/operations/${item.id}`,raw:item}));
+export default function Page(){return <ResourceListShell title="Operations" section="Operations" description="Command runtime state with latency and related resource context." rows={rows} statuses={['All','received','queued','submitted','in_flight','ledger_committed','projected','failed','unknown','reconciled']} />;}
