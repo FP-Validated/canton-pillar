@@ -1,0 +1,13 @@
+[build-system]
+requires=["setuptools>=68","wheel"]
+build-backend="setuptools.build_meta"
+[project]
+name="pillar-sdk-python"
+version="0.1.0"
+requires-python=">=3.10"
+dependencies=["httpx","pydantic>=2,<3","cryptography"]
+[tool.setuptools.packages.find]
+include=["pillar*"]
+
+[tool.pytest.ini_options]
+testpaths=["tests"]

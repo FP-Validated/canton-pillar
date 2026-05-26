@@ -1,0 +1,1 @@
+import{Command}from'commander';export function sandbox(){const c=new Command('sandbox');for(const n of ['up','down','reset'])c.command(n).action(()=>console.log(`sandbox ${n}: infra/compose/local.yml`));return c}

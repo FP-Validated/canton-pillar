@@ -1,0 +1,1 @@
+import{Command}from'commander';export function webhooks(){const c=new Command('webhooks');for(const n of ['listen','trigger','test'])c.command(n).argument('[target]').action((t?:string)=>console.log(`${n} ${t??''}`));return c}

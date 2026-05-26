@@ -1,0 +1,1 @@
+import{endpoints}from'../../lib/mock/data';export default function Page(){return <main><h1>API Explorer</h1><ul>{endpoints.map(e=><li key={e}>{e}<form><button>Run sandbox call</button></form></li>)}</ul></main>}

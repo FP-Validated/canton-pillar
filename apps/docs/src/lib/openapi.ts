@@ -1,0 +1,1 @@
+import{readFileSync}from'node:fs';import{join}from'node:path';export function openApiSummary(){return readFileSync(join(process.cwd(),'../../packages/api-contracts/openapi/pillar-v1.yaml'),'utf8').split('\n').filter(l=>l.startsWith('  /v1/')).slice(0,20)}

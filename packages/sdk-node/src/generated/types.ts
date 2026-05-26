@@ -1,0 +1,1 @@
+export type PillarObject={id:string;object:string;[k:string]:unknown};export type ListResponse<T>={object:'list';data:T[];has_more:boolean;next_cursor?:string|null};export type Event=PillarObject&{type:string};export type RequestOptions={idempotencyKey?:string;timeoutMs?:number;signal?:AbortSignal;apiVersion?:string};

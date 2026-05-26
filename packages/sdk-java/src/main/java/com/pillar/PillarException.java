@@ -1,0 +1,1 @@
+package com.pillar; public class PillarException extends RuntimeException { public final String requestId; public final int status; public PillarException(String message,int status,String requestId){ super(message); this.status=status; this.requestId=requestId; } }

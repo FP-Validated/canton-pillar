@@ -1,0 +1,1 @@
+import{Command}from'commander';import{storeToken}from'../auth/keychain.js';export function login(){return new Command('login').argument('[token]').option('--profile <profile>','profile','default').action(async(token:string|undefined,opts:{profile:string})=>{await storeToken(opts.profile,token??'');console.log('Logged in')})}

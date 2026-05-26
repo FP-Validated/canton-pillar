@@ -1,0 +1,1 @@
+import test from'node:test';import assert from'node:assert/strict';import{buildProgram}from'../src/bin/pillar.js';test('help includes commands',()=>{assert.match(buildProgram().helpInformation(),/events/)});

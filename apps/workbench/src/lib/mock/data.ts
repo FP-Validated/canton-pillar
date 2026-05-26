@@ -1,0 +1,1 @@
+export const kpis=[['API requests','12,402'],['Webhook failures','3'],['Ledger lag','2s'],['Pending intents','8']];export const endpoints=['/v1/accounts','/v1/assets','/v1/transfer_intents','/v1/events','/v1/webhook_endpoints'];

@@ -1,0 +1,1 @@
+import{Command}from'commander';export function events(){const c=new Command('events');c.command('list').action(()=>console.log('[]'));c.command('replay').argument('<id>').action((id:string)=>console.log(`replayed ${id}`));return c}

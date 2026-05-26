@@ -1,0 +1,1 @@
+import{openApiSummary}from'../lib/openapi';export default function Page(){return <main><h1>Pillar Docs</h1><p>SDK, CLI, webhook, Workbench, and sandbox walkthroughs.</p><pre>{openApiSummary().join('\n')}</pre></main>}

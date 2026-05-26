@@ -16,6 +16,8 @@ rootProject.name = "pillar"
 
 include(":packages:ledger-types")
 project(":packages:ledger-types").projectDir = file("packages/ledger-types")
+include(":packages:sdk-java")
+project(":packages:sdk-java").projectDir = file("packages/sdk-java")
 
 val kotlinServices = listOf(
     "ledger-command",

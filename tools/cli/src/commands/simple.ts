@@ -1,0 +1,1 @@
+import{Command}from'commander';export function simple(name:string){const c=new Command(name);c.command(name==='traces'?'get':name==='balances'?'get':name==='holdings'?'list':name==='keys'?'list':name==='exports'?'list':'show').argument('[id]').action((id?:string)=>console.log(JSON.stringify({command:name,id:id??null})));return c}
