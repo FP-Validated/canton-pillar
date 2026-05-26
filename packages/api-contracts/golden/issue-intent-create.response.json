@@ -1,0 +1,15 @@
+{
+  "account": "acct_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7Z7Z",
+  "amount": "100.00",
+  "asset": "asst_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7Z9",
+  "created": "2026-05-26T00:00:00.000Z",
+  "id": "issint_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7ZC",
+  "latest_event": "evt_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7ZH",
+  "livemode": false,
+  "metadata": {
+    "reference": "demo"
+  },
+  "object": "issue_intent",
+  "operation": "op_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7ZG",
+  "status": "processing"
+}

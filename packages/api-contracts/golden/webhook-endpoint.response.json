@@ -1,0 +1,15 @@
+{
+  "api_version": "2026-05-26",
+  "created": "2026-05-26T00:00:00.000Z",
+  "enabled_events": [
+    "transfer_intent.succeeded"
+  ],
+  "id": "we_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7ZJ",
+  "livemode": false,
+  "metadata": {
+    "reference": "demo"
+  },
+  "object": "webhook_endpoint",
+  "status": "enabled",
+  "url": "https://example.com/webhooks/pillar"
+}

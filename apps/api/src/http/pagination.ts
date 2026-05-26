@@ -1,0 +1,6 @@
+import { PillarError } from '../errors/pillar-error.js';
+export function encodeCursor(value: unknown) { return Buffer.from(JSON.stringify(value)).toString('base64url'); }
+export function decodeCursor(cursor?: string) { if (!cursor) return undefined; try { return JSON.parse(Buffer.from(cursor, 'base64url').toString('utf8')); } catch { throw PillarError.invalid('invalid_cursor','Invalid pagination cursor.'); } }
+export function parseLimit(v: unknown, def=10) { const n = v === undefined ? def : Number(v); if (!Number.isInteger(n) || n < 1 || n > 100) throw PillarError.invalid('invalid_limit','Limit must be between 1 and 100.','limit'); return n; }
+export function applyCursor<T extends {id:string; created:string}>(items:T[], q:Record<string,unknown>) { const limit=parseLimit(q.limit); decodeCursor(q.starting_after as string|undefined); const sa=q.starting_after as string|undefined; const eb=q.ending_before as string|undefined; let arr=[...items].sort((a,b)=> b.created.localeCompare(a.created)||b.id.localeCompare(a.id)); if(sa) arr=arr.slice(arr.findIndex(i=>i.id===sa)+1); if(eb) arr=arr.slice(0, Math.max(0, arr.findIndex(i=>i.id===eb))); return { data: arr.slice(0,limit), has_more: arr.length>limit }; }
+export function renderList<T>(url:string, data:T[], has_more=false) { return { object:'list' as const, url, has_more, data }; }

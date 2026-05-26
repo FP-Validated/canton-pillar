@@ -1,0 +1,21 @@
+{
+  "id": "evt_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7ZH",
+  "object": "event",
+  "created": "2026-05-26T00:00:00.000Z",
+  "livemode": false,
+  "type": "transfer_intent.succeeded",
+  "api_version": "2026-05-26",
+  "data": {
+    "object": {
+      "id": "trint_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7ZE",
+      "object": "transfer_intent"
+    }
+  },
+  "request": {
+    "id": "req_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7ZM",
+    "idempotency_key": "idem-key"
+  },
+  "metadata": {
+    "reference": "demo"
+  }
+}

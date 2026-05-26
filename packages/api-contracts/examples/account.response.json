@@ -1,0 +1,11 @@
+{
+  "id": "acct_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7Z7Z",
+  "object": "account",
+  "created": "2026-05-26T00:00:00.000Z",
+  "livemode": false,
+  "display_name": "Treasury",
+  "status": "active",
+  "metadata": {
+    "reference": "demo"
+  }
+}

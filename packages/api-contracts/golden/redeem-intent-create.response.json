@@ -1,0 +1,16 @@
+{
+  "account": "acct_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7Z7Z",
+  "amount": "10.00",
+  "asset": "asst_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7Z9",
+  "created": "2026-05-26T00:00:00.000Z",
+  "id": "redint_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7ZD",
+  "latest_event": "evt_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7ZH",
+  "livemode": false,
+  "metadata": {
+    "reference": "demo"
+  },
+  "object": "redeem_intent",
+  "operation": "op_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7ZG",
+  "source_holding": "hld_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7ZB",
+  "status": "processing"
+}

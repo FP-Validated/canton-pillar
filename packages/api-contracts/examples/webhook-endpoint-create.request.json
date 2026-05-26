@@ -1,0 +1,11 @@
+{
+  "url": "https://example.com/webhooks/pillar",
+  "enabled_events": [
+    "transfer_intent.succeeded"
+  ],
+  "api_version": "2026-05-26",
+  "description": "Primary endpoint",
+  "metadata": {
+    "reference": "demo"
+  }
+}

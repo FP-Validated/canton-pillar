@@ -1,0 +1,23 @@
+{
+  "object": "list",
+  "url": "/v1/operations",
+  "has_more": false,
+  "data": [
+    {
+      "id": "op_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7ZG",
+      "object": "operation",
+      "created": "2026-05-26T00:00:00.000Z",
+      "livemode": false,
+      "intent": "trint_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7ZE",
+      "status": "projected",
+      "ledger": {
+        "backend": "canton",
+        "update_reference": "opaque-update-ref",
+        "offset": "42"
+      },
+      "metadata": {
+        "reference": "demo"
+      }
+    }
+  ]
+}

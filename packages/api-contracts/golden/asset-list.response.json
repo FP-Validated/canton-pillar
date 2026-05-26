@@ -1,0 +1,22 @@
+{
+  "data": [
+    {
+      "code": "USDTEST",
+      "created": "2026-05-26T00:00:00.000Z",
+      "id": "asst_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7Z9",
+      "livemode": false,
+      "metadata": {
+        "reference": "demo"
+      },
+      "name": "Test Dollar",
+      "object": "asset",
+      "redeemable": true,
+      "scale": 2,
+      "status": "active",
+      "transferable": true
+    }
+  ],
+  "has_more": false,
+  "object": "list",
+  "url": "/v1/assets"
+}

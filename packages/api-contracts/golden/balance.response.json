@@ -1,0 +1,17 @@
+{
+  "account": "acct_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7Z7Z",
+  "as_of_ledger_offset": "42",
+  "as_of_ledger_time": "2026-05-26T00:00:00.000Z",
+  "asset": "asst_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7Z9",
+  "available": "100.00",
+  "created": "2026-05-26T00:00:00.000Z",
+  "id": "bal_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7ZA",
+  "livemode": false,
+  "metadata": {
+    "reference": "demo"
+  },
+  "object": "balance",
+  "pending": "0",
+  "reserved": "10.00",
+  "settled": "110.00"
+}

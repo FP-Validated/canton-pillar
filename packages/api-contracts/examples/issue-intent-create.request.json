@@ -1,0 +1,9 @@
+{
+  "amount": "100.00",
+  "asset": "asst_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7Z9",
+  "account": "acct_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7Z7Z",
+  "confirm": true,
+  "metadata": {
+    "reference": "demo"
+  }
+}

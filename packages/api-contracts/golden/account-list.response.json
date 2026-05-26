@@ -1,0 +1,18 @@
+{
+  "data": [
+    {
+      "created": "2026-05-26T00:00:00.000Z",
+      "display_name": "Treasury",
+      "id": "acct_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7Z7Z",
+      "livemode": false,
+      "metadata": {
+        "reference": "demo"
+      },
+      "object": "account",
+      "status": "active"
+    }
+  ],
+  "has_more": false,
+  "object": "list",
+  "url": "/v1/accounts"
+}

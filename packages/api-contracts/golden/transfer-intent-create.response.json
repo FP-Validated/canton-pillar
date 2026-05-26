@@ -1,0 +1,16 @@
+{
+  "amount": "25.00",
+  "asset": "asst_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7Z9",
+  "created": "2026-05-26T00:00:00.000Z",
+  "from_account": "acct_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7Z7Z",
+  "id": "trint_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7ZE",
+  "latest_event": "evt_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7ZH",
+  "livemode": false,
+  "metadata": {
+    "reference": "demo"
+  },
+  "object": "transfer_intent",
+  "operation": "op_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7ZG",
+  "status": "processing",
+  "to_account": "acct_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7Z8"
+}

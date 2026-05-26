@@ -1,0 +1,8 @@
+{
+  "error": {
+    "type": "ledger_error",
+    "code": "ledger_command_rejected",
+    "message": "Ledger command rejected.",
+    "request_id": "req_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7ZM"
+  }
+}

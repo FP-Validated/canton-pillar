@@ -1,0 +1,10 @@
+{
+  "code": "USDTEST",
+  "name": "Test Dollar",
+  "scale": 2,
+  "transferable": true,
+  "redeemable": true,
+  "metadata": {
+    "reference": "demo"
+  }
+}

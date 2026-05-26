@@ -1,0 +1,10 @@
+{
+  "amount": "25.00",
+  "asset": "asst_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7Z9",
+  "from_account": "acct_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7Z7Z",
+  "to_account": "acct_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7Z8",
+  "confirm": true,
+  "metadata": {
+    "reference": "demo"
+  }
+}

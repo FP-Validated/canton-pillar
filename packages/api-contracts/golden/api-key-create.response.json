@@ -1,0 +1,17 @@
+{
+  "created": "2026-05-26T00:00:00.000Z",
+  "id": "ak_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7ZK",
+  "last4": "7Z7K",
+  "livemode": false,
+  "metadata": {
+    "reference": "demo"
+  },
+  "name": "Server key",
+  "object": "api_key",
+  "prefix": "pk_test",
+  "scopes": [
+    "accounts:read"
+  ],
+  "secret": "pk_test_secret_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7ZK",
+  "status": "active"
+}

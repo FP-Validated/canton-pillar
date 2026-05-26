@@ -1,0 +1,16 @@
+{
+  "created": "2026-05-26T00:00:00.000Z",
+  "id": "op_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7ZG",
+  "intent": "trint_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7ZE",
+  "ledger": {
+    "backend": "canton",
+    "offset": "42",
+    "update_reference": "opaque-update-ref"
+  },
+  "livemode": false,
+  "metadata": {
+    "reference": "demo"
+  },
+  "object": "operation",
+  "status": "projected"
+}
