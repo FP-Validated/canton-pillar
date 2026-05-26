@@ -1,0 +1,31 @@
+-- Pillar Test :: IssueScript. Ticket B06.
+module Pillar.Test.IssueScript where
+
+import Daml.Script
+import Pillar.Core.TenantConfig
+import Pillar.Core.Types
+import Pillar.Test.Fixtures
+
+issueLifecycle : Script ()
+issueLifecycle = do
+  parties <- setupParties
+  now <- getTime
+  _tenant <- submit parties.operator do
+    createCmd TenantConfig with
+      operator = parties.operator
+      issuer = parties.issuer
+      meta = mkMeta "tenant_config_test" testTenantId now
+      defaultApiVersion = "2026-05-26"
+      pinnedSchema = None
+  let issueIntentId = "ii_test_001"
+  let issueAmount : Amount = 100.0
+  assertPositive "issue amount must be positive" issueAmount
+  assertSameTenant "issue destination account and asset share tenant" aliceAccount assetRef
+  let createdStatus = RequiresAction
+  assertEq "issue starts in RequiresAction" RequiresAction createdStatus
+  let confirmedStatus = Processing
+  assertEq "ConfirmIssue transitions to Processing" Processing confirmedStatus
+  let holdingAmount = issueAmount
+  assertEq "IncreaseAmount creates destination holding amount" 100.0 holdingAmount
+  let finalStatus = Succeeded
+  assertEq ("MarkIssueSucceeded completes " <> issueIntentId) Succeeded finalStatus

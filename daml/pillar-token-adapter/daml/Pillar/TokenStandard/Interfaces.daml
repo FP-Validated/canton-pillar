@@ -1,0 +1,33 @@
+-- Pillar TokenStandard :: Adapter interfaces. Tickets B22, B23.
+module Pillar.TokenStandard.Interfaces where
+
+-- Internal adapter interfaces for future CN Token Standard interoperability.
+-- These are NOT the real CN Token Standard interfaces; they are Pillar-side adapters
+-- whose method signatures will later be bridged to the real interfaces. See ADR-0008.
+interface HoldingI where
+  viewtype HoldingView
+
+  holdingOwner : Party
+  holdingAmount : Decimal
+  holdingAssetRefId : Text
+
+data HoldingView = HoldingView with
+  owner : Party
+  amount : Decimal
+  assetRef : Text
+    deriving (Eq, Show)
+
+interface TransferI where
+  viewtype TransferView
+
+  transferFromAccountId : Text
+  transferToAccountId : Text
+  transferAssetRefId : Text
+  transferAmount : Decimal
+
+data TransferView = TransferView with
+  fromAccount : Text
+  toAccount : Text
+  assetRef : Text
+  amount : Decimal
+    deriving (Eq, Show)

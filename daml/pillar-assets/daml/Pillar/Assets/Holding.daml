@@ -1,0 +1,122 @@
+-- Pillar Assets :: Holding. Ticket B12.
+module Pillar.Assets.Holding where
+
+import Pillar.Assets.Hold (Hold(..))
+import Pillar.Core.AccountRef (HoldingRef)
+import Pillar.Core.Meta (PillarMeta)
+import Pillar.Core.Types (HoldStatus(..))
+
+template Holding
+  with
+    operator : Party
+    issuer : Party
+    holder : Party
+    meta : PillarMeta
+    holdingRef : HoldingRef
+    owner : Party
+    amount : Decimal
+    activeHolds : Decimal
+    versionTag : Text
+  where
+    signatory operator, issuer, holder
+    ensure owner == holder && amount >= 0.0 && activeHolds >= 0.0 && activeHolds <= amount
+
+    choice SplitHolding : (ContractId Holding, ContractId Holding)
+      with
+        newMeta : PillarMeta
+        firstAmount : Decimal
+        secondAmount : Decimal
+        firstVersionTag : Text
+        secondVersionTag : Text
+      controller operator, issuer, holder
+      do
+        assertMsg "cannot split holding with active holds" (activeHolds == 0.0)
+        assertMsg "split amounts must be positive" (firstAmount > 0.0 && secondAmount > 0.0)
+        assertMsg "split amounts must equal holding amount" (firstAmount + secondAmount == amount)
+        firstCid <- create this with meta = newMeta, amount = firstAmount, activeHolds = 0.0, versionTag = firstVersionTag
+        secondCid <- create this with meta = newMeta, amount = secondAmount, activeHolds = 0.0, versionTag = secondVersionTag
+        pure (firstCid, secondCid)
+
+    choice MergeHolding : ContractId Holding
+      with
+        other : ContractId Holding
+        newMeta : PillarMeta
+        newVersionTag : Text
+      controller operator, issuer, holder
+      do
+        otherHolding <- fetch other
+        assertMsg "holding refs must match" (otherHolding.holdingRef == holdingRef)
+        assertMsg "owners must match" (otherHolding.owner == owner && otherHolding.holder == holder)
+        assertMsg "operator and issuer must match" (otherHolding.operator == operator && otherHolding.issuer == issuer)
+        assertMsg "cannot merge holdings with active holds" (activeHolds == 0.0 && otherHolding.activeHolds == 0.0)
+        archive other
+        create this with
+          meta = newMeta
+          amount = amount + otherHolding.amount
+          activeHolds = 0.0
+          versionTag = newVersionTag
+
+    choice TransferOwnership : ContractId Holding
+      with
+        newMeta : PillarMeta
+        newHolder : Party
+        newVersionTag : Text
+      controller operator, issuer, holder, newHolder
+      do
+        assertMsg "cannot transfer holding with active holds" (activeHolds == 0.0)
+        create this with
+          meta = newMeta
+          holder = newHolder
+          owner = newHolder
+          versionTag = newVersionTag
+
+    choice ConsumeAmount : ContractId Holding
+      with
+        newMeta : PillarMeta
+        consumeAmount : Decimal
+        newVersionTag : Text
+      controller operator
+      do
+        assertMsg "consume amount must be positive" (consumeAmount > 0.0)
+        assertMsg "consume amount exceeds available" (consumeAmount <= amount - activeHolds)
+        create this with
+          meta = newMeta
+          amount = amount - consumeAmount
+          versionTag = newVersionTag
+
+    choice IncreaseAmount : ContractId Holding
+      with
+        newMeta : PillarMeta
+        increaseAmount : Decimal
+        newVersionTag : Text
+      controller operator, issuer
+      do
+        assertMsg "increase amount must be positive" (increaseAmount > 0.0)
+        create this with
+          meta = newMeta
+          amount = amount + increaseAmount
+          versionTag = newVersionTag
+
+    choice CreateHold : (ContractId Holding, ContractId Hold)
+      with
+        holdMeta : PillarMeta
+        holdAmount : Decimal
+        purpose : Text
+        expiresAt : Optional Time
+        newVersionTag : Text
+      controller operator
+      do
+        assertMsg "hold amount must be positive" (holdAmount > 0.0)
+        assertMsg "hold amount exceeds available" (holdAmount <= amount - activeHolds)
+        holdCid <- create Hold with
+          operator = operator
+          issuer = issuer
+          ownerHolder = holder
+          meta = holdMeta
+          holdingRef = holdingRef
+          amount = holdAmount
+          status = HoldActive
+          purpose = purpose
+          expiresAt = expiresAt
+        holdingCid <- create this with activeHolds = activeHolds + holdAmount, versionTag = newVersionTag
+        pure (holdingCid, holdCid)

@@ -1,0 +1,25 @@
+-- Pillar Core :: AccountRef. Ticket B08. External account reference.
+module Pillar.Core.AccountRef where
+
+import Pillar.Core.Meta (TenantId)
+
+data AccountRef = AccountRef with
+  tenantId  : TenantId
+  accountId : Text  -- e.g. "acct_01HY..."
+    deriving (Eq, Show)
+
+data AssetRef = AssetRef with
+  tenantId : TenantId
+  assetId  : Text  -- e.g. "asst_01HY..."
+    deriving (Eq, Show)
+
+data HoldingRef = HoldingRef with
+  account : AccountRef
+  asset   : AssetRef
+    deriving (Eq, Show)
+
+-- Smart constructor: refs must share tenantId.
+mkHoldingRef : AccountRef -> AssetRef -> Either Text HoldingRef
+mkHoldingRef a b
+  | a.tenantId /= b.tenantId = Left "account/asset tenantId mismatch"
+  | otherwise = Right (HoldingRef a b)

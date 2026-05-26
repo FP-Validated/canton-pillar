@@ -1,0 +1,82 @@
+-- Pillar Ops :: WorkflowTask. Ticket B21.
+module Pillar.Ops.WorkflowTask where
+
+import DA.TextMap (TextMap)
+import Pillar.Core.Meta (PillarMeta(..))
+import Pillar.Core.Types (TaskStatus(..))
+
+isDue : Optional Time -> Time -> Bool
+isDue scheduledFor now =
+  case scheduledFor of
+    None -> True
+    Some scheduledAt -> scheduledAt <= now
+
+template WorkflowTask
+  with
+    operator : Party
+    meta : PillarMeta
+    status : TaskStatus
+    taskType : Text
+    scheduledFor : Optional Time
+    attempts : Int
+    maxAttempts : Int
+    payload : TextMap Text
+    failureReason : Optional Text
+  where
+    signatory operator
+    ensure attempts >= 0 && maxAttempts >= 0 && attempts <= maxAttempts
+
+    choice StartTask : ContractId WorkflowTask
+      with
+        now : Time
+      controller operator
+      do
+        assertMsg "task must be pending to start" (status == TaskPending)
+        assertMsg "task is scheduled for the future" (isDue scheduledFor now)
+        create this with
+          status = TaskRunning
+          meta = meta with updatedAt = now
+
+    choice CompleteTask : ContractId WorkflowTask
+      with
+        now : Time
+      controller operator
+      do
+        create this with
+          status = TaskCompleted
+          failureReason = None
+          meta = meta with updatedAt = now
+
+    choice FailTask : ContractId WorkflowTask
+      with
+        reason : Text
+        now : Time
+      controller operator
+      do
+        create this with
+          status = TaskFailed
+          failureReason = Some reason
+          meta = meta with updatedAt = now
+
+    choice CancelTask : ContractId WorkflowTask
+      with
+        reason : Text
+        now : Time
+      controller operator
+      do
+        create this with
+          status = TaskCancelled
+          failureReason = Some reason
+          meta = meta with updatedAt = now
+
+    choice RetryTask : ContractId WorkflowTask
+      with
+        now : Time
+      controller operator
+      do
+        assertMsg "task retry limit reached" (attempts < maxAttempts)
+        create this with
+          status = TaskPending
+          attempts = attempts + 1
+          failureReason = None
+          meta = meta with updatedAt = now

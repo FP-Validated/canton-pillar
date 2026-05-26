@@ -1,7 +1,0 @@
--- Phase 0 placeholder. Fixtures land in Phase 1.
-module Pillar.Test.Placeholder where
-
-import Pillar.Core.Placeholder qualified as Core
-
-fixturesPhase0Marker : Text
-fixturesPhase0Marker = Core.phase0Marker <> ":fixtures"

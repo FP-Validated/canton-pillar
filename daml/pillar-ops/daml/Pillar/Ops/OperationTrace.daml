@@ -1,0 +1,108 @@
+-- Pillar Ops :: OperationTrace. Ticket B04/B20.
+module Pillar.Ops.OperationTrace where
+
+import Pillar.Core.Meta (PillarMeta(..))
+import Pillar.Core.Types (IntentKind, OperationStatus(..))
+
+isRetryableStatus : OperationStatus -> Bool
+isRetryableStatus status =
+  status == OpReceived || status == OpQueued || status == OpSubmitted || status == OpInFlight || status == OpFailed || status == OpUnknown
+
+template OperationTrace
+  with
+    operator : Party
+    meta : PillarMeta
+    status : OperationStatus
+    intentKind : IntentKind
+    intentObjectId : Text
+    commandId : Optional Text
+    submissionId : Optional Text
+    updateId : Optional Text
+    ledgerOffset : Optional Text
+    ledgerTime : Optional Time
+    traceId : Text
+    failureReason : Optional Text
+    retryCount : Int
+  where
+    signatory operator
+    ensure retryCount >= 0
+
+    choice RecordSubmitted : ContractId OperationTrace
+      with
+        submissionId : Text
+      controller operator
+      do
+        assertMsg "operation must be received or queued before submission" (status == OpReceived || status == OpQueued)
+        create this with
+          status = OpSubmitted
+          submissionId = Some submissionId
+
+    choice RecordCompleted : ContractId OperationTrace
+      with
+        updateId : Text
+        ledgerOffset : Text
+        ledgerTime : Time
+        now : Time
+      controller operator
+      do
+        create this with
+          status = OpLedgerCommitted
+          updateId = Some updateId
+          ledgerOffset = Some ledgerOffset
+          ledgerTime = Some ledgerTime
+          failureReason = None
+          meta = meta with updatedAt = now
+
+    choice RecordFailed : ContractId OperationTrace
+      with
+        reason : Text
+        now : Time
+      controller operator
+      do
+        create this with
+          status = OpFailed
+          failureReason = Some reason
+          meta = meta with updatedAt = now
+
+    choice LinkUpdate : ContractId OperationTrace
+      with
+        updateId : Text
+        ledgerOffset : Text
+        ledgerTime : Time
+        now : Time
+      controller operator
+      do
+        create this with
+          updateId = Some updateId
+          ledgerOffset = Some ledgerOffset
+          ledgerTime = Some ledgerTime
+          meta = meta with updatedAt = now
+
+    choice MarkProjected : ContractId OperationTrace
+      with
+        now : Time
+      controller operator
+      do
+        create this with
+          status = OpProjected
+          meta = meta with updatedAt = now
+
+    choice MarkReconciled : ContractId OperationTrace
+      with
+        now : Time
+      controller operator
+      do
+        assertMsg "only unknown operations can be reconciled" (status == OpUnknown)
+        create this with
+          status = OpReconciled
+          meta = meta with updatedAt = now
+
+    choice IncrementRetry : ContractId OperationTrace
+      with
+        now : Time
+      controller operator
+      do
+        assertMsg "operation status is not retryable" (isRetryableStatus status)
+        create this with
+          retryCount = retryCount + 1
+          meta = meta with updatedAt = now

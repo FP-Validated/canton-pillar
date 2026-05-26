@@ -1,0 +1,168 @@
+-- Pillar Intents :: Test. Ticket B03/B16-B19.
+module Pillar.Intents.Test.Intents_Test where
+
+import Daml.Script
+import Pillar.Core.Meta
+import Pillar.Core.Types
+import Pillar.Intents.Common
+import Pillar.Intents.IssueIntent
+import Pillar.Intents.RedeemIntent
+import Pillar.Intents.TransferIntent
+
+mkMeta : Text -> Time -> PillarMeta
+mkMeta objectId now = PillarMeta with
+  objectId
+  tenantId = "tnt_intents"
+  apiVersion = "2026-05-26"
+  schemaVersion = 1
+  livemode = False
+  requestId = None
+  idempotencyKey = None
+  workflowId = Some ("wf_" <> objectId)
+  createdAt = now
+  updatedAt = now
+  metadata = emptyMetadata
+
+mkBase : Party -> Text -> Time -> IntentBase
+mkBase operator objectId now = IntentBase with
+  meta = mkMeta objectId now
+  status = RequiresAction
+  initiator = operator
+  failureReason = None
+
+mkIssue : Party -> Party -> Text -> Time -> IssueIntent
+mkIssue operator issuer objectId now = IssueIntent with
+  operator
+  issuer
+  base = mkBase operator objectId now
+  accountId = "acct_dest"
+  assetId = "asst_usdc"
+  amount = 100.0
+  expiresAt = Some now
+
+mkRedeem : Party -> Party -> Text -> Time -> RedeemIntent
+mkRedeem operator issuer objectId now = RedeemIntent with
+  operator
+  issuer
+  base = mkBase operator objectId now
+  accountId = "acct_source"
+  assetId = "asst_usdc"
+  amount = 25.0
+  expiresAt = Some now
+
+mkTransfer : Party -> Party -> Text -> Time -> TransferIntent
+mkTransfer operator issuer objectId now = TransferIntent with
+  operator
+  issuer
+  base = mkBase operator objectId now
+  fromAccountId = "acct_from"
+  toAccountId = "acct_to"
+  assetId = "asst_usdc"
+  amount = 10.0
+  expiresAt = Some now
+
+issueLifecycleTest : Script ()
+issueLifecycleTest = script do
+  operator <- allocateParty "issue-operator"
+  issuer <- allocateParty "issue-issuer"
+  now <- getTime
+  cid <- submit (actAs [operator, issuer]) do
+    createCmd (mkIssue operator issuer "issint_lifecycle" now)
+  processingCid <- submit operator do
+    exerciseCmd cid ConfirmIssue with now
+  succeededCid <- submit operator do
+    exerciseCmd processingCid MarkIssueSucceeded with now
+  succeeded <- queryContractId operator succeededCid
+  case succeeded of
+    None -> abort "expected succeeded issue intent"
+    Some intent -> assertMsg "issue succeeded" (intent.base.status == Succeeded)
+
+transferLifecycleTest : Script ()
+transferLifecycleTest = script do
+  operator <- allocateParty "transfer-operator"
+  issuer <- allocateParty "transfer-issuer"
+  now <- getTime
+  cid <- submit (actAs [operator, issuer]) do
+    createCmd (mkTransfer operator issuer "trint_lifecycle" now)
+  processingCid <- submit operator do
+    exerciseCmd cid ConfirmTransfer with now
+  succeededCid <- submit operator do
+    exerciseCmd processingCid MarkTransferSucceeded with now
+  succeeded <- queryContractId operator succeededCid
+  case succeeded of
+    None -> abort "expected succeeded transfer intent"
+    Some intent -> assertMsg "transfer succeeded" (intent.base.status == Succeeded)
+
+redeemLifecycleTest : Script ()
+redeemLifecycleTest = script do
+  operator <- allocateParty "redeem-operator"
+  issuer <- allocateParty "redeem-issuer"
+  now <- getTime
+  cid <- submit (actAs [operator, issuer]) do
+    createCmd (mkRedeem operator issuer "redint_lifecycle" now)
+  processingCid <- submit operator do
+    exerciseCmd cid ConfirmRedeem with now
+  succeededCid <- submit operator do
+    exerciseCmd processingCid MarkRedeemSucceeded with now
+  succeeded <- queryContractId operator succeededCid
+  case succeeded of
+    None -> abort "expected succeeded redeem intent"
+    Some intent -> assertMsg "redeem succeeded" (intent.base.status == Succeeded)
+
+intentFailureTest : Script ()
+intentFailureTest = script do
+  operator <- allocateParty "failure-operator"
+  issuer <- allocateParty "failure-issuer"
+  now <- getTime
+  cid <- submit (actAs [operator, issuer]) do
+    createCmd (mkIssue operator issuer "issint_failed" now)
+  failedCid <- submit operator do
+    exerciseCmd cid FailIssue with reason = "insufficient policy allowance"; now
+  failed <- queryContractId operator failedCid
+  case failed of
+    None -> abort "expected failed issue intent"
+    Some intent -> do
+      assertMsg "issue failed" (intent.base.status == Failed)
+      assertMsg "reason preserved" (intent.base.failureReason == Some "insufficient policy allowance")
+
+intentCancellationTest : Script ()
+intentCancellationTest = script do
+  operator <- allocateParty "cancel-operator"
+  issuer <- allocateParty "cancel-issuer"
+  now <- getTime
+  cid <- submit (actAs [operator, issuer]) do
+    createCmd (mkTransfer operator issuer "trint_canceled" now)
+  canceledCid <- submit operator do
+    exerciseCmd cid CancelTransfer with now
+  canceled <- queryContractId operator canceledCid
+  case canceled of
+    None -> abort "expected canceled transfer intent"
+    Some intent -> assertMsg "transfer canceled" (intent.base.status == Canceled)
+
+intentExpiryTest : Script ()
+intentExpiryTest = script do
+  operator <- allocateParty "expiry-operator"
+  issuer <- allocateParty "expiry-issuer"
+  now <- getTime
+  cid <- submit (actAs [operator, issuer]) do
+    createCmd (mkRedeem operator issuer "redint_expired" now)
+  processingCid <- submit operator do
+    exerciseCmd cid ConfirmRedeem with now
+  expiredCid <- submit operator do
+    exerciseCmd processingCid ExpireRedeem with now
+  expired <- queryContractId operator expiredCid
+  case expired of
+    None -> abort "expected expired redeem intent"
+    Some intent -> assertMsg "redeem expired" (intent.base.status == Expired)
+
+duplicateConfirmNegativeTest : Script ()
+duplicateConfirmNegativeTest = script do
+  operator <- allocateParty "duplicate-operator"
+  issuer <- allocateParty "duplicate-issuer"
+  now <- getTime
+  cid <- submit (actAs [operator, issuer]) do
+    createCmd (mkIssue operator issuer "issint_duplicate" now)
+  processingCid <- submit operator do
+    exerciseCmd cid ConfirmIssue with now
+  submitMustFail operator do
+    exerciseCmd processingCid ConfirmIssue with now

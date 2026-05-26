@@ -1,11 +1,12 @@
 sdk-version: 3.4.11
-name: pillar-test-fixtures
-version: 0.0.1
+name: pillar-assets
+version: 0.1.0
 source: daml
 parties: []
 dependencies:
   - daml-prim
   - daml-stdlib
+  - daml-script
 data-dependencies:
-  - ../pillar-core/.daml/dist/pillar-core-0.0.1.dar
+  - ../pillar-core/.daml/dist/pillar-core-0.1.0.dar
 module-prefixes: {}

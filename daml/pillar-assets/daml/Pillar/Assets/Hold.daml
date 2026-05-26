@@ -1,0 +1,50 @@
+-- Pillar Assets :: Hold. Ticket B13.
+module Pillar.Assets.Hold where
+
+import Pillar.Core.AccountRef (HoldingRef)
+import Pillar.Core.Meta (PillarMeta)
+import Pillar.Core.Types (HoldStatus(..))
+
+template Hold
+  with
+    operator : Party
+    issuer : Party
+    ownerHolder : Party
+    meta : PillarMeta
+    holdingRef : HoldingRef
+    amount : Decimal
+    status : HoldStatus
+    purpose : Text
+    expiresAt : Optional Time
+  where
+    signatory operator, issuer
+    observer ownerHolder
+    ensure amount > 0.0
+
+    choice ReleaseHold : ContractId Hold
+      with
+        newMeta : PillarMeta
+      controller operator, issuer
+      do
+        assertMsg "only active holds can be released" (status == HoldActive)
+        create this with meta = newMeta, status = HoldReleased
+
+    choice ConsumeHold : ContractId Hold
+      with
+        newMeta : PillarMeta
+      controller operator
+      do
+        assertMsg "only active holds can be consumed" (status == HoldActive)
+        create this with meta = newMeta, status = HoldConsumed
+
+    choice ExpireHold : ContractId Hold
+      with
+        newMeta : PillarMeta
+        now : Time
+      controller operator
+      do
+        assertMsg "only active holds can expire" (status == HoldActive)
+        case expiresAt of
+          None -> abort "hold has no expiry"
+          Some expiry -> assertMsg "hold is not expired" (now > expiry)
+        create this with meta = newMeta, status = HoldExpired

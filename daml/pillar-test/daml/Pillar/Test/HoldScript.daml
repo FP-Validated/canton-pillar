@@ -1,0 +1,23 @@
+-- Pillar Test :: HoldScript. Ticket B06.
+module Pillar.Test.HoldScript where
+
+import Daml.Script
+import Pillar.Core.Types
+import Pillar.Test.Fixtures
+
+holdLifecycle : Script ()
+holdLifecycle = do
+  let holdingAmount : Amount = 100.0
+  let holdAmount : Amount = 30.0
+  assertCanDebit "CreateHold requires available amount" holdingAmount holdAmount
+  let availableAfterHold = holdingAmount - holdAmount
+  assertEq "CreateHold reduces available amount" 70.0 availableAfterHold
+  let releaseStatus = HoldReleased
+  let availableAfterRelease = availableAfterHold + holdAmount
+  assertEq "ReleaseHold restores available amount" HoldReleased releaseStatus
+  assertEq "ReleaseHold restores holding availability" holdingAmount availableAfterRelease
+  assertCanDebit "CreateHold before ConsumeHold requires available amount" holdingAmount holdAmount
+  let consumeStatus = HoldConsumed
+  let amountAfterConsume = holdingAmount - holdAmount
+  assertEq "ConsumeHold marks hold consumed" HoldConsumed consumeStatus
+  assertEq "ConsumeHold decreases holding amount" 70.0 amountAfterConsume

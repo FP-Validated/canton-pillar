@@ -1,0 +1,16 @@
+sdk-version: 3.4.11
+name: pillar-test
+version: 0.1.0
+source: daml
+parties: []
+dependencies:
+  - daml-prim
+  - daml-stdlib
+  - daml-script
+data-dependencies:
+  - ../pillar-core/.daml/dist/pillar-core-0.1.0.dar
+  - ../pillar-assets/.daml/dist/pillar-assets-0.1.0.dar
+  - ../pillar-intents/.daml/dist/pillar-intents-0.1.0.dar
+  - ../pillar-ops/.daml/dist/pillar-ops-0.1.0.dar
+  - ../pillar-token-adapter/.daml/dist/pillar-token-adapter-0.1.0.dar
+module-prefixes: {}

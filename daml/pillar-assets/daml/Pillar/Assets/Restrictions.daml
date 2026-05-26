@@ -1,0 +1,38 @@
+-- Pillar Assets :: Restrictions. Ticket B14.
+module Pillar.Assets.Restrictions where
+
+
+data Restriction
+  = JurisdictionAllowList with countryCodes : [Text]
+  | KycRequired
+  | SanctionsCheckRequired
+  | RegulatedAssetClass with className : Text
+  | TransferAmountCeiling with amount : Decimal
+    deriving (Eq, Show)
+
+allowsOne : Restriction -> Optional Text -> Decimal -> Either Text ()
+allowsOne restriction jurisdiction transferAmount =
+  case restriction of
+    JurisdictionAllowList countryCodes ->
+      case jurisdiction of
+        None -> Left "jurisdiction required"
+        Some countryCode ->
+          if elem countryCode countryCodes
+            then Right ()
+            else Left "jurisdiction not allowed"
+    KycRequired -> Right ()
+    SanctionsCheckRequired -> Right ()
+    RegulatedAssetClass _ -> Right ()
+    TransferAmountCeiling ceilingAmount ->
+      if transferAmount <= ceilingAmount
+        then Right ()
+        else Left "transfer amount exceeds ceiling"
+
+allowsTransfer : [Restriction] -> Optional Text -> Decimal -> Either Text ()
+allowsTransfer restrictions jurisdiction transferAmount =
+  case restrictions of
+    [] -> Right ()
+    r :: rest ->
+      case allowsOne r jurisdiction transferAmount of
+        Left reason -> Left reason
+        Right () -> allowsTransfer rest jurisdiction transferAmount

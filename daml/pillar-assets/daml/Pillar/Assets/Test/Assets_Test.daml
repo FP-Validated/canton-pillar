@@ -1,0 +1,152 @@
+-- Pillar Assets :: Test. Tickets B02/B11-B15.
+module Pillar.Assets.Test.Assets_Test where
+
+import Daml.Script
+import DA.TextMap qualified as TM
+import Pillar.Assets.AssetRules
+import Pillar.Assets.Hold
+import Pillar.Assets.Holding
+import Pillar.Core.AccountRef
+import Pillar.Core.Meta
+import Pillar.Core.Types
+
+mkMeta : Time -> Text -> PillarMeta
+mkMeta now objectId = PillarMeta with
+  objectId = objectId
+  tenantId = "tnt_assets"
+  apiVersion = "2026-05-26"
+  schemaVersion = 1
+  livemode = False
+  requestId = None
+  idempotencyKey = None
+  workflowId = None
+  createdAt = now
+  updatedAt = now
+  metadata = Metadata (TM.fromList [("suite", "assets")])
+
+testAssetRef : AssetRef
+testAssetRef = AssetRef with tenantId = "tnt_assets"; assetId = "asst_usdc"
+
+testAccountRef : AccountRef
+testAccountRef = AccountRef with tenantId = "tnt_assets"; accountId = "acct_holder"
+
+testHoldingRef : HoldingRef
+testHoldingRef = HoldingRef with account = testAccountRef; asset = testAssetRef
+
+createAsset : Party -> Party -> Party -> Time -> Commands (ContractId AssetRules)
+createAsset operator issuer tenantOperator now =
+  createCmd AssetRules with
+    operator = operator
+    issuer = issuer
+    tenantOperator = tenantOperator
+    meta = mkMeta now "rules_1"
+    assetRef = testAssetRef
+    status = AssetActive
+    precision = 2
+    transferEnabled = True
+    redemptionEnabled = True
+    mintEnabled = True
+    restrictions = []
+    versionTag = "v1"
+
+createHolding : Party -> Party -> Party -> Time -> Decimal -> Commands (ContractId Holding)
+createHolding operator issuer holder now initialAmount =
+  createCmd Holding with
+    operator = operator
+    issuer = issuer
+    holder = holder
+    meta = mkMeta now "holdg_1"
+    holdingRef = testHoldingRef
+    owner = holder
+    amount = initialAmount
+    activeHolds = 0.0
+    versionTag = "v1"
+
+assetCreationTest : Script ()
+assetCreationTest = script do
+  operator <- allocateParty "asset-operator"
+  issuer <- allocateParty "asset-issuer"
+  tenantOperator <- allocateParty "asset-tenant-operator"
+  now <- getTime
+  cid <- submitMulti [operator, issuer] [] do createAsset operator issuer tenantOperator now
+  updatedCid <- submitMulti [operator, issuer] [] do
+    exerciseCmd cid UpdateRules with
+      newMeta = mkMeta now "rules_1_updated"
+      newPrecision = 6
+      newTransferEnabled = False
+      newRedemptionEnabled = True
+      newMintEnabled = False
+      newRestrictions = []
+      newVersionTag = "v2"
+  Some updated <- queryContractId operator updatedCid
+  assertMsg "precision updated" (updated.precision == 6)
+  assertMsg "transfer flag updated" (not updated.transferEnabled)
+  assertMsg "mint flag updated" (not updated.mintEnabled)
+
+assetSuspensionTest : Script ()
+assetSuspensionTest = script do
+  operator <- allocateParty "suspend-operator"
+  issuer <- allocateParty "suspend-issuer"
+  tenantOperator <- allocateParty "suspend-tenant-operator"
+  now <- getTime
+  cid <- submitMulti [operator, issuer] [] do createAsset operator issuer tenantOperator now
+  suspendedCid <- submitMulti [operator, issuer] [] do
+    exerciseCmd cid SuspendAsset with newMeta = mkMeta now "rules_1_suspended"
+  Some suspended <- queryContractId operator suspendedCid
+  assertMsg "asset suspended" (suspended.status == AssetSuspended)
+  reactivatedCid <- submitMulti [operator, issuer] [] do
+    exerciseCmd suspendedCid ReactivateAsset with newMeta = mkMeta now "rules_1_active_again"
+  Some reactivated <- queryContractId operator reactivatedCid
+  assertMsg "asset reactivated" (reactivated.status == AssetActive)
+
+holdingIssueTest : Script ()
+holdingIssueTest = script do
+  operator <- allocateParty "issue-operator"
+  issuer <- allocateParty "issue-issuer"
+  holder <- allocateParty "issue-holder"
+  tenantOperator <- allocateParty "issue-tenant-operator"
+  now <- getTime
+  _rulesCid <- submitMulti [operator, issuer] [] do createAsset operator issuer tenantOperator now
+  cid <- submitMulti [operator, issuer, holder] [] do createHolding operator issuer holder now 0.0
+  increasedCid <- submitMulti [operator, issuer] [] do
+    exerciseCmd cid IncreaseAmount with
+      newMeta = mkMeta now "holdg_1_issued"
+      increaseAmount = 100.0
+      newVersionTag = "v2"
+  Some holding <- queryContractId operator increasedCid
+  assertMsg "holding increased" (holding.amount == 100.0)
+  assertMsg "holding available equals amount" (holding.amount - holding.activeHolds == 100.0)
+
+holdLifecycleTest : Script ()
+holdLifecycleTest = script do
+  operator <- allocateParty "hold-operator"
+  issuer <- allocateParty "hold-issuer"
+  holder <- allocateParty "hold-holder"
+  now <- getTime
+  cid <- submitMulti [operator, issuer, holder] [] do createHolding operator issuer holder now 100.0
+  (_holdingCid, holdCid) <- submit operator do
+    exerciseCmd cid CreateHold with
+      holdMeta = mkMeta now "hold_1"
+      holdAmount = 25.0
+      purpose = "transfer"
+      expiresAt = None
+      newVersionTag = "v2"
+  releasedCid <- submitMulti [operator, issuer] [] do
+    exerciseCmd holdCid ReleaseHold with newMeta = mkMeta now "hold_1_released"
+  Some hold <- queryContractId operator releasedCid
+  assertMsg "hold released" (hold.status == HoldReleased)
+
+overHoldNegativeTest : Script ()
+overHoldNegativeTest = script do
+  operator <- allocateParty "overhold-operator"
+  issuer <- allocateParty "overhold-issuer"
+  holder <- allocateParty "overhold-holder"
+  now <- getTime
+  cid <- submitMulti [operator, issuer, holder] [] do createHolding operator issuer holder now 10.0
+  submitMustFail operator do
+    exerciseCmd cid CreateHold with
+      holdMeta = mkMeta now "hold_too_large"
+      holdAmount = 11.0
+      purpose = "transfer"
+      expiresAt = None
+      newVersionTag = "v2"

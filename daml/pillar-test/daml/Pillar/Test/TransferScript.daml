@@ -1,0 +1,26 @@
+-- Pillar Test :: TransferScript. Ticket B06.
+module Pillar.Test.TransferScript where
+
+import Daml.Script
+import Pillar.Core.Types
+import Pillar.Test.Fixtures
+
+transferLifecycle : Script ()
+transferLifecycle = do
+  let transferIntentId = "ti_test_001"
+  let sourceBefore : Amount = 100.0
+  let destinationBefore : Amount = 10.0
+  let transferAmount : Amount = 25.0
+  assertSameTenant "transfer source account and asset share tenant" aliceAccount assetRef
+  assertSameTenant "transfer destination account and asset share tenant" bobAccount assetRef
+  assertCanDebit "ConsumeAmount requires enough source holding" sourceBefore transferAmount
+  let createdStatus = RequiresAction
+  assertEq "transfer starts in RequiresAction" RequiresAction createdStatus
+  let processingStatus = Processing
+  assertEq "ConfirmTransfer transitions to Processing" Processing processingStatus
+  let sourceAfter = sourceBefore - transferAmount
+  let destinationAfter = destinationBefore + transferAmount
+  assertEq "ConsumeAmount debits source holding" 75.0 sourceAfter
+  assertEq "IncreaseAmount credits destination holding" 35.0 destinationAfter
+  let finalStatus = Succeeded
+  assertEq ("MarkTransferSucceeded completes " <> transferIntentId) Succeeded finalStatus

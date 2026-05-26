@@ -1,0 +1,54 @@
+-- Pillar Core :: Types. Ticket B09. Shared status enums and decimal/amount handling.
+module Pillar.Core.Types where
+
+-- Asset amount uses Daml Decimal (38,10 precision).
+type Amount = Decimal
+
+-- Status enums shared across packages and reflected in /v1 status fields.
+data IntentStatus
+  = RequiresAction
+  | Processing
+  | Succeeded
+  | Failed
+  | Canceled
+  | Expired
+    deriving (Eq, Show)
+
+data HoldStatus
+  = HoldActive
+  | HoldReleased
+  | HoldConsumed
+  | HoldExpired
+    deriving (Eq, Show)
+
+data AssetStatus
+  = AssetActive
+  | AssetSuspended
+  | AssetArchived
+    deriving (Eq, Show)
+
+data OperationStatus
+  = OpReceived
+  | OpQueued
+  | OpSubmitted
+  | OpInFlight
+  | OpLedgerCommitted
+  | OpProjected
+  | OpFailed
+  | OpUnknown
+  | OpReconciled
+    deriving (Eq, Show)
+
+data TaskStatus
+  = TaskPending
+  | TaskRunning
+  | TaskCompleted
+  | TaskFailed
+  | TaskCancelled
+    deriving (Eq, Show)
+
+-- Direction of a transfer relative to a holding.
+data TransferDirection = TransferOut | TransferIn deriving (Eq, Show)
+
+-- Type of intent for ops trace correlation.
+data IntentKind = KindIssue | KindRedeem | KindTransfer deriving (Eq, Show)

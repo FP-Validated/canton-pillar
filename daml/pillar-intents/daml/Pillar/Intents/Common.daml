@@ -1,0 +1,42 @@
+-- Pillar Intents :: Common. Ticket B03/B16-B19.
+module Pillar.Intents.Common where
+
+import Pillar.Core.Meta
+import Pillar.Core.Types
+
+data IntentBase = IntentBase with
+  meta : PillarMeta
+  status : IntentStatus
+  initiator : Party
+  failureReason : Optional Text
+    deriving (Eq, Show)
+
+updateStatus : IntentBase -> IntentStatus -> Time -> Optional Text -> IntentBase
+updateStatus base newStatus now reason = base with
+  status = newStatus
+  failureReason = reason
+  meta = base.meta with updatedAt = now
+
+markFailed : IntentBase -> Text -> Time -> IntentBase
+markFailed base reason now = updateStatus base Failed now (Some reason)
+
+markSucceeded : IntentBase -> Time -> IntentBase
+markSucceeded base now = updateStatus base Succeeded now None
+
+markCanceled : IntentBase -> Time -> IntentBase
+markCanceled base now = updateStatus base Canceled now None
+
+markRequiresAction : IntentBase -> Time -> IntentBase
+markRequiresAction base now = updateStatus base RequiresAction now None
+
+markProcessing : IntentBase -> Time -> IntentBase
+markProcessing base now = updateStatus base Processing now None
+
+markExpired : IntentBase -> Time -> IntentBase
+markExpired base now = updateStatus base Expired now None
+
+ensureRequiresAction : IntentBase -> Bool
+ensureRequiresAction base = base.status == RequiresAction
+
+ensureProcessing : IntentBase -> Bool
+ensureProcessing base = base.status == Processing

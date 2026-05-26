@@ -1,0 +1,63 @@
+-- Pillar Intents :: TransferIntent. Ticket B03/B18.
+module Pillar.Intents.TransferIntent where
+
+import Pillar.Core.Types
+import Pillar.Intents.Common
+
+template TransferIntent
+  with
+    operator : Party
+    issuer : Party
+    base : IntentBase
+    fromAccountId : Text
+    toAccountId : Text
+    assetId : Text
+    amount : Amount
+    expiresAt : Optional Time
+  where
+    signatory operator, issuer
+    observer operator
+    ensure amount > 0.0 && base.meta.objectId /= "" && fromAccountId /= "" && toAccountId /= "" && fromAccountId /= toAccountId && assetId /= "" && base.initiator == operator
+
+    choice ConfirmTransfer : ContractId TransferIntent
+      with
+        now : Time
+      controller operator
+      do
+        assertMsg "TransferIntent must be RequiresAction to confirm" (ensureRequiresAction base)
+        create this with base = markProcessing base now
+
+    choice CancelTransfer : ContractId TransferIntent
+      with
+        now : Time
+      controller operator
+      do
+        create this with base = markCanceled base now
+
+    choice FailTransfer : ContractId TransferIntent
+      with
+        reason : Text
+        now : Time
+      controller operator
+      do
+        assertMsg "failure reason is required" (reason /= "")
+        create this with base = markFailed base reason now
+
+    choice MarkTransferSucceeded : ContractId TransferIntent
+      with
+        now : Time
+      controller operator
+      do
+        assertMsg "TransferIntent must be Processing to succeed" (ensureProcessing base)
+        create this with base = markSucceeded base now
+
+    choice ExpireTransfer : ContractId TransferIntent
+      with
+        now : Time
+      controller operator
+      do
+        assertMsg "TransferIntent must be Processing to expire" (ensureProcessing base)
+        case expiresAt of
+          None -> abort "TransferIntent has no expiry deadline"
+          Some deadline -> assertMsg "TransferIntent expiry deadline has not passed" (now >= deadline)
+        create this with base = markExpired base now

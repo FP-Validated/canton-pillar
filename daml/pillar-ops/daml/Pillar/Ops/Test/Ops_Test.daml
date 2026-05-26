@@ -1,0 +1,145 @@
+-- Pillar Ops :: Test. Tickets B20/B21.
+module Pillar.Ops.Test.Ops_Test where
+
+import Daml.Script
+import DA.TextMap qualified as TM
+import DA.Time (addRelTime, seconds)
+import Pillar.Core.Meta
+import Pillar.Core.Types
+import Pillar.Ops.OperationTrace
+import Pillar.Ops.WorkflowTask
+
+mkMeta : Text -> Time -> PillarMeta
+mkMeta objectId now = PillarMeta with
+  objectId
+  tenantId = "tnt_ops"
+  apiVersion = "2026-05-26"
+  schemaVersion = 1
+  livemode = False
+  requestId = Some ("req_" <> objectId)
+  idempotencyKey = Some ("idmp_" <> objectId)
+  workflowId = Some ("wf_" <> objectId)
+  createdAt = now
+  updatedAt = now
+  metadata = emptyMetadata
+
+mkTrace : Party -> OperationStatus -> Time -> OperationTrace
+mkTrace operator status now = OperationTrace with
+  operator
+  meta = mkMeta "op_trace" now
+  status
+  intentKind = KindTransfer
+  intentObjectId = "trint_trace"
+  commandId = Some "cmd_trace"
+  submissionId = None
+  updateId = None
+  ledgerOffset = None
+  ledgerTime = None
+  traceId = "trace_ops"
+  failureReason = None
+  retryCount = 0
+
+mkTask : Party -> TaskStatus -> Optional Time -> Int -> Int -> Time -> WorkflowTask
+mkTask operator status scheduledFor attempts maxAttempts now = WorkflowTask with
+  operator
+  meta = mkMeta "task_ops" now
+  status
+  taskType = "retry_unknown_command"
+  scheduledFor
+  attempts
+  maxAttempts
+  payload = TM.fromList [("operationId", "op_trace")]
+  failureReason = None
+
+traceSubmissionTest : Script ()
+traceSubmissionTest = script do
+  operator <- allocateParty "ops-trace-submission-operator"
+  now <- getTime
+  traceCid <- submit operator do createCmd (mkTrace operator OpReceived now)
+  submittedCid <- submit operator do
+    exerciseCmd traceCid RecordSubmitted with submissionId = "sub_001"
+  completedCid <- submit operator do
+    exerciseCmd submittedCid RecordCompleted with
+      updateId = "upd_001"
+      ledgerOffset = "42"
+      ledgerTime = now
+      now
+  projectedCid <- submit operator do
+    exerciseCmd completedCid MarkProjected with now
+  projected <- queryContractId operator projectedCid
+  case projected of
+    None -> abort "projected trace not visible"
+    Some trace -> do
+      assertMsg "trace projected" (trace.status == OpProjected)
+      assertMsg "submission linked" (trace.submissionId == Some "sub_001")
+      assertMsg "update linked" (trace.updateId == Some "upd_001")
+      assertMsg "offset linked" (trace.ledgerOffset == Some "42")
+      pure ()
+
+traceFailureTest : Script ()
+traceFailureTest = script do
+  operator <- allocateParty "ops-trace-failure-operator"
+  now <- getTime
+  traceCid <- submit operator do createCmd (mkTrace operator OpQueued now)
+  failedCid <- submit operator do
+    exerciseCmd traceCid RecordFailed with reason = "command rejected"; now
+  failed <- queryContractId operator failedCid
+  case failed of
+    None -> abort "failed trace not visible"
+    Some trace -> do
+      assertMsg "trace failed" (trace.status == OpFailed)
+      assertMsg "failure captured" (trace.failureReason == Some "command rejected")
+      pure ()
+
+traceUnknownReconcileTest : Script ()
+traceUnknownReconcileTest = script do
+  operator <- allocateParty "ops-trace-reconcile-operator"
+  now <- getTime
+  traceCid <- submit operator do createCmd (mkTrace operator OpUnknown now)
+  reconciledCid <- submit operator do
+    exerciseCmd traceCid MarkReconciled with now
+  reconciled <- queryContractId operator reconciledCid
+  case reconciled of
+    None -> abort "reconciled trace not visible"
+    Some trace -> assertMsg "unknown reconciled" (trace.status == OpReconciled)
+
+workflowTaskLifecycleTest : Script ()
+workflowTaskLifecycleTest = script do
+  operator <- allocateParty "ops-task-lifecycle-operator"
+  now <- getTime
+  taskCid <- submit operator do createCmd (mkTask operator TaskPending None 0 3 now)
+  runningCid <- submit operator do exerciseCmd taskCid StartTask with now
+  completedCid <- submit operator do exerciseCmd runningCid CompleteTask with now
+  completed <- queryContractId operator completedCid
+  case completed of
+    None -> abort "completed task not visible"
+    Some task -> assertMsg "task completed" (task.status == TaskCompleted)
+
+workflowTaskRetryTest : Script ()
+workflowTaskRetryTest = script do
+  operator <- allocateParty "ops-task-retry-operator"
+  now <- getTime
+  taskCid <- submit operator do createCmd (mkTask operator TaskFailed None 0 2 now)
+  retryOneCid <- submit operator do exerciseCmd taskCid RetryTask with now
+  retryOne <- queryContractId operator retryOneCid
+  case retryOne of
+    None -> abort "first retry task not visible"
+    Some task -> do
+      assertMsg "first retry pending" (task.status == TaskPending)
+      assertMsg "first retry increments attempts" (task.attempts == 1)
+  retryTwoCid <- submit operator do exerciseCmd retryOneCid RetryTask with now
+  retryTwo <- queryContractId operator retryTwoCid
+  case retryTwo of
+    None -> abort "second retry task not visible"
+    Some task -> assertMsg "second retry reaches max" (task.attempts == 2)
+  submitMustFail operator do exerciseCmd retryTwoCid RetryTask with now
+  pure ()
+
+workflowTaskExpiredScheduleTest : Script ()
+workflowTaskExpiredScheduleTest = script do
+  operator <- allocateParty "ops-task-schedule-operator"
+  now <- getTime
+  let future = addRelTime now (seconds 60)
+  taskCid <- submit operator do createCmd (mkTask operator TaskPending (Some future) 0 3 now)
+  submitMustFail operator do exerciseCmd taskCid StartTask with now
+  pure ()

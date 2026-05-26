@@ -1,0 +1,15 @@
+-- Pillar Assets :: Versioning. Ticket B15.
+module Pillar.Assets.Versioning where
+
+
+currentSchemaVersion : Int
+currentSchemaVersion = 1
+
+supportedSchemaVersions : [Int]
+supportedSchemaVersions = [1]
+
+requireSupportedSchema : Int -> Either Text ()
+requireSupportedSchema schemaVersion =
+  if elem schemaVersion supportedSchemaVersions
+    then Right ()
+    else Left "unsupported asset schema version"

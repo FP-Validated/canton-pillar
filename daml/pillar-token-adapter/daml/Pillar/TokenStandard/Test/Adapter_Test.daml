@@ -1,0 +1,34 @@
+-- Pillar TokenStandard :: Adapter tests. Tickets B05, B24.
+module Pillar.TokenStandard.Test.Adapter_Test where
+
+import Daml.Script
+import Pillar.TokenStandard.Adapter
+import Pillar.TokenStandard.Interfaces
+
+adapterProbeTest : Script ()
+adapterProbeTest = script do
+  operator <- allocateParty "operator"
+  owner <- allocateParty "owner"
+  _cid <- submit operator do
+    createCmd HoldingAdapterProbe with
+      operator
+      owner
+      amount = 42.5000000000
+      assetRef = "asst_usdc"
+
+  holdingViews <- queryInterface @HoldingI operator
+  let expected = HoldingView with owner; amount = 42.5000000000; assetRef = "asst_usdc"
+  case holdingViews of
+    [(_, Some holdingView)] -> assertMsg "HoldingI view should match probe fields" (holdingView == expected)
+    _ -> abort "expected one HoldingI view for probe"
+
+adapterCompatibilityTest : Script ()
+adapterCompatibilityTest = script do
+  owner <- allocateParty "compat-owner"
+  let nativeHolding = PillarHolding with
+        holder = owner
+        holdingAmountValue = 7.2500000000
+        holdingAssetRef = "asst_compat"
+  let holdingView = viewAsHoldingI nativeHolding
+  let expected = HoldingView with owner; amount = 7.2500000000; assetRef = "asst_compat"
+  assertMsg "adapter preserves native holding fields" (holdingView == expected)

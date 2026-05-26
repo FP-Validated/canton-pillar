@@ -1,0 +1,33 @@
+-- Pillar Core :: TenantConfig. Ticket B01/B07.
+module Pillar.Core.TenantConfig where
+
+import Pillar.Core.Meta
+
+template TenantConfig
+  with
+    operator  : Party       -- Pillar operator party for this tenant
+    issuer    : Party       -- default issuer party (may be same as operator)
+    meta      : PillarMeta
+    defaultApiVersion : ApiVersion
+    -- Coexistence pin: if Just, this tenant's commands target the given template schemaVersion.
+    pinnedSchema : Optional Int
+  where
+    signatory operator
+    observer issuer
+
+    ensure metadataSize meta.metadata <= 50
+
+    choice UpdateTenantConfig : ContractId TenantConfig
+      with newApiVersion : ApiVersion; newPinnedSchema : Optional Int; newMetadata : Metadata; now : Time
+      controller operator
+      do
+        create this with
+          defaultApiVersion = newApiVersion
+          pinnedSchema = newPinnedSchema
+          meta = meta with
+            updatedAt = now
+            metadata = newMetadata
+
+    choice ArchiveTenantConfig : ()
+      controller operator
+      do return ()

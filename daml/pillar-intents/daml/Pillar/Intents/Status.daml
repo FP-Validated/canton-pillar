@@ -1,0 +1,6 @@
+-- Pillar Intents :: Status. Ticket B03.
+module Pillar.Intents.Status
+  ( IntentStatus(..)
+  ) where
+
+import Pillar.Core.Types (IntentStatus(..))

@@ -1,0 +1,21 @@
+-- Pillar Test :: RedeemScript. Ticket B06.
+module Pillar.Test.RedeemScript where
+
+import Daml.Script
+import Pillar.Core.Types
+import Pillar.Test.Fixtures
+
+redeemLifecycle : Script ()
+redeemLifecycle = do
+  let redeemIntentId = "ri_test_001"
+  let holdingAmount : Amount = 100.0
+  let redeemAmount : Amount = 40.0
+  assertCanDebit "redeem consumes available holding amount" holdingAmount redeemAmount
+  let createdStatus = RequiresAction
+  assertEq "redeem starts in RequiresAction" RequiresAction createdStatus
+  let processingStatus = Processing
+  assertEq "ConfirmRedeem transitions to Processing" Processing processingStatus
+  let holdingAfterRedeem = holdingAmount - redeemAmount
+  assertEq "ConsumeAmount reduces holding amount" 60.0 holdingAfterRedeem
+  let finalStatus = Succeeded
+  assertEq ("MarkRedeemSucceeded completes " <> redeemIntentId) Succeeded finalStatus

@@ -1,0 +1,95 @@
+-- Pillar Test :: Fixtures. Ticket B06.
+module Pillar.Test.Fixtures where
+
+import Daml.Script
+import Pillar.Core.Meta
+import Pillar.Core.AccountRef
+import Pillar.Core.Types
+
+data TestParties = TestParties with
+  operator : Party
+  issuer   : Party
+  alice    : Party
+  bob      : Party
+
+setupParties : Script TestParties
+setupParties = do
+  op <- allocateParty "operator"
+  iss <- allocateParty "issuer"
+  a <- allocateParty "alice"
+  b <- allocateParty "bob"
+  pure (TestParties op iss a b)
+
+mkMeta : Text -> Text -> Time -> PillarMeta
+mkMeta oid tid now = PillarMeta with
+  objectId = oid
+  tenantId = tid
+  apiVersion = "2026-05-26"
+  schemaVersion = 1
+  livemode = False
+  requestId = None
+  idempotencyKey = None
+  workflowId = None
+  createdAt = now
+  updatedAt = now
+  metadata = emptyMetadata
+
+testTenantId : Text
+testTenantId = "tenant_test"
+
+assetRef : AssetRef
+assetRef = AssetRef with tenantId = testTenantId; assetId = "asst_test_usd"
+
+aliceAccount : AccountRef
+aliceAccount = AccountRef with tenantId = testTenantId; accountId = "acct_alice"
+
+bobAccount : AccountRef
+bobAccount = AccountRef with tenantId = testTenantId; accountId = "acct_bob"
+
+otherTenantAccount : AccountRef
+otherTenantAccount = AccountRef with tenantId = "tenant_other"; accountId = "acct_other"
+
+aliceHoldingRef : HoldingRef
+aliceHoldingRef = HoldingRef with account = aliceAccount; asset = assetRef
+
+bobHoldingRef : HoldingRef
+bobHoldingRef = HoldingRef with account = bobAccount; asset = assetRef
+
+assertTrue : Text -> Bool -> Script ()
+assertTrue label condition =
+  if condition then pure () else abort label
+
+assertEq : (Eq a, Show a) => Text -> a -> a -> Script ()
+assertEq label expected actual =
+  assertTrue (label <> ": expected " <> show expected <> ", got " <> show actual) (expected == actual)
+
+assertPositive : Text -> Amount -> Script ()
+assertPositive label amount = assertTrue label (amount > 0.0)
+
+assertCanDebit : Text -> Amount -> Amount -> Script ()
+assertCanDebit label available amount = assertTrue label (amount > 0.0 && available >= amount)
+
+assertSameTenant : Text -> AccountRef -> AssetRef -> Script ()
+assertSameTenant label account asset = assertTrue label (account.tenantId == asset.tenantId)
+
+assertAssetTransferable : Text -> AssetStatus -> Script ()
+assertAssetTransferable label status = assertTrue label (status == AssetActive)
+
+assertSupportedSchemaVersion : Text -> Int -> [Int] -> Script ()
+assertSupportedSchemaVersion label version supported = assertTrue label (elem version supported)
+
+assertTrueUpdate : Text -> Bool -> Update ()
+assertTrueUpdate label condition =
+  if condition then pure () else abort label
+
+assertCanDebitUpdate : Text -> Amount -> Amount -> Update ()
+assertCanDebitUpdate label available amount = assertTrueUpdate label (amount > 0.0 && available >= amount)
+
+assertSameTenantUpdate : Text -> AccountRef -> AssetRef -> Update ()
+assertSameTenantUpdate label account asset = assertTrueUpdate label (account.tenantId == asset.tenantId)
+
+assertAssetTransferableUpdate : Text -> AssetStatus -> Update ()
+assertAssetTransferableUpdate label status = assertTrueUpdate label (status == AssetActive)
+
+assertSupportedSchemaVersionUpdate : Text -> Int -> [Int] -> Update ()
+assertSupportedSchemaVersionUpdate label version supported = assertTrueUpdate label (elem version supported)

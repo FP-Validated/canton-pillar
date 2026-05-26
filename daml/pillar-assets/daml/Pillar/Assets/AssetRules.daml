@@ -1,0 +1,72 @@
+-- Pillar Assets :: AssetRules. Ticket B02/B11.
+module Pillar.Assets.AssetRules where
+
+import Pillar.Assets.Restrictions (Restriction)
+import Pillar.Assets.Versioning (requireSupportedSchema)
+import Pillar.Core.AccountRef (AssetRef)
+import Pillar.Core.Meta (PillarMeta)
+import Pillar.Core.Types (AssetStatus(..))
+
+template AssetRules
+  with
+    operator : Party
+    issuer : Party
+    tenantOperator : Party
+    meta : PillarMeta
+    assetRef : AssetRef
+    status : AssetStatus
+    precision : Int
+    transferEnabled : Bool
+    redemptionEnabled : Bool
+    mintEnabled : Bool
+    restrictions : [Restriction]
+    versionTag : Text
+  where
+    signatory operator, issuer
+    observer tenantOperator
+    ensure precision >= 0 && precision <= 18 && requireSupportedSchema meta.schemaVersion == Right ()
+
+    choice UpdateRules : ContractId AssetRules
+      with
+        newMeta : PillarMeta
+        newPrecision : Int
+        newTransferEnabled : Bool
+        newRedemptionEnabled : Bool
+        newMintEnabled : Bool
+        newRestrictions : [Restriction]
+        newVersionTag : Text
+      controller operator, issuer
+      do
+        assertMsg "cannot update archived asset rules" (status /= AssetArchived)
+        assertMsg "precision must be between 0 and 18" (newPrecision >= 0 && newPrecision <= 18)
+        assertMsg "unsupported schema version" (requireSupportedSchema newMeta.schemaVersion == Right ())
+        create this with
+          meta = newMeta
+          precision = newPrecision
+          transferEnabled = newTransferEnabled
+          redemptionEnabled = newRedemptionEnabled
+          mintEnabled = newMintEnabled
+          restrictions = newRestrictions
+          versionTag = newVersionTag
+
+    choice SuspendAsset : ContractId AssetRules
+      with
+        newMeta : PillarMeta
+      controller operator, issuer
+      do
+        assertMsg "only active asset rules can be suspended" (status == AssetActive)
+        create this with meta = newMeta, status = AssetSuspended
+
+    choice ReactivateAsset : ContractId AssetRules
+      with
+        newMeta : PillarMeta
+      controller operator, issuer
+      do
+        assertMsg "only suspended asset rules can be reactivated" (status == AssetSuspended)
+        create this with meta = newMeta, status = AssetActive
+
+    choice ArchiveRules : ()
+      controller operator, issuer
+      do
+        assertMsg "asset rules already archived" (status /= AssetArchived)
+        pure ()

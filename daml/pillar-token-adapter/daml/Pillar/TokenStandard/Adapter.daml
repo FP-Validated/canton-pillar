@@ -1,0 +1,32 @@
+-- Pillar TokenStandard :: Adapter probe. Tickets B05, B24.
+module Pillar.TokenStandard.Adapter where
+
+import Pillar.TokenStandard.Interfaces
+
+data PillarHolding = PillarHolding with
+  holder : Party
+  holdingAmountValue : Decimal
+  holdingAssetRef : Text
+    deriving (Eq, Show)
+
+viewAsHoldingI : PillarHolding -> HoldingView
+viewAsHoldingI holding = HoldingView with
+  owner = holding.holder
+  amount = holding.holdingAmountValue
+  assetRef = holding.holdingAssetRef
+
+-- Minimal probe template implementing HoldingI so the interface compiles.
+template HoldingAdapterProbe
+  with
+    operator : Party
+    owner : Party
+    amount : Decimal
+    assetRef : Text
+  where
+    signatory operator
+
+    interface instance HoldingI for HoldingAdapterProbe where
+      view = HoldingView with owner; amount; assetRef
+      holdingOwner = owner
+      holdingAmount = amount
+      holdingAssetRefId = assetRef

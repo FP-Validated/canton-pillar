@@ -1,0 +1,31 @@
+-- Pillar Intents :: SettlementIntent. Ticket B19.
+module Pillar.Intents.SettlementIntent where
+
+import Pillar.Core.Types
+import Pillar.Intents.Common
+
+data SettlementLeg = SettlementLeg with
+  fromAccountId : Text
+  toAccountId : Text
+  assetId : Text
+  amount : Amount
+    deriving (Eq, Show)
+
+template SettlementIntent
+  with
+    base : IntentBase
+    legs : [SettlementLeg]
+  where
+    signatory base.initiator
+    ensure base.meta.objectId /= "" && not (null legs) && all validLeg legs
+
+    choice MarkSettlementSucceeded : ContractId SettlementIntent
+      with
+        now : Time
+      controller base.initiator
+      do
+        create this with base = markSucceeded base now
+
+validLeg : SettlementLeg -> Bool
+validLeg leg =
+  leg.fromAccountId /= "" && leg.toAccountId /= "" && leg.fromAccountId /= leg.toAccountId && leg.assetId /= "" && leg.amount > 0.0

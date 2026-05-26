@@ -1,3 +1,7 @@
 packages:
   - ./pillar-core
-  - ./pillar-test-fixtures
+  - ./pillar-assets
+  - ./pillar-intents
+  - ./pillar-ops
+  - ./pillar-token-adapter
+  - ./pillar-test

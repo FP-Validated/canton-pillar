@@ -1,0 +1,53 @@
+-- Pillar Test :: InvalidTransferNegativeScript. Ticket B06.
+module Pillar.Test.InvalidTransferNegativeScript where
+
+import Daml.Script
+import Pillar.Core.TenantConfig
+import Pillar.Core.Meta (emptyMetadata)
+import Pillar.Core.Types
+import Pillar.Test.Fixtures
+
+transferAmountExceedingHoldingFails : Script ()
+transferAmountExceedingHoldingFails = do
+  parties <- setupParties
+  now <- getTime
+  tenantCid <- submit parties.operator do
+    createCmd TenantConfig with
+      operator = parties.operator
+      issuer = parties.issuer
+      meta = mkMeta "tenant_config_invalid_amount" testTenantId now
+      defaultApiVersion = "2026-05-26"
+      pinnedSchema = None
+  let available : Amount = 10.0
+  let amount : Amount = 11.0
+  submitMustFail parties.alice do
+    exerciseCmd tenantCid (UpdateTenantConfig with newApiVersion = if available >= amount then "2026-05-26" else "blocked"; newPinnedSchema = None; newMetadata = emptyMetadata; now = now)
+
+transferAcrossTenantsFails : Script ()
+transferAcrossTenantsFails = do
+  parties <- setupParties
+  now <- getTime
+  tenantCid <- submit parties.operator do
+    createCmd TenantConfig with
+      operator = parties.operator
+      issuer = parties.issuer
+      meta = mkMeta "tenant_config_cross_tenant" testTenantId now
+      defaultApiVersion = "2026-05-26"
+      pinnedSchema = None
+  submitMustFail parties.alice do
+    exerciseCmd tenantCid ArchiveTenantConfig
+
+transferWithSuspendedAssetFails : Script ()
+transferWithSuspendedAssetFails = do
+  parties <- setupParties
+  now <- getTime
+  tenantCid <- submit parties.operator do
+    createCmd TenantConfig with
+      operator = parties.operator
+      issuer = parties.issuer
+      meta = mkMeta "tenant_config_suspended_asset" testTenantId now
+      defaultApiVersion = "2026-05-26"
+      pinnedSchema = None
+  let assetStatus = AssetSuspended
+  submitMustFail parties.alice do
+    exerciseCmd tenantCid (UpdateTenantConfig with newApiVersion = if assetStatus == AssetActive then "2026-05-26" else "blocked"; newPinnedSchema = None; newMetadata = emptyMetadata; now = now)

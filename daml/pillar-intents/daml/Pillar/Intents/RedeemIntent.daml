@@ -1,0 +1,62 @@
+-- Pillar Intents :: RedeemIntent. Ticket B03/B17.
+module Pillar.Intents.RedeemIntent where
+
+import Pillar.Core.Types
+import Pillar.Intents.Common
+
+template RedeemIntent
+  with
+    operator : Party
+    issuer : Party
+    base : IntentBase
+    accountId : Text
+    assetId : Text
+    amount : Amount
+    expiresAt : Optional Time
+  where
+    signatory operator, issuer
+    observer operator
+    ensure amount > 0.0 && base.meta.objectId /= "" && accountId /= "" && assetId /= "" && base.initiator == operator
+
+    choice ConfirmRedeem : ContractId RedeemIntent
+      with
+        now : Time
+      controller operator
+      do
+        assertMsg "RedeemIntent must be RequiresAction to confirm" (ensureRequiresAction base)
+        create this with base = markProcessing base now
+
+    choice CancelRedeem : ContractId RedeemIntent
+      with
+        now : Time
+      controller operator
+      do
+        create this with base = markCanceled base now
+
+    choice FailRedeem : ContractId RedeemIntent
+      with
+        reason : Text
+        now : Time
+      controller operator
+      do
+        assertMsg "failure reason is required" (reason /= "")
+        create this with base = markFailed base reason now
+
+    choice MarkRedeemSucceeded : ContractId RedeemIntent
+      with
+        now : Time
+      controller operator
+      do
+        assertMsg "RedeemIntent must be Processing to succeed" (ensureProcessing base)
+        create this with base = markSucceeded base now
+
+    choice ExpireRedeem : ContractId RedeemIntent
+      with
+        now : Time
+      controller operator
+      do
+        assertMsg "RedeemIntent must be Processing to expire" (ensureProcessing base)
+        case expiresAt of
+          None -> abort "RedeemIntent has no expiry deadline"
+          Some deadline -> assertMsg "RedeemIntent expiry deadline has not passed" (now >= deadline)
+        create this with base = markExpired base now

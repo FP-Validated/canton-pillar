@@ -1,0 +1,38 @@
+-- Pillar Core :: Meta. Ticket B07/B09.
+module Pillar.Core.Meta where
+
+import DA.TextMap (TextMap)
+import DA.TextMap qualified as TM
+
+-- Stable external object id (e.g. "asst_01HY..."). Never a ContractId.
+type ObjectId = Text
+type TenantId = Text
+type ApiVersion = Text
+type RequestId = Text
+type IdempotencyKey = Text
+type WorkflowId = Text
+
+-- PII-free metadata key/value bag for templates.
+newtype Metadata = Metadata { entries : TextMap Text }
+  deriving (Eq, Show)
+
+emptyMetadata : Metadata
+emptyMetadata = Metadata TM.empty
+
+metadataSize : Metadata -> Int
+metadataSize (Metadata m) = length (TM.toList m)
+
+-- Pillar metadata envelope embedded into every template.
+data PillarMeta = PillarMeta with
+  objectId       : ObjectId
+  tenantId       : TenantId
+  apiVersion     : ApiVersion
+  schemaVersion  : Int
+  livemode       : Bool
+  requestId      : Optional RequestId
+  idempotencyKey : Optional IdempotencyKey
+  workflowId     : Optional WorkflowId
+  createdAt      : Time
+  updatedAt      : Time
+  metadata       : Metadata
+    deriving (Eq, Show)

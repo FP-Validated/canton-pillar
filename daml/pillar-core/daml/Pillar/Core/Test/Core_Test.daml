@@ -1,0 +1,78 @@
+-- Pillar Core :: Test harness base. Ticket B10.
+module Pillar.Core.Test.Core_Test where
+
+import Daml.Script
+import DA.TextMap qualified as TM
+import Pillar.Core.Meta
+import Pillar.Core.AccountRef
+import Pillar.Core.TenantConfig
+
+-- Smoke test: build a metadata envelope and assert invariants.
+metaSmokeTest : Script ()
+metaSmokeTest = script do
+  now <- getTime
+  let meta = PillarMeta with
+        objectId = "tnt_test_smoke"
+        tenantId = "tnt_smoke"
+        apiVersion = "2026-05-26"
+        schemaVersion = 1
+        livemode = False
+        requestId = None
+        idempotencyKey = None
+        workflowId = None
+        createdAt = now
+        updatedAt = now
+        metadata = Metadata (TM.fromList [("label", "smoke")])
+  assertMsg "meta size <= 50" (metadataSize meta.metadata <= 50)
+  pure ()
+
+-- Smoke test: tenant lifecycle.
+tenantLifecycleTest : Script ()
+tenantLifecycleTest = script do
+  alice <- allocateParty "operator"
+  bob   <- allocateParty "issuer"
+  now <- getTime
+  let meta = PillarMeta with
+        objectId = "tnt_lifecycle"
+        tenantId = "tnt_lifecycle"
+        apiVersion = "2026-05-26"
+        schemaVersion = 1
+        livemode = False
+        requestId = None
+        idempotencyKey = None
+        workflowId = None
+        createdAt = now
+        updatedAt = now
+        metadata = emptyMetadata
+  cid <- submit alice do
+    createCmd TenantConfig with
+      operator = alice
+      issuer = bob
+      meta
+      defaultApiVersion = "2026-05-26"
+      pinnedSchema = None
+
+  -- Update
+  newCid <- submit alice do
+    exerciseCmd cid UpdateTenantConfig with
+      newApiVersion = "2026-06-01"
+      newPinnedSchema = Some 1
+      newMetadata = Metadata (TM.fromList [("updated", "yes")])
+      now = now
+
+  -- Archive
+  submit alice do exerciseCmd newCid ArchiveTenantConfig
+  pure ()
+
+-- AccountRef tests.
+accountRefTest : Script ()
+accountRefTest = script do
+  let a = AccountRef with tenantId = "tnt_a"; accountId = "acct_x"
+      b = AssetRef with tenantId = "tnt_a"; assetId = "asst_x"
+  case mkHoldingRef a b of
+    Right _ -> pure ()
+    Left e -> abort ("unexpected error: " <> e)
+  let bWrong = AssetRef with tenantId = "tnt_b"; assetId = "asst_y"
+  case mkHoldingRef a bWrong of
+    Left _ -> pure ()
+    Right _ -> abort "expected tenantId mismatch error"
