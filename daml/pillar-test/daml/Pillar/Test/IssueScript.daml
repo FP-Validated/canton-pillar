@@ -2,30 +2,26 @@
 module Pillar.Test.IssueScript where
 
 import Daml.Script
-import Pillar.Core.TenantConfig
+import Pillar.Assets.Holding
 import Pillar.Core.Types
+import Pillar.Intents.IssueIntent
 import Pillar.Test.Fixtures
 
-issueLifecycle : Script ()
-issueLifecycle = do
+issueLifecycleTest : Script ()
+issueLifecycleTest = do
   parties <- setupParties
   now <- getTime
-  _tenant <- submit parties.operator do
-    createCmd TenantConfig with
-      operator = parties.operator
-      issuer = parties.issuer
-      meta = mkMeta "tenant_config_test" testTenantId now
-      defaultApiVersion = "2026-05-26"
-      pinnedSchema = None
-  let issueIntentId = "ii_test_001"
-  let issueAmount : Amount = 100.0
-  assertPositive "issue amount must be positive" issueAmount
-  assertSameTenant "issue destination account and asset share tenant" aliceAccount assetRef
-  let createdStatus = RequiresAction
-  assertEq "issue starts in RequiresAction" RequiresAction createdStatus
-  let confirmedStatus = Processing
-  assertEq "ConfirmIssue transitions to Processing" Processing confirmedStatus
-  let holdingAmount = issueAmount
-  assertEq "IncreaseAmount creates destination holding amount" 100.0 holdingAmount
-  let finalStatus = Succeeded
-  assertEq ("MarkIssueSucceeded completes " <> issueIntentId) Succeeded finalStatus
+  holdingCid <- createHolding parties.operator parties.issuer parties.alice aliceHoldingRef 0.0 now
+  traceCid <- createTrace parties.operator KindIssue "issue_ok" now
+  intentCid <- submit (actAs [parties.operator, parties.issuer]) do
+    createCmd IssueIntent with operator = parties.operator; issuer = parties.issuer; base = mkBase parties.operator "issue_ok" now; accountId = aliceAccount.accountId; assetId = testAssetRef.assetId; amount = 100.0; expiresAt = None
+  processingCid <- submit parties.operator do
+    exerciseCmd intentCid ConfirmIssue with now; operationTraceId = traceCid; submissionId = "sub_issue"
+  projectedTraceCid <- createTrace parties.operator KindIssue "issue_projected" now
+  succeededCid <- submit parties.operator do
+    exerciseCmd processingCid MarkIssueSucceeded with now; holdingCid; creditAmount = 100.0; newHoldingMeta = mkMeta "issue_holding" testTenantId now; newHoldingVersionTag = "v2"; operationTraceId = projectedTraceCid
+  succeeded <- expectSome "expected succeeded issue" =<< queryContractId parties.operator succeededCid
+  assertEq "issue succeeded" Succeeded succeeded.base.status
+  holdings <- (queryFilter parties.operator (\(h : Holding) -> h.holdingRef == aliceHoldingRef) : Script [(ContractId Holding, Holding)])
+  assertMsg "issue credits holding" (any (\(_, h) -> h.amount == (100.0 : Decimal) && h.activeHolds == (0.0 : Decimal)) holdings)
+  pure ()

@@ -2,48 +2,14 @@
 module Pillar.Test.AuthorizationNegativeScript where
 
 import Daml.Script
-import Pillar.Core.TenantConfig
-import Pillar.Core.Meta (emptyMetadata)
+import Pillar.Assets.Holding
 import Pillar.Test.Fixtures
 
-nonOperatorCannotExerciseConfirmIssue : Script ()
-nonOperatorCannotExerciseConfirmIssue = do
+authorizationNegativeTest : Script ()
+authorizationNegativeTest = do
   parties <- setupParties
   now <- getTime
-  tenantCid <- submit parties.operator do
-    createCmd TenantConfig with
-      operator = parties.operator
-      issuer = parties.issuer
-      meta = mkMeta "tenant_config_auth_issue" testTenantId now
-      defaultApiVersion = "2026-05-26"
-      pinnedSchema = None
-  submitMustFail parties.alice do
-    exerciseCmd tenantCid (UpdateTenantConfig with newApiVersion = "2026-05-26"; newPinnedSchema = None; newMetadata = emptyMetadata; now = now)
-
-nonIssuerCannotChangeAssetRules : Script ()
-nonIssuerCannotChangeAssetRules = do
-  parties <- setupParties
-  now <- getTime
-  tenantCid <- submit parties.operator do
-    createCmd TenantConfig with
-      operator = parties.operator
-      issuer = parties.issuer
-      meta = mkMeta "tenant_config_auth_asset" testTenantId now
-      defaultApiVersion = "2026-05-26"
-      pinnedSchema = None
-  submitMustFail parties.alice do
-    exerciseCmd tenantCid ArchiveTenantConfig
-
-nonHolderCannotTransferOwnership : Script ()
-nonHolderCannotTransferOwnership = do
-  parties <- setupParties
-  now <- getTime
-  tenantCid <- submit parties.operator do
-    createCmd TenantConfig with
-      operator = parties.operator
-      issuer = parties.issuer
-      meta = mkMeta "tenant_config_auth_holding" testTenantId now
-      defaultApiVersion = "2026-05-26"
-      pinnedSchema = None
+  holdingCid <- createHolding parties.operator parties.issuer parties.alice aliceHoldingRef 100.0 now
   submitMustFail parties.bob do
-    exerciseCmd tenantCid ArchiveTenantConfig
+    exerciseCmd holdingCid CreateHold with holdMeta = mkMeta "unauthorized_hold" testTenantId now; holdAmount = 10.0; purpose = "transfer"; expiresAt = None; newVersionTag = "v2"
+  pure ()

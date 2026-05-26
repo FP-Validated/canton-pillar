@@ -2,25 +2,52 @@
 module Pillar.Test.TransferScript where
 
 import Daml.Script
+import Pillar.Assets.Holding
 import Pillar.Core.Types
+import Pillar.Intents.TransferIntent
 import Pillar.Test.Fixtures
 
-transferLifecycle : Script ()
-transferLifecycle = do
-  let transferIntentId = "ti_test_001"
-  let sourceBefore : Amount = 100.0
-  let destinationBefore : Amount = 10.0
-  let transferAmount : Amount = 25.0
-  assertSameTenant "transfer source account and asset share tenant" aliceAccount assetRef
-  assertSameTenant "transfer destination account and asset share tenant" bobAccount assetRef
-  assertCanDebit "ConsumeAmount requires enough source holding" sourceBefore transferAmount
-  let createdStatus = RequiresAction
-  assertEq "transfer starts in RequiresAction" RequiresAction createdStatus
-  let processingStatus = Processing
-  assertEq "ConfirmTransfer transitions to Processing" Processing processingStatus
-  let sourceAfter = sourceBefore - transferAmount
-  let destinationAfter = destinationBefore + transferAmount
-  assertEq "ConsumeAmount debits source holding" 75.0 sourceAfter
-  assertEq "IncreaseAmount credits destination holding" 35.0 destinationAfter
-  let finalStatus = Succeeded
-  assertEq ("MarkTransferSucceeded completes " <> transferIntentId) Succeeded finalStatus
+transferLifecycleTest : Script ()
+transferLifecycleTest = do
+  parties <- setupParties
+  now <- getTime
+  rulesCid <- createRules parties.operator parties.issuer parties.operator AssetActive True now
+  fromCid <- createHolding parties.operator parties.issuer parties.alice aliceHoldingRef 100.0 now
+  toCid <- createHolding parties.operator parties.issuer parties.bob bobHoldingRef 10.0 now
+  (holdCid, heldFromCid) <- submit parties.operator do
+    exerciseCmd fromCid CreateHold with holdMeta = mkMeta "transfer_hold" testTenantId now; holdAmount = 25.0; purpose = "transfer"; expiresAt = None; newVersionTag = "v2"
+  traceCid <- createTrace parties.operator KindTransfer "transfer_ok" now
+  intentCid <- submit (actAs [parties.operator, parties.issuer]) do
+    createCmd TransferIntent with operator = parties.operator; issuer = parties.issuer; base = mkBase parties.operator "transfer_ok" now; fromAccountId = aliceAccount.accountId; toAccountId = bobAccount.accountId; assetId = testAssetRef.assetId; amount = 25.0; expiresAt = None
+  processingCid <- submit parties.operator do
+    exerciseCmd intentCid ConfirmTransfer with now; fromHoldingCid = heldFromCid; toHoldingCid = toCid; holdCid; assetRulesCid = rulesCid; sourceMeta = mkMeta "from_after" testTenantId now; destinationMeta = mkMeta "to_after" testTenantId now; sourceVersionTag = "v3"; destinationVersionTag = "v2"; operationTraceId = traceCid; submissionId = "sub_transfer"
+  completedTraceCid <- createTrace parties.operator KindTransfer "transfer_completed" now
+  succeededCid <- submit parties.operator do
+    exerciseCmd processingCid MarkTransferSucceeded with now; operationTraceId = completedTraceCid; updateId = "upd_transfer"; ledgerOffset = "42"; ledgerTime = now
+  succeeded <- expectSome "expected succeeded transfer" =<< queryContractId parties.operator succeededCid
+  assertEq "transfer succeeded" Succeeded succeeded.base.status
+  finalSources <- (queryFilter parties.operator (\(h : Holding) -> h.holdingRef == aliceHoldingRef) : Script [(ContractId Holding, Holding)])
+  finalDests <- (queryFilter parties.operator (\(h : Holding) -> h.holdingRef == bobHoldingRef) : Script [(ContractId Holding, Holding)])
+  assertMsg "source debited to 75" (any (\(_, h) -> h.amount == (75.0 : Decimal) && h.activeHolds == (0.0 : Decimal)) finalSources)
+  assertMsg "destination credited to 35" (any (\(_, h) -> h.amount == (35.0 : Decimal) && h.activeHolds == (0.0 : Decimal)) finalDests)
+  assertArchived parties.operator "transfer consumes hold" holdCid
+  pure ()
+
+transferFailReleasesHoldTest : Script ()
+transferFailReleasesHoldTest = do
+  parties <- setupParties
+  now <- getTime
+  fromCid <- createHolding parties.operator parties.issuer parties.alice aliceHoldingRef 100.0 now
+  (holdCid, heldFromCid) <- submit parties.operator do
+    exerciseCmd fromCid CreateHold with holdMeta = mkMeta "transfer_fail_hold" testTenantId now; holdAmount = 25.0; purpose = "transfer"; expiresAt = None; newVersionTag = "v2"
+  traceCid <- createTrace parties.operator KindTransfer "transfer_fail" now
+  intentCid <- submit (actAs [parties.operator, parties.issuer]) do
+    createCmd TransferIntent with operator = parties.operator; issuer = parties.issuer; base = mkBase parties.operator "transfer_fail" now; fromAccountId = aliceAccount.accountId; toAccountId = bobAccount.accountId; assetId = testAssetRef.assetId; amount = 25.0; expiresAt = None
+  failedCid <- submit parties.operator do
+    exerciseCmd intentCid FailTransfer with reason = "canceled"; now; fromHoldingCid = heldFromCid; holdCid; newHoldingMeta = mkMeta "from_released" testTenantId now; newHoldingVersionTag = "v3"; operationTraceId = traceCid
+  failed <- expectSome "expected failed transfer" =<< queryContractId parties.operator failedCid
+  assertEq "transfer failed" Failed failed.base.status
+  finalSources <- (queryFilter parties.operator (\(h : Holding) -> h.holdingRef == aliceHoldingRef) : Script [(ContractId Holding, Holding)])
+  assertMsg "source unchanged after fail" (any (\(_, h) -> h.amount == (100.0 : Decimal) && h.activeHolds == (0.0 : Decimal)) finalSources)
+  assertArchived parties.operator "fail archives hold" holdCid
+  pure ()

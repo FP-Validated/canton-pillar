@@ -1,6 +1,9 @@
 -- Pillar Intents :: IssueIntent. Ticket B03/B16.
 module Pillar.Intents.IssueIntent where
 
+import Pillar.Assets.Holding
+import Pillar.Ops.OperationTrace
+import Pillar.Core.Meta (PillarMeta)
 import Pillar.Core.Types
 import Pillar.Intents.Common
 
@@ -21,9 +24,12 @@ template IssueIntent
     choice ConfirmIssue : ContractId IssueIntent
       with
         now : Time
+        operationTraceId : ContractId OperationTrace
+        submissionId : Text
       controller operator
       do
         assertMsg "IssueIntent must be RequiresAction to confirm" (ensureRequiresAction base)
+        _trace <- exercise operationTraceId RecordSubmitted with submissionId
         create this with base = markProcessing base now
 
     choice CancelIssue : ContractId IssueIntent
@@ -37,17 +43,30 @@ template IssueIntent
       with
         reason : Text
         now : Time
+        operationTraceId : ContractId OperationTrace
       controller operator
       do
         assertMsg "failure reason is required" (reason /= "")
+        _trace <- exercise operationTraceId RecordFailed with reason; now
         create this with base = markFailed base reason now
 
     choice MarkIssueSucceeded : ContractId IssueIntent
       with
         now : Time
+        holdingCid : ContractId Holding
+        creditAmount : Amount
+        newHoldingMeta : PillarMeta
+        newHoldingVersionTag : Text
+        operationTraceId : ContractId OperationTrace
       controller operator
       do
         assertMsg "IssueIntent must be Processing to succeed" (ensureProcessing base)
+        holding <- fetch holdingCid
+        assertMsg "issue holding account mismatch" (holding.holdingRef.account.accountId == accountId)
+        assertMsg "issue holding asset mismatch" (holding.holdingRef.asset.assetId == assetId)
+        assertMsg "issue amount mismatch" (creditAmount == amount)
+        _newHolding <- exercise holdingCid IncreaseAmount with newMeta = newHoldingMeta; increaseAmount = creditAmount; newVersionTag = newHoldingVersionTag
+        _trace <- exercise operationTraceId MarkProjected with now
         create this with base = markSucceeded base now
 
     choice ExpireIssue : ContractId IssueIntent

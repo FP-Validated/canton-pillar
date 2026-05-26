@@ -2,9 +2,13 @@
 module Pillar.Test.Fixtures where
 
 import Daml.Script
-import Pillar.Core.Meta
+import Pillar.Assets.AssetRules (AssetRules(..))
+import Pillar.Assets.Holding
 import Pillar.Core.AccountRef
+import Pillar.Core.Meta
 import Pillar.Core.Types
+import Pillar.Intents.Common
+import Pillar.Ops.OperationTrace
 
 data TestParties = TestParties with
   operator : Party
@@ -37,8 +41,8 @@ mkMeta oid tid now = PillarMeta with
 testTenantId : Text
 testTenantId = "tenant_test"
 
-assetRef : AssetRef
-assetRef = AssetRef with tenantId = testTenantId; assetId = "asst_test_usd"
+testAssetRef : AssetRef
+testAssetRef = AssetRef with tenantId = testTenantId; assetId = "asst_test_usd"
 
 aliceAccount : AccountRef
 aliceAccount = AccountRef with tenantId = testTenantId; accountId = "acct_alice"
@@ -50,46 +54,89 @@ otherTenantAccount : AccountRef
 otherTenantAccount = AccountRef with tenantId = "tenant_other"; accountId = "acct_other"
 
 aliceHoldingRef : HoldingRef
-aliceHoldingRef = HoldingRef with account = aliceAccount; asset = assetRef
+aliceHoldingRef = HoldingRef with account = aliceAccount; asset = testAssetRef
 
 bobHoldingRef : HoldingRef
-bobHoldingRef = HoldingRef with account = bobAccount; asset = assetRef
+bobHoldingRef = HoldingRef with account = bobAccount; asset = testAssetRef
+
+otherTenantHoldingRef : HoldingRef
+otherTenantHoldingRef = HoldingRef with account = otherTenantAccount; asset = AssetRef with tenantId = "tenant_other"; assetId = "asst_test_usd"
+
+mkBase : Party -> Text -> Time -> IntentBase
+mkBase operator objectId now = IntentBase with
+  meta = mkMeta objectId testTenantId now
+  status = RequiresAction
+  initiator = operator
+  failureReason = None
+
+mkHolding : Party -> Party -> Party -> HoldingRef -> Decimal -> Time -> Holding
+mkHolding operator issuer holder ref amount now = Holding with
+  operator
+  issuer
+  holder
+  meta = mkMeta ("h_" <> ref.account.accountId) ref.account.tenantId now
+  holdingRef = ref
+  owner = holder
+  amount
+  activeHolds = 0.0
+  versionTag = "v1"
+
+createHolding : Party -> Party -> Party -> HoldingRef -> Decimal -> Time -> Script (ContractId Holding)
+createHolding operator issuer holder ref amount now =
+  submit (actAs [operator, issuer, holder]) do createCmd (mkHolding operator issuer holder ref amount now)
+
+createRules : Party -> Party -> Party -> AssetStatus -> Bool -> Time -> Script (ContractId AssetRules)
+createRules operator issuer tenantOperator status transferEnabled now =
+  submit (actAs [operator, issuer]) do
+    createCmd AssetRules with
+      operator
+      issuer
+      tenantOperator
+      meta = mkMeta "rules" testTenantId now
+      assetRef = testAssetRef
+      status
+      precision = 2
+      transferEnabled
+      redemptionEnabled = True
+      mintEnabled = True
+      restrictions = []
+      versionTag = "v1"
+
+createTrace : Party -> IntentKind -> Text -> Time -> Script (ContractId OperationTrace)
+createTrace operator kind objectId now =
+  submit operator do
+    createCmd OperationTrace with
+      operator
+      meta = mkMeta ("trace_" <> objectId) testTenantId now
+      status = OpReceived
+      intentKind = kind
+      intentObjectId = objectId
+      commandId = None
+      submissionId = None
+      updateId = None
+      ledgerOffset = None
+      ledgerTime = None
+      traceId = "tr_" <> objectId
+      failureReason = None
+      retryCount = 0
 
 assertTrue : Text -> Bool -> Script ()
-assertTrue label condition =
-  if condition then pure () else abort label
+assertTrue label condition = assertMsg label condition
 
 assertEq : (Eq a, Show a) => Text -> a -> a -> Script ()
-assertEq label expected actual =
-  assertTrue (label <> ": expected " <> show expected <> ", got " <> show actual) (expected == actual)
+assertEq label expected actual = assertMsg (label <> ": expected " <> show expected <> ", got " <> show actual) (expected == actual)
 
-assertPositive : Text -> Amount -> Script ()
-assertPositive label amount = assertTrue label (amount > 0.0)
+expectSome : Text -> Optional a -> Script a
+expectSome label value = case value of
+  None -> abort label
+  Some x -> pure x
 
-assertCanDebit : Text -> Amount -> Amount -> Script ()
-assertCanDebit label available amount = assertTrue label (amount > 0.0 && available >= amount)
-
-assertSameTenant : Text -> AccountRef -> AssetRef -> Script ()
-assertSameTenant label account asset = assertTrue label (account.tenantId == asset.tenantId)
-
-assertAssetTransferable : Text -> AssetStatus -> Script ()
-assertAssetTransferable label status = assertTrue label (status == AssetActive)
+assertArchived : (Template t, HasEnsure t) => Party -> Text -> ContractId t -> Script ()
+assertArchived party label cid = do
+  found <- queryContractId party cid
+  case found of
+    None -> pure ()
+    Some _ -> abort label
 
 assertSupportedSchemaVersion : Text -> Int -> [Int] -> Script ()
-assertSupportedSchemaVersion label version supported = assertTrue label (elem version supported)
-
-assertTrueUpdate : Text -> Bool -> Update ()
-assertTrueUpdate label condition =
-  if condition then pure () else abort label
-
-assertCanDebitUpdate : Text -> Amount -> Amount -> Update ()
-assertCanDebitUpdate label available amount = assertTrueUpdate label (amount > 0.0 && available >= amount)
-
-assertSameTenantUpdate : Text -> AccountRef -> AssetRef -> Update ()
-assertSameTenantUpdate label account asset = assertTrueUpdate label (account.tenantId == asset.tenantId)
-
-assertAssetTransferableUpdate : Text -> AssetStatus -> Update ()
-assertAssetTransferableUpdate label status = assertTrueUpdate label (status == AssetActive)
-
-assertSupportedSchemaVersionUpdate : Text -> Int -> [Int] -> Update ()
-assertSupportedSchemaVersionUpdate label version supported = assertTrueUpdate label (elem version supported)
+assertSupportedSchemaVersion label version supported = assertMsg label (elem version supported)

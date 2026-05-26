@@ -124,7 +124,7 @@ holdLifecycleTest = script do
   holder <- allocateParty "hold-holder"
   now <- getTime
   cid <- submitMulti [operator, issuer, holder] [] do createHolding operator issuer holder now 100.0
-  (_holdingCid, holdCid) <- submit operator do
+  (holdCid, holdingCid) <- submit operator do
     exerciseCmd cid CreateHold with
       holdMeta = mkMeta now "hold_1"
       holdAmount = 25.0
@@ -132,9 +132,13 @@ holdLifecycleTest = script do
       expiresAt = None
       newVersionTag = "v2"
   releasedCid <- submitMulti [operator, issuer] [] do
-    exerciseCmd holdCid ReleaseHold with newMeta = mkMeta now "hold_1_released"
-  Some hold <- queryContractId operator releasedCid
-  assertMsg "hold released" (hold.status == HoldReleased)
+    exerciseCmd holdingCid ReleaseHold with holdCid; newMeta = mkMeta now "hold_1_released"; newVersionTag = "v3"
+  released <- queryContractId operator releasedCid
+  case released of
+    None -> abort "expected holding after hold release"
+    Some holding -> assertMsg "hold released from active holds" (holding.activeHolds == 0.0)
+  archived <- queryContractId operator holdCid
+  assertMsg "hold archived after release" (archived == None)
 
 overHoldNegativeTest : Script ()
 overHoldNegativeTest = script do

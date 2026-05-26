@@ -2,20 +2,29 @@
 module Pillar.Test.RedeemScript where
 
 import Daml.Script
+import Pillar.Assets.Holding
 import Pillar.Core.Types
+import Pillar.Intents.RedeemIntent
 import Pillar.Test.Fixtures
 
-redeemLifecycle : Script ()
-redeemLifecycle = do
-  let redeemIntentId = "ri_test_001"
-  let holdingAmount : Amount = 100.0
-  let redeemAmount : Amount = 40.0
-  assertCanDebit "redeem consumes available holding amount" holdingAmount redeemAmount
-  let createdStatus = RequiresAction
-  assertEq "redeem starts in RequiresAction" RequiresAction createdStatus
-  let processingStatus = Processing
-  assertEq "ConfirmRedeem transitions to Processing" Processing processingStatus
-  let holdingAfterRedeem = holdingAmount - redeemAmount
-  assertEq "ConsumeAmount reduces holding amount" 60.0 holdingAfterRedeem
-  let finalStatus = Succeeded
-  assertEq ("MarkRedeemSucceeded completes " <> redeemIntentId) Succeeded finalStatus
+redeemLifecycleTest : Script ()
+redeemLifecycleTest = do
+  parties <- setupParties
+  now <- getTime
+  holdingCid <- createHolding parties.operator parties.issuer parties.alice aliceHoldingRef 100.0 now
+  (holdCid, heldCid) <- submit parties.operator do
+    exerciseCmd holdingCid CreateHold with holdMeta = mkMeta "redeem_hold" testTenantId now; holdAmount = 40.0; purpose = "redeem"; expiresAt = None; newVersionTag = "v2"
+  traceCid <- createTrace parties.operator KindRedeem "redeem_ok" now
+  intentCid <- submit (actAs [parties.operator, parties.issuer]) do
+    createCmd RedeemIntent with operator = parties.operator; issuer = parties.issuer; base = mkBase parties.operator "redeem_ok" now; accountId = aliceAccount.accountId; assetId = testAssetRef.assetId; amount = 40.0; expiresAt = None
+  processingCid <- submit parties.operator do
+    exerciseCmd intentCid ConfirmRedeem with now; operationTraceId = traceCid; submissionId = "sub_redeem"
+  projectedTraceCid <- createTrace parties.operator KindRedeem "redeem_projected" now
+  succeededCid <- submit parties.operator do
+    exerciseCmd processingCid MarkRedeemSucceeded with now; fromHoldingCid = heldCid; holdCid; newHoldingMeta = mkMeta "redeem_holding" testTenantId now; newHoldingVersionTag = "v3"; operationTraceId = projectedTraceCid
+  succeeded <- expectSome "expected succeeded redeem" =<< queryContractId parties.operator succeededCid
+  assertEq "redeem succeeded" Succeeded succeeded.base.status
+  holdings <- (queryFilter parties.operator (\(h : Holding) -> h.holdingRef == aliceHoldingRef) : Script [(ContractId Holding, Holding)])
+  assertMsg "redeem debits holding" (any (\(_, h) -> h.amount == (60.0 : Decimal) && h.activeHolds == (0.0 : Decimal)) holdings)
+  assertArchived parties.operator "redeem archives hold" holdCid
+  pure ()

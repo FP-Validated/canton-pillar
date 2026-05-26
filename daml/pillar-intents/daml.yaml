@@ -10,4 +10,5 @@ dependencies:
 data-dependencies:
   - ../pillar-core/.daml/dist/pillar-core-0.1.0.dar
   - ../pillar-assets/.daml/dist/pillar-assets-0.1.0.dar
+  - ../pillar-ops/.daml/dist/pillar-ops-0.1.0.dar
 module-prefixes: {}

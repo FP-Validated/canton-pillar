@@ -19,7 +19,7 @@ template Holding
     versionTag : Text
   where
     signatory operator, issuer, holder
-    ensure owner == holder && amount >= 0.0 && activeHolds >= 0.0 && activeHolds <= amount
+    ensure owner == holder && amount >= 0.0 && activeHolds >= 0.0 && activeHolds <= amount && holdingRef.account.tenantId == holdingRef.asset.tenantId
 
     choice SplitHolding : (ContractId Holding, ContractId Holding)
       with
@@ -97,7 +97,7 @@ template Holding
           amount = amount + increaseAmount
           versionTag = newVersionTag
 
-    choice CreateHold : (ContractId Holding, ContractId Hold)
+    choice CreateHold : (ContractId Hold, ContractId Holding)
       with
         holdMeta : PillarMeta
         holdAmount : Decimal
@@ -119,4 +119,50 @@ template Holding
           purpose = purpose
           expiresAt = expiresAt
         holdingCid <- create this with activeHolds = activeHolds + holdAmount, versionTag = newVersionTag
-        pure (holdingCid, holdCid)
+        pure (holdCid, holdingCid)
+
+    choice ReleaseHold : ContractId Holding
+      with
+        holdCid : ContractId Hold
+        newMeta : PillarMeta
+        newVersionTag : Text
+      controller operator, issuer
+      do
+        hold <- fetch holdCid
+        assertMsg "hold does not belong to holding" (hold.holdingRef == holdingRef)
+        assertMsg "only active holds can be released" (hold.status == HoldActive)
+        assertMsg "hold amount exceeds active holds" (hold.amount <= activeHolds)
+        archive holdCid
+        create this with meta = newMeta, activeHolds = activeHolds - hold.amount, versionTag = newVersionTag
+
+    choice ConsumeHold : ContractId Holding
+      with
+        holdCid : ContractId Hold
+        newMeta : PillarMeta
+        newVersionTag : Text
+      controller operator
+      do
+        hold <- fetch holdCid
+        assertMsg "hold does not belong to holding" (hold.holdingRef == holdingRef)
+        assertMsg "only active holds can be consumed" (hold.status == HoldActive)
+        assertMsg "hold amount exceeds active holds" (hold.amount <= activeHolds)
+        archive holdCid
+        create this with meta = newMeta, amount = amount - hold.amount, activeHolds = activeHolds - hold.amount, versionTag = newVersionTag
+
+    choice ExpireHold : ContractId Holding
+      with
+        holdCid : ContractId Hold
+        now : Time
+        newMeta : PillarMeta
+        newVersionTag : Text
+      controller operator
+      do
+        hold <- fetch holdCid
+        assertMsg "hold does not belong to holding" (hold.holdingRef == holdingRef)
+        assertMsg "only active holds can expire" (hold.status == HoldActive)
+        assertMsg "hold amount exceeds active holds" (hold.amount <= activeHolds)
+        case hold.expiresAt of
+          None -> abort "hold has no expiry"
+          Some expiry -> assertMsg "hold is not expired" (now > expiry)
+        archive holdCid
+        create this with meta = newMeta, activeHolds = activeHolds - hold.amount, versionTag = newVersionTag

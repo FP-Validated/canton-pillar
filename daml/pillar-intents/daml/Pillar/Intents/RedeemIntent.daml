@@ -1,8 +1,12 @@
 -- Pillar Intents :: RedeemIntent. Ticket B03/B17.
 module Pillar.Intents.RedeemIntent where
 
+import Pillar.Assets.Hold
+import Pillar.Assets.Holding
+import Pillar.Core.Meta (PillarMeta)
 import Pillar.Core.Types
 import Pillar.Intents.Common
+import Pillar.Ops.OperationTrace
 
 template RedeemIntent
   with
@@ -21,9 +25,12 @@ template RedeemIntent
     choice ConfirmRedeem : ContractId RedeemIntent
       with
         now : Time
+        operationTraceId : ContractId OperationTrace
+        submissionId : Text
       controller operator
       do
         assertMsg "RedeemIntent must be RequiresAction to confirm" (ensureRequiresAction base)
+        _trace <- exercise operationTraceId RecordSubmitted with submissionId
         create this with base = markProcessing base now
 
     choice CancelRedeem : ContractId RedeemIntent
@@ -37,17 +44,32 @@ template RedeemIntent
       with
         reason : Text
         now : Time
+        operationTraceId : ContractId OperationTrace
       controller operator
       do
         assertMsg "failure reason is required" (reason /= "")
+        _trace <- exercise operationTraceId RecordFailed with reason; now
         create this with base = markFailed base reason now
 
     choice MarkRedeemSucceeded : ContractId RedeemIntent
       with
         now : Time
+        fromHoldingCid : ContractId Holding
+        holdCid : ContractId Hold
+        newHoldingMeta : PillarMeta
+        newHoldingVersionTag : Text
+        operationTraceId : ContractId OperationTrace
       controller operator
       do
         assertMsg "RedeemIntent must be Processing to succeed" (ensureProcessing base)
+        holding <- fetch fromHoldingCid
+        hold <- fetch holdCid
+        assertMsg "redeem holding account mismatch" (holding.holdingRef.account.accountId == accountId)
+        assertMsg "redeem holding asset mismatch" (holding.holdingRef.asset.assetId == assetId)
+        assertMsg "redeem hold source mismatch" (hold.holdingRef == holding.holdingRef)
+        assertMsg "redeem hold amount mismatch" (hold.amount == amount)
+        _holding <- exercise fromHoldingCid ConsumeHold with holdCid; newMeta = newHoldingMeta; newVersionTag = newHoldingVersionTag
+        _trace <- exercise operationTraceId MarkProjected with now
         create this with base = markSucceeded base now
 
     choice ExpireRedeem : ContractId RedeemIntent

@@ -2,22 +2,58 @@
 module Pillar.Test.HoldScript where
 
 import Daml.Script
-import Pillar.Core.Types
+import DA.Time
+import Pillar.Assets.Holding
 import Pillar.Test.Fixtures
 
-holdLifecycle : Script ()
-holdLifecycle = do
-  let holdingAmount : Amount = 100.0
-  let holdAmount : Amount = 30.0
-  assertCanDebit "CreateHold requires available amount" holdingAmount holdAmount
-  let availableAfterHold = holdingAmount - holdAmount
-  assertEq "CreateHold reduces available amount" 70.0 availableAfterHold
-  let releaseStatus = HoldReleased
-  let availableAfterRelease = availableAfterHold + holdAmount
-  assertEq "ReleaseHold restores available amount" HoldReleased releaseStatus
-  assertEq "ReleaseHold restores holding availability" holdingAmount availableAfterRelease
-  assertCanDebit "CreateHold before ConsumeHold requires available amount" holdingAmount holdAmount
-  let consumeStatus = HoldConsumed
-  let amountAfterConsume = holdingAmount - holdAmount
-  assertEq "ConsumeHold marks hold consumed" HoldConsumed consumeStatus
-  assertEq "ConsumeHold decreases holding amount" 70.0 amountAfterConsume
+holdLifecycleTest : Script ()
+holdLifecycleTest = do
+  parties <- setupParties
+  now <- getTime
+  holdingCid <- createHolding parties.operator parties.issuer parties.alice aliceHoldingRef 100.0 now
+  (holdCid, heldCid) <- submit parties.operator do
+    exerciseCmd holdingCid CreateHold with holdMeta = mkMeta "hold_release" testTenantId now; holdAmount = 30.0; purpose = "transfer"; expiresAt = None; newVersionTag = "v2"
+  held <- expectSome "expected held holding" =<< queryContractId parties.operator heldCid
+  assertEq "hold active holds" 30.0 held.activeHolds
+  assertEq "hold amount unchanged" 100.0 held.amount
+  assertEq "available after hold" 70.0 (held.amount - held.activeHolds)
+  hold <- expectSome "expected hold contract" =<< queryContractId parties.operator holdCid
+  assertEq "hold companion amount" 30.0 hold.amount
+  releasedCid <- submit (actAs [parties.operator, parties.issuer]) do
+    exerciseCmd heldCid ReleaseHold with holdCid; newMeta = mkMeta "holding_released" testTenantId now; newVersionTag = "v3"
+  released <- expectSome "expected released holding" =<< queryContractId parties.operator releasedCid
+  assertEq "release restores amount" 100.0 released.amount
+  assertEq "release clears active holds" 0.0 released.activeHolds
+  assertArchived parties.operator "release archives hold" holdCid
+  pure ()
+
+holdConsumeTest : Script ()
+holdConsumeTest = do
+  parties <- setupParties
+  now <- getTime
+  holdingCid <- createHolding parties.operator parties.issuer parties.alice aliceHoldingRef 100.0 now
+  (holdCid, heldCid) <- submit parties.operator do
+    exerciseCmd holdingCid CreateHold with holdMeta = mkMeta "hold_consume" testTenantId now; holdAmount = 30.0; purpose = "redeem"; expiresAt = None; newVersionTag = "v2"
+  consumedCid <- submit parties.operator do
+    exerciseCmd heldCid ConsumeHold with holdCid; newMeta = mkMeta "holding_consumed" testTenantId now; newVersionTag = "v3"
+  consumed <- expectSome "expected consumed holding" =<< queryContractId parties.operator consumedCid
+  assertEq "consume debits amount" 70.0 consumed.amount
+  assertEq "consume clears active holds" 0.0 consumed.activeHolds
+  assertArchived parties.operator "consume archives hold" holdCid
+  pure ()
+
+holdExpireTest : Script ()
+holdExpireTest = do
+  parties <- setupParties
+  now <- getTime
+  let expiry = addRelTime now (days (-1))
+  holdingCid <- createHolding parties.operator parties.issuer parties.alice aliceHoldingRef 100.0 now
+  (holdCid, heldCid) <- submit parties.operator do
+    exerciseCmd holdingCid CreateHold with holdMeta = mkMeta "hold_expire" testTenantId now; holdAmount = 30.0; purpose = "timeout"; expiresAt = Some expiry; newVersionTag = "v2"
+  expiredCid <- submit parties.operator do
+    exerciseCmd heldCid ExpireHold with holdCid; now; newMeta = mkMeta "holding_expired" testTenantId now; newVersionTag = "v3"
+  expired <- expectSome "expected expired holding" =<< queryContractId parties.operator expiredCid
+  assertEq "expire preserves amount" 100.0 expired.amount
+  assertEq "expire clears active holds" 0.0 expired.activeHolds
+  assertArchived parties.operator "expire archives hold" holdCid
+  pure ()

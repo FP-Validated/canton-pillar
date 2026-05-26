@@ -2,39 +2,12 @@
 module Pillar.Test.UpgradeCompatScript where
 
 import Daml.Script
-import Pillar.Core.TenantConfig
-import Pillar.Core.Meta (emptyMetadata)
+import Pillar.Assets.Versioning
 import Pillar.Test.Fixtures
 
-currentSchemaVersion : Int
-currentSchemaVersion = 1
-
-supportedSchemaVersions : [Int]
-supportedSchemaVersions = [currentSchemaVersion]
-
-requireSupportedSchema : Int -> Either Text Int
-requireSupportedSchema version =
-  if elem version supportedSchemaVersions then Right version else Left "unsupported schema version"
-
-upgradeCompat : Script ()
-upgradeCompat = do
-  parties <- setupParties
-  now <- getTime
-  tenantCid <- submit parties.operator do
-    createCmd TenantConfig with
-      operator = parties.operator
-      issuer = parties.issuer
-      meta = mkMeta "tenant_config_upgrade" testTenantId now
-      defaultApiVersion = "2026-05-26"
-      pinnedSchema = None
-  assertSupportedSchemaVersion "current schema version is accepted" currentSchemaVersion supportedSchemaVersions
-  submitMustFail parties.alice do
-    exerciseCmd tenantCid (UpdateTenantConfig with newApiVersion = "2026-05-26"; newPinnedSchema = Some 0; newMetadata = emptyMetadata; now = now)
-  submitMustFail parties.alice do
-    exerciseCmd tenantCid (UpdateTenantConfig with newApiVersion = "2026-05-26"; newPinnedSchema = Some 99; newMetadata = emptyMetadata; now = now)
-  case requireSupportedSchema currentSchemaVersion of
-    Right accepted -> assertEq "requireSupportedSchema returns current version" currentSchemaVersion accepted
-    Left err -> abort err
-  case requireSupportedSchema 99 of
-    Left _ -> pure ()
-    Right _ -> abort "unsupported schema version 99 unexpectedly accepted"
+upgradeCompatTest : Script ()
+upgradeCompatTest = do
+  assertEq "current schema accepted" (Right ()) (requireSupportedSchema currentSchemaVersion)
+  assertEq "schema 0 rejected" (Left "unsupported asset schema version") (requireSupportedSchema 0)
+  assertEq "schema 99 rejected" (Left "unsupported asset schema version") (requireSupportedSchema 99)
+  pure ()

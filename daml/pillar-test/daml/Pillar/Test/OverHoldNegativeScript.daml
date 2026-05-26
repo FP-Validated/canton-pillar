@@ -2,41 +2,14 @@
 module Pillar.Test.OverHoldNegativeScript where
 
 import Daml.Script
-import Pillar.Core.TenantConfig
-import Pillar.Core.Meta (emptyMetadata)
-import Pillar.Core.Types
+import Pillar.Assets.Holding
 import Pillar.Test.Fixtures
 
-holdAmountExceedingHoldingAvailableFails : Script ()
-holdAmountExceedingHoldingAvailableFails = do
+overHoldNegativeTest : Script ()
+overHoldNegativeTest = do
   parties <- setupParties
   now <- getTime
-  tenantCid <- submit parties.operator do
-    createCmd TenantConfig with
-      operator = parties.operator
-      issuer = parties.issuer
-      meta = mkMeta "tenant_config_over_hold" testTenantId now
-      defaultApiVersion = "2026-05-26"
-      pinnedSchema = None
-  let available : Amount = 50.0
-  let holdAmount : Amount = 55.0
-  submitMustFail parties.alice do
-    exerciseCmd tenantCid (UpdateTenantConfig with newApiVersion = if available >= holdAmount then "2026-05-26" else "blocked"; newPinnedSchema = None; newMetadata = emptyMetadata; now = now)
-
-doubleHoldExceedsAvailable : Script ()
-doubleHoldExceedsAvailable = do
-  parties <- setupParties
-  now <- getTime
-  tenantCid <- submit parties.operator do
-    createCmd TenantConfig with
-      operator = parties.operator
-      issuer = parties.issuer
-      meta = mkMeta "tenant_config_double_hold" testTenantId now
-      defaultApiVersion = "2026-05-26"
-      pinnedSchema = None
-  let available : Amount = 100.0
-  let firstHold : Amount = 70.0
-  let secondHold : Amount = 40.0
-  assertCanDebit "first hold fits available holding" available firstHold
-  submitMustFail parties.alice do
-    exerciseCmd tenantCid (UpdateTenantConfig with newApiVersion = if available - firstHold >= secondHold then "2026-05-26" else "blocked"; newPinnedSchema = None; newMetadata = emptyMetadata; now = now)
+  holdingCid <- createHolding parties.operator parties.issuer parties.alice aliceHoldingRef 10.0 now
+  submitMustFail parties.operator do
+    exerciseCmd holdingCid CreateHold with holdMeta = mkMeta "over_hold" testTenantId now; holdAmount = 11.0; purpose = "transfer"; expiresAt = None; newVersionTag = "v2"
+  pure ()

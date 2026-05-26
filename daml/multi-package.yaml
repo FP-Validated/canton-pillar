@@ -1,7 +1,7 @@
 packages:
   - ./pillar-core
   - ./pillar-assets
-  - ./pillar-intents
   - ./pillar-ops
+  - ./pillar-intents
   - ./pillar-token-adapter
   - ./pillar-test

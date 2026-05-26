@@ -1,8 +1,13 @@
 -- Pillar Intents :: TransferIntent. Ticket B03/B18.
 module Pillar.Intents.TransferIntent where
 
+import Pillar.Assets.AssetRules
+import Pillar.Assets.Hold
+import Pillar.Assets.Holding
+import Pillar.Core.Meta (PillarMeta)
 import Pillar.Core.Types
 import Pillar.Intents.Common
+import Pillar.Ops.OperationTrace
 
 template TransferIntent
   with
@@ -22,9 +27,35 @@ template TransferIntent
     choice ConfirmTransfer : ContractId TransferIntent
       with
         now : Time
+        fromHoldingCid : ContractId Holding
+        toHoldingCid : ContractId Holding
+        holdCid : ContractId Hold
+        assetRulesCid : ContractId AssetRules
+        sourceMeta : PillarMeta
+        destinationMeta : PillarMeta
+        sourceVersionTag : Text
+        destinationVersionTag : Text
+        operationTraceId : ContractId OperationTrace
+        submissionId : Text
       controller operator
       do
         assertMsg "TransferIntent must be RequiresAction to confirm" (ensureRequiresAction base)
+        fromHolding <- fetch fromHoldingCid
+        toHolding <- fetch toHoldingCid
+        hold <- fetch holdCid
+        rules <- fetch assetRulesCid
+        assertMsg "transfer source account mismatch" (fromHolding.holdingRef.account.accountId == fromAccountId)
+        assertMsg "transfer destination account mismatch" (toHolding.holdingRef.account.accountId == toAccountId)
+        assertMsg "transfer source asset mismatch" (fromHolding.holdingRef.asset.assetId == assetId)
+        assertMsg "transfer destination asset mismatch" (toHolding.holdingRef.asset.assetId == assetId)
+        assertMsg "transfer source and destination tenant mismatch" (fromHolding.holdingRef.account.tenantId == toHolding.holdingRef.account.tenantId)
+        assertMsg "transfer hold amount mismatch" (hold.amount == amount)
+        assertMsg "transfer hold source mismatch" (hold.holdingRef == fromHolding.holdingRef)
+        assertMsg "transfer asset mismatch" (rules.assetRef == fromHolding.holdingRef.asset)
+        assertMsg "transfer asset must be active" (rules.status == AssetActive && rules.transferEnabled)
+        _source <- exercise fromHoldingCid ConsumeHold with holdCid; newMeta = sourceMeta; newVersionTag = sourceVersionTag
+        _destination <- exercise toHoldingCid IncreaseAmount with newMeta = destinationMeta; increaseAmount = amount; newVersionTag = destinationVersionTag
+        _trace <- exercise operationTraceId RecordSubmitted with submissionId
         create this with base = markProcessing base now
 
     choice CancelTransfer : ContractId TransferIntent
@@ -38,17 +69,29 @@ template TransferIntent
       with
         reason : Text
         now : Time
+        fromHoldingCid : ContractId Holding
+        holdCid : ContractId Hold
+        newHoldingMeta : PillarMeta
+        newHoldingVersionTag : Text
+        operationTraceId : ContractId OperationTrace
       controller operator
       do
         assertMsg "failure reason is required" (reason /= "")
+        _holding <- exercise fromHoldingCid ReleaseHold with holdCid; newMeta = newHoldingMeta; newVersionTag = newHoldingVersionTag
+        _trace <- exercise operationTraceId RecordFailed with reason; now
         create this with base = markFailed base reason now
 
     choice MarkTransferSucceeded : ContractId TransferIntent
       with
         now : Time
+        operationTraceId : ContractId OperationTrace
+        updateId : Text
+        ledgerOffset : Text
+        ledgerTime : Time
       controller operator
       do
         assertMsg "TransferIntent must be Processing to succeed" (ensureProcessing base)
+        _trace <- exercise operationTraceId RecordCompleted with updateId; ledgerOffset; ledgerTime; now
         create this with base = markSucceeded base now
 
     choice ExpireTransfer : ContractId TransferIntent

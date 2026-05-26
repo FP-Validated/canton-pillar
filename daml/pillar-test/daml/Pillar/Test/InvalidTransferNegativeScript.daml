@@ -2,52 +2,48 @@
 module Pillar.Test.InvalidTransferNegativeScript where
 
 import Daml.Script
-import Pillar.Core.TenantConfig
-import Pillar.Core.Meta (emptyMetadata)
+import Pillar.Assets.Holding
 import Pillar.Core.Types
+import Pillar.Intents.TransferIntent
 import Pillar.Test.Fixtures
 
-transferAmountExceedingHoldingFails : Script ()
-transferAmountExceedingHoldingFails = do
-  parties <- setupParties
-  now <- getTime
-  tenantCid <- submit parties.operator do
-    createCmd TenantConfig with
-      operator = parties.operator
-      issuer = parties.issuer
-      meta = mkMeta "tenant_config_invalid_amount" testTenantId now
-      defaultApiVersion = "2026-05-26"
-      pinnedSchema = None
-  let available : Amount = 10.0
-  let amount : Amount = 11.0
-  submitMustFail parties.alice do
-    exerciseCmd tenantCid (UpdateTenantConfig with newApiVersion = if available >= amount then "2026-05-26" else "blocked"; newPinnedSchema = None; newMetadata = emptyMetadata; now = now)
+mkTransferIntent : TestParties -> Text -> Time -> TransferIntent
+mkTransferIntent parties objectId now = TransferIntent with
+  operator = parties.operator
+  issuer = parties.issuer
+  base = mkBase parties.operator objectId now
+  fromAccountId = aliceAccount.accountId
+  toAccountId = bobAccount.accountId
+  assetId = testAssetRef.assetId
+  amount = 25.0
+  expiresAt = None
 
 transferAcrossTenantsFails : Script ()
 transferAcrossTenantsFails = do
   parties <- setupParties
   now <- getTime
-  tenantCid <- submit parties.operator do
-    createCmd TenantConfig with
-      operator = parties.operator
-      issuer = parties.issuer
-      meta = mkMeta "tenant_config_cross_tenant" testTenantId now
-      defaultApiVersion = "2026-05-26"
-      pinnedSchema = None
-  submitMustFail parties.alice do
-    exerciseCmd tenantCid ArchiveTenantConfig
+  rulesCid <- createRules parties.operator parties.issuer parties.operator AssetActive True now
+  fromCid <- createHolding parties.operator parties.issuer parties.alice aliceHoldingRef 100.0 now
+  toCid <- createHolding parties.operator parties.issuer parties.bob otherTenantHoldingRef 10.0 now
+  (holdCid, heldFromCid) <- submit parties.operator do
+    exerciseCmd fromCid CreateHold with holdMeta = mkMeta "tenant_hold" testTenantId now; holdAmount = 25.0; purpose = "transfer"; expiresAt = None; newVersionTag = "v2"
+  traceCid <- createTrace parties.operator KindTransfer "tenant_fail" now
+  intentCid <- submit (actAs [parties.operator, parties.issuer]) do createCmd (mkTransferIntent parties "tenant_fail" now)
+  submitMustFail parties.operator do
+    exerciseCmd intentCid ConfirmTransfer with now; fromHoldingCid = heldFromCid; toHoldingCid = toCid; holdCid; assetRulesCid = rulesCid; sourceMeta = mkMeta "from_after" testTenantId now; destinationMeta = mkMeta "to_after" testTenantId now; sourceVersionTag = "v3"; destinationVersionTag = "v2"; operationTraceId = traceCid; submissionId = "sub"
+  pure ()
 
 transferWithSuspendedAssetFails : Script ()
 transferWithSuspendedAssetFails = do
   parties <- setupParties
   now <- getTime
-  tenantCid <- submit parties.operator do
-    createCmd TenantConfig with
-      operator = parties.operator
-      issuer = parties.issuer
-      meta = mkMeta "tenant_config_suspended_asset" testTenantId now
-      defaultApiVersion = "2026-05-26"
-      pinnedSchema = None
-  let assetStatus = AssetSuspended
-  submitMustFail parties.alice do
-    exerciseCmd tenantCid (UpdateTenantConfig with newApiVersion = if assetStatus == AssetActive then "2026-05-26" else "blocked"; newPinnedSchema = None; newMetadata = emptyMetadata; now = now)
+  rulesCid <- createRules parties.operator parties.issuer parties.operator AssetSuspended True now
+  fromCid <- createHolding parties.operator parties.issuer parties.alice aliceHoldingRef 100.0 now
+  toCid <- createHolding parties.operator parties.issuer parties.bob bobHoldingRef 10.0 now
+  (holdCid, heldFromCid) <- submit parties.operator do
+    exerciseCmd fromCid CreateHold with holdMeta = mkMeta "suspended_hold" testTenantId now; holdAmount = 25.0; purpose = "transfer"; expiresAt = None; newVersionTag = "v2"
+  traceCid <- createTrace parties.operator KindTransfer "suspended_fail" now
+  intentCid <- submit (actAs [parties.operator, parties.issuer]) do createCmd (mkTransferIntent parties "suspended_fail" now)
+  submitMustFail parties.operator do
+    exerciseCmd intentCid ConfirmTransfer with now; fromHoldingCid = heldFromCid; toHoldingCid = toCid; holdCid; assetRulesCid = rulesCid; sourceMeta = mkMeta "from_after" testTenantId now; destinationMeta = mkMeta "to_after" testTenantId now; sourceVersionTag = "v3"; destinationVersionTag = "v2"; operationTraceId = traceCid; submissionId = "sub"
+  pure ()
