@@ -21,7 +21,7 @@
 | P0    | PASS          | 10.0 | P0 remediation subagent | HEAD 67b1763edf5fea89127ddf157f9d1dd0416c287e; rotated Daml SDK pin to 3.4.11, fixed DPM multi-package schema, updated DPM build commands to `dpm build --all`, corrected SDK version check, rebased onto origin/main, and pushed. |
 | P1    | PASS          | 9.5 | 77-P1Verify | HEAD efe5323a10e32b12b7b50351af74cb5c7fb401cb; `dpm build --all`, all six package `dpm test` runs, P0 regression commands, rebase, and push succeeded. Conservative notes: M2 adapter boundary is compile-oriented and some phase-doc exact script/module filenames are represented by equivalent scripts/modules. |
 | P2    | PASS          | 9.5 | 95-P2RemediateTests | HEAD 515ba4339f04d78035db0eb49e21eb480efb0514; split `apps/api/test/core.test.ts` into 19 per-topic files plus `_helpers.ts`; api typecheck=0, api build=0, api test=0 (36 tests), api-contracts test=0 (8 tests), web typecheck=0. |
-| P3    | blocked on P2 |     — | —           | —     |
+| P3    | PASS          | 9.5 | 97-P3FinishVerify | Docker reclaimed 1.331GB+ plus all build cache; Postgres 16 container on localhost:55432; db/idempotency/migrator typecheck=0 build=0; migrator up=0 verify=0 status=0; db/idempotency/migrator tests=0; web/api typecheck=0; api-contracts test=0; forbidden sweep clean. Score: ticket_completeness 1.9, build_gate 2.0, verify_gate 2.0, invariant_gate 1.4, no_fabrication 1.0, code_quality 0.7, cross_phase 0.5. |
 | P4    | blocked on P3 |     — | —           | —     |
 | P5    | blocked on P4 |     — | —           | —     |
 | P6    | blocked on P5 |     — | —           | —     |

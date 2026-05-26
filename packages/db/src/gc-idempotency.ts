@@ -1,0 +1,2 @@
+import type pg from 'pg';
+export async function countIdempotencyGcEligible(pool: pg.Pool, cutoff: Date, minRetentionHours = 24): Promise<number> { const min = Date.now() - minRetentionHours*3600_000; if (cutoff.getTime() > min) throw new Error('cutoff younger than minimum retention'); const r=await pool.query("select count(*)::int as count from idempotency_keys where expires_at < $1 and status <> 'in_progress'",[cutoff]); return r.rows[0].count; }

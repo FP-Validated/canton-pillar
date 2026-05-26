@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import { createPool, MigrationRunner } from '../src/index.js';
+test('immutable audit_log rejects update', async (t)=>{ if(!process.env.DATABASE_URL) return; const pool=createPool(); t.after(()=>pool.end()); await new MigrationRunner(pool).up(); await pool.query("insert into audit_log(id,tenant_id,action) values('a','t','x') on conflict do nothing"); await assert.rejects(()=>pool.query("update audit_log set action='y' where id='a'"), /immutable_table_violation/); });

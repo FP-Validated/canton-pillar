@@ -1,0 +1,16 @@
+-- ticket: P3.D22
+-- owner: projection-worker
+-- forward-only: yes
+-- expand-contract: expand
+-- rebuildable: yes
+
+CREATE TABLE IF NOT EXISTS transfers (id text primary key, tenant_id text not null, operation_id text, source_account_id text, destination_account_id text, asset_id text, amount numeric(38,18) not null, status text not null, as_of_ledger_offset text, as_of_ledger_time timestamptz, created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+CREATE INDEX IF NOT EXISTS transfers_tenant_id_idx ON transfers(tenant_id);
+CREATE INDEX IF NOT EXISTS transfers_ledger_offset_idx ON transfers(as_of_ledger_offset);
+DROP TRIGGER IF EXISTS transfers_set_updated_at ON transfers;
+CREATE TRIGGER transfers_set_updated_at BEFORE UPDATE ON transfers FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+-- verify:
+SELECT to_regclass('public.transfers') IS NOT NULL AS ok;
+SELECT EXISTS (SELECT 1 FROM pg_indexes WHERE schemaname='public' AND indexname='transfers_tenant_id_idx') AS ok;
+-- /verify

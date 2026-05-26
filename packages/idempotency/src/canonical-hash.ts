@@ -1,0 +1,5 @@
+import { createHash } from 'node:crypto';
+export type CanonicalRequest = { method: string; path_template: string; api_version: string; body?: unknown; headers?: Record<string,string|undefined> };
+function norm(v: unknown): unknown { if (Array.isArray(v)) return v.map(norm); if (v && typeof v === 'object') return Object.fromEntries(Object.entries(v as Record<string,unknown>).sort(([a],[b])=>a.localeCompare(b)).map(([k,val])=>[k,norm(val)])); if (typeof v === 'string') return v.trim(); return v; }
+export function canonicalJson(v: unknown): string { return JSON.stringify(norm(v ?? {})); }
+export function canonicalRequestHash(req: CanonicalRequest): string { const headers=Object.fromEntries(Object.entries(req.headers??{}).filter(([k])=>['content-type','pillar-version'].includes(k.toLowerCase())).sort(([a],[b])=>a.localeCompare(b)).map(([k,v])=>[k.toLowerCase(),String(v??'').trim()])); const payload={method:req.method.toUpperCase(),path_template:req.path_template,api_version:req.api_version,body:JSON.parse(canonicalJson(req.body)),headers}; return createHash('sha256').update(JSON.stringify(payload)).digest('hex'); }

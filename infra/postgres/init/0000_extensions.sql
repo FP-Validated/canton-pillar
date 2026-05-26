@@ -3,11 +3,27 @@
 -- Real migration management lands in Phase 03 (packages/db/migrations).
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
+CREATE EXTENSION IF NOT EXISTS citext;
 
--- pg_partman is reserved for monthly partitioning of large audit/usage tables
--- (see docs/Dev/Phase_14_Usage_Metering_Billing.md migration 0110_usage_metering).
--- It is NOT enabled in Phase 0 because the canonical Postgres image
--- (postgres:16-alpine) does not ship pg_partman by default. Enabling it requires
--- a Postgres image with pg_partman precompiled. Enabling deferred to Phase 14 or
--- when the image story is finalized in Phase 09.
--- CREATE EXTENSION IF NOT EXISTS pg_partman;
+CREATE SCHEMA IF NOT EXISTS partman;
+DO $$
+BEGIN
+  CREATE EXTENSION IF NOT EXISTS pg_partman SCHEMA partman;
+EXCEPTION
+  WHEN undefined_file THEN
+    RAISE NOTICE 'pg_partman extension is not available in this Postgres image; partitioned tables use normal table fallback until an image with pg_partman is deployed.';
+END
+$$;
+
+CREATE OR REPLACE FUNCTION set_updated_at() RETURNS trigger AS $$
+BEGIN
+  NEW.updated_at = now();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION migrator_advisory_lock_key() RETURNS bigint AS $$
+BEGIN
+  RETURN ('x' || substr(encode(digest('pillar_migration', 'sha256'), 'hex'), 1, 16))::bit(64)::bigint;
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;

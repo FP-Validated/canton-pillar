@@ -1,0 +1,18 @@
+{
+  "input": {
+    "method": "POST",
+    "path_template": "/v1/transfer_intents",
+    "api_version": "2026-06-30.cedar",
+    "body": {
+      "amount": {
+        "asset": "asset_1",
+        "value": "1.000000"
+      }
+    },
+    "headers": {
+      "content-type": "application/json",
+      "pillar-version": "2026-06-30.cedar"
+    }
+  },
+  "expected_hash": "8b09647f29d3b12eeb0811d3544dbcf8c6ff6a58c60af7fc8ada402df2de88f3"
+}

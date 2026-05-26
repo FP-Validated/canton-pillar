@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import { createPool, MigrationRunner, verifyMigrations } from '../src/index.js';
+test('empty db migrates and verifies', async (t)=>{ if(!process.env.DATABASE_URL) return; const pool=createPool(); t.after(()=>pool.end()); const r=new MigrationRunner(pool); await r.up(); assert.equal(await verifyMigrations(pool), true); const s=await r.status(); assert.ok(s.every(x=>x.applied)); });
