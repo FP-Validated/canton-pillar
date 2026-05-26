@@ -1,0 +1,9 @@
+{{- if .Values.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Release.Name }}-pillar-template-registry
+spec:
+  selector: { matchLabels: { app: pillar-template-registry } }
+  endpoints: [{ port: http, path: /metrics }]
+{{- end }}

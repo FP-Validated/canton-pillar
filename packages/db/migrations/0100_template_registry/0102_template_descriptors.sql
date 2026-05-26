@@ -1,0 +1,3 @@
+create table if not exists template_registry.template_descriptors (id text primary key, dar_upload_id text not null references template_registry.dar_uploads(id), template_family text not null, operation_type text not null, template_id text not null, choice text not null, descriptor_json jsonb not null default '{}'::jsonb, created_at timestamptz not null default now(), unique(dar_upload_id,template_family,operation_type));
+create index if not exists template_descriptors_lookup_idx on template_registry.template_descriptors(template_family,operation_type);
+-- verify: select 1 from information_schema.tables where table_schema='template_registry' and table_name='template_descriptors';

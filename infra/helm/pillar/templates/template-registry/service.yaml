@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-pillar-template-registry
+spec:
+  selector: { app: pillar-template-registry }
+  ports: [{ name: http, port: 8087, targetPort: http }]

@@ -1,0 +1,17 @@
+suite: template registry
+templates:
+  - templates/dar-upload-job.yaml
+  - templates/template-registry/deployment.yaml
+tests:
+  - it: renders registry deployment
+    asserts:
+      - containsDocument:
+          kind: Deployment
+          apiVersion: apps/v1
+          name: RELEASE-NAME-pillar-template-registry
+  - it: dar upload is ordered after migrator
+    template: templates/dar-upload-job.yaml
+    asserts:
+      - equal:
+          path: metadata.annotations[helm.sh/hook-weight]
+          value: "10"

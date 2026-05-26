@@ -1,0 +1,1 @@
+import{Command}from'commander';function out(cmd:Command,data:any){console.log(JSON.stringify(data,null,cmd.parent?.opts().output==='json'?2:0))}export function templates(){const c=new Command('templates'); for(const n of ['list','get','register','publish','retire','revoke']) c.command(n).argument('[id]').action((id)=>out(c,{command:`templates ${n}`,id:id??null})); return c}

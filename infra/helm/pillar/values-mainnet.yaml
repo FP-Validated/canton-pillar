@@ -258,3 +258,14 @@ search-indexer:
   resources:
     requests: { cpu: 100m, memory: 128Mi }
     limits: { cpu: 500m, memory: 512Mi }
+
+registry:
+  uploadPlanId: dev-upload-plan
+templateRegistry:
+  replicas: 1
+  image:
+    repository: ghcr.io/fp-validated/pillar-template-registry
+    tag: dev
+  signing:
+    trustedKeyIds: [dev-registry-key]
+    trustRoots: []

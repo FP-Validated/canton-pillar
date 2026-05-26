@@ -1,0 +1,3 @@
+create table if not exists template_registry.compatibility_records (id text primary key, package_version_id text not null references template_registry.package_versions(id), participant_id text not null, environment text not null, status template_registry.compatibility_status not null, evidence_json jsonb not null default '{}'::jsonb, observed_package_id text, observed_at timestamptz not null default now(), unique(package_version_id,participant_id,environment));
+create index if not exists compatibility_records_status_idx on template_registry.compatibility_records(environment,status);
+-- verify: select 1 from information_schema.tables where table_schema='template_registry' and table_name='compatibility_records';

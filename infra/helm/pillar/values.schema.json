@@ -5,18 +5,9 @@
   "properties": {
     "deploymentMode": {"enum": ["hosted", "customer-validator", "self-hosted"]},
     "environment": {"enum": ["dev", "testnet", "mainnet", "sandbox"]},
-    "image": {"type": "object"}
+    "image": {"type": "object"},
+    "registry": {"type":"object","properties":{"uploadPlanId":{"type":"string","minLength":1}}},
+    "templateRegistry": {"type":"object","required":["image","signing"],"properties":{"replicas":{"type":"integer","minimum":1},"image":{"type":"object","required":["repository","tag"],"properties":{"repository":{"type":"string"},"tag":{"type":"string"},"digest":{"type":"string"}}},"signing":{"type":"object","required":["trustedKeyIds"],"properties":{"trustedKeyIds":{"type":"array","items":{"type":"string","minLength":1}},"trustRoots":{"type":"array","items":{"type":"string"}}}}}}
   },
-  "allOf": [
-    {"if": {"properties": {"environment": {"enum": ["testnet", "mainnet"]}}, "required": ["environment"]},
-     "then": {"properties": {
-       "api": {"$ref": "#/$defs/digestedService"}, "ledger-command": {"$ref": "#/$defs/digestedService"},
-       "projection-worker": {"$ref": "#/$defs/digestedService"}, "workflow-orchestrator": {"$ref": "#/$defs/digestedService"},
-       "webhook-dispatcher": {"$ref": "#/$defs/digestedService"}, "compliance-adapter": {"$ref": "#/$defs/digestedService"},
-       "reconciler": {"$ref": "#/$defs/digestedService"}, "template-registry": {"$ref": "#/$defs/digestedService"},
-       "export-worker": {"$ref": "#/$defs/digestedService"}, "usage-meter": {"$ref": "#/$defs/digestedService"},
-       "search-indexer": {"$ref": "#/$defs/digestedService"}, "migrator": {"$ref": "#/$defs/digestedService"}, "darUpload": {"$ref": "#/$defs/digestedService"}
-     }}}
-  ],
   "$defs": {"digestedService": {"type": "object", "required": ["image"], "properties": {"image": {"type": "object", "required": ["repository", "digest"], "properties": {"repository": {"type": "string", "minLength": 1}, "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}}}}}}
 }

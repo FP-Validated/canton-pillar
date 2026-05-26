@@ -1,0 +1,3 @@
+create or replace view template_registry.active_package_bindings as select tenant_id, environment, livemode, template_family, operation_type, id as package_version_id, package_id, package_version, registry_version, active_from from template_registry.package_versions where status='active';
+create or replace view template_registry.registry_audit_view as select action, resource_type, resource_id, actor_id, created_at from template_registry.registry_audit;
+-- verify: select 1 from information_schema.views where table_schema='template_registry' and table_name in ('active_package_bindings','registry_audit_view');

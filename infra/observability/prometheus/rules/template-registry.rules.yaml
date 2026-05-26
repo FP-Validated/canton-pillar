@@ -1,0 +1,15 @@
+groups:
+- name: template-registry
+  rules:
+  - alert: TemplateRegistryStale
+    expr: pillar_registry_stale_seconds > 300
+    labels: { severity: p1 }
+  - alert: TemplateRegistryPackageMismatch
+    expr: pillar_registry_package_mismatch_total > 0
+    labels: { severity: p1 }
+  - alert: TemplateRegistrySignatureFailureSpike
+    expr: rate(pillar_registry_signature_failure_total[5m]) > 0
+    labels: { severity: p1 }
+  - alert: TemplateRegistrySideChannelDetected
+    expr: pillar_registry_side_channel_total > 0
+    labels: { severity: p1 }

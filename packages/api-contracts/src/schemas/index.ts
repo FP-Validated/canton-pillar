@@ -16,3 +16,4 @@ export * from './search-query.js';
 export * from './export-job.js';
 export * from './report-template.js';
 export * from './export-destination.js';
+export * from './admin/template-registry/index.js';

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-pillar-template-registry
+data:
+  PORT: "8087"
+  TRUSTED_SIGNING_KEY_IDS: {{ join "," .Values.templateRegistry.signing.trustedKeyIds | quote }}

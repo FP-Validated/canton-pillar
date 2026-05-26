@@ -1,50 +1,16 @@
-{{- $svc := index .Values "template-registry" -}}
-{{- if $svc.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "pillar.fullname" . }}-template-registry
-  labels:
-{{ include "pillar.componentLabels" (dict "root" . "component" "template-registry") | indent 4 }}
+  name: {{ .Release.Name }}-pillar-template-registry
 spec:
-  replicas: {{ $svc.replicas }}
-  selector:
-    matchLabels:
-{{ include "pillar.selectorLabels" (dict "root" . "component" "template-registry") | indent 6 }}
+  replicas: {{ .Values.templateRegistry.replicas }}
+  selector: { matchLabels: { app: pillar-template-registry } }
   template:
-    metadata:
-      labels:
-{{ include "pillar.componentLabels" (dict "root" . "component" "template-registry") | indent 8 }}
+    metadata: { labels: { app: pillar-template-registry } }
     spec:
-      serviceAccountName: {{ include "pillar.fullname" . }}-template-registry
-      securityContext:
-        runAsNonRoot: true
-        seccompProfile: { type: RuntimeDefault }
+      serviceAccountName: {{ .Release.Name }}-pillar-template-registry
       containers:
         - name: template-registry
-          image: {{ include "pillar.image" (dict "root" . "component" "template-registry") }}
-          imagePullPolicy: IfNotPresent
-          ports:
-            - name: http
-              containerPort: {{ $svc.port }}
-          envFrom:
-            - configMapRef:
-                name: {{ include "pillar.fullname" . }}-config
-          env:
-            - name: DATABASE_URL
-              valueFrom: { secretKeyRef: { name: {{ include "pillar.fullname" . }}-runtime, key: DATABASE_URL } }
-            - name: LEDGER_TOKEN
-              valueFrom: { secretKeyRef: { name: {{ include "pillar.fullname" . }}-runtime, key: LEDGER_TOKEN } }
-            - name: WEBHOOK_SIGNING_SECRET
-              valueFrom: { secretKeyRef: { name: {{ include "pillar.fullname" . }}-runtime, key: WEBHOOK_SIGNING_SECRET } }
-          readinessProbe:
-            httpGet: { path: /health/ready, port: http }
-          livenessProbe:
-            httpGet: { path: /health/live, port: http }
-          resources:
-{{ toYaml $svc.resources | indent 12 }}
-          securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
-            capabilities: { drop: ["ALL"] }
-{{- end }}
+          image: "{{ .Values.templateRegistry.image.repository }}:{{ .Values.templateRegistry.image.tag }}"
+          ports: [{ containerPort: 8087, name: http }]
+          envFrom: [{ configMapRef: { name: {{ .Release.Name }}-pillar-template-registry } }]

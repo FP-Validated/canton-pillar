@@ -1,0 +1,3 @@
+create table if not exists template_registry.dar_uploads (id text primary key, tenant_id text not null, environment text not null, livemode boolean not null, object_uri text not null, sha256 text not null, manifest_uri text not null, signature_uri text not null, signer_key_id text not null, kms_key_id text not null, status text not null default 'registered', uploaded_by text not null, created_at timestamptz not null default now(), unique(tenant_id,environment,livemode,sha256));
+create index if not exists dar_uploads_tenant_created_idx on template_registry.dar_uploads(tenant_id, created_at desc);
+-- verify: select 1 from information_schema.tables where table_schema='template_registry' and table_name='dar_uploads';
