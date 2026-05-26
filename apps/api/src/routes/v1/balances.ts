@@ -22,13 +22,18 @@ export async function balancesRoutes(s: FastifyInstance) {
       if (op.status !== 'projected') return reply.code(202).send({ object: 'projection_pending', operation: q.operation, projection_lag: { seconds: 1, status: 'pending' } });
     }
     const rows = await listBalances(r.accountId, { account: q.account, asset: q.asset, limit: q.limit ? Number(q.limit) : undefined, startingAfter: q.starting_after, endingBefore: q.ending_before });
-    if (q.consistency === 'strong' && rows.some(row => row.projection?.stale)) throw projectionStale(rows.find(row => row.projection?.stale)?.projection?.as_of_ledger_offset);
+    if (q.consistency === 'strong' && rows.some(row => row.projection?.stale)) {
+      const staleOffset = rows.find(row => row.projection?.stale)?.projection?.as_of_ledger_offset;
+      throw projectionStale(staleOffset);
+    }
     return renderList('/v1/balances', rows.map(x => presentBalance({ ...x, livemode: r.auth.livemode })));
   });
   s.get('/balances/:id', async (r) => {
     const row = await getBalance(r.accountId, r.accountId, (r.params as any).id);
     if (!projectionExists(row)) throw s.httpErrors.notFound('Resource not found.');
-    if ((r.query as any)?.consistency === 'strong' && row.projection?.stale) throw projectionStale(row.projection.as_of_ledger_offset);
+    if ((r.query as any)?.consistency === 'strong' && row?.projection?.stale) {
+      throw projectionStale(row.projection?.as_of_ledger_offset);
+    }
     return presentBalance({ ...row, id: (r.params as any).id, livemode: r.auth.livemode });
   });
 }

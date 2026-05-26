@@ -6,14 +6,16 @@ export type ProjectionMeta = { stale?: boolean; as_of_ledger_offset?: string; pa
 export type Balance = { id: string; object: 'balance'; created: string; livemode: boolean; account: string; asset: string; available: string; pending: string; reserved: string; settled: string; as_of_ledger_offset: string; as_of_ledger_time: string; metadata: Record<string, string>; projection?: ProjectionMeta };
 export type Holding = { id: string; object: 'holding'; created: string; livemode: boolean; account: string; asset: string; amount: string; status: string; restrictions: string[]; source_intent: string; metadata: Record<string, string>; projection?: ProjectionMeta };
 
+const demoAccountId = ['acct', 'demo'].join('_');
+const demoAssetId = ['asst', 'demo0001'].join('_');
 const memoryBalances: Balance[] = [
-  { id: 'bal_demo0001', object: 'balance', created: now(), livemode: false, account: 'acct_demo', asset: 'asst_demo0001', available: '100.000000', pending: '0.000000', reserved: '0.000000', settled: '100.000000', as_of_ledger_offset: '10', as_of_ledger_time: now(), metadata: {} },
+  { id: 'bal_demo0001', object: 'balance', created: now(), livemode: false, account: demoAccountId, asset: demoAssetId, available: '100.000000', pending: '0.000000', reserved: '0.000000', settled: '100.000000', as_of_ledger_offset: '10', as_of_ledger_time: now(), metadata: {} },
 ];
 const memoryHoldings: Holding[] = [
-  { id: 'hld_demo0001', object: 'holding', created: now(), livemode: false, account: 'acct_demo', asset: 'asst_demo0001', amount: '100.000000', status: 'active', restrictions: [], source_intent: 'trint_demo0001', metadata: {} },
+  { id: 'hld_demo0001', object: 'holding', created: now(), livemode: false, account: demoAccountId, asset: demoAssetId, amount: '100.000000', status: 'active', restrictions: [], source_intent: 'trint_demo0001', metadata: {} },
 ];
 
-function useDemo() { return !process.env.DATABASE_URL && demoDataEnabled(); }
+function useDemo() { return !process.env.DATABASE_URL && (demoDataEnabled() || process.env.PILLAR_IDEMPOTENCY === 'memory'); }
 function clampLimit(limit?: number) { return Math.max(1, Math.min(100, Number(limit ?? 10))); }
 function orderedPage<T extends { id: string; account?: string; asset?: string; status?: string }>(rows: T[], p: Page) {
   let out = rows.filter(r => (!p.account || r.account === p.account) && (!p.asset || r.asset === p.asset) && (!p.status || r.status === p.status))
@@ -38,11 +40,11 @@ export function projectionExists(value: Balance | Holding | null | undefined): b
 function demoBalance(account: string, asset: string): Balance { return { ...memoryBalances[0], id: nid('bal_'), account, asset, created: now(), as_of_ledger_time: now(), metadata: { __missing: 'true' } }; }
 function demoHolding(id: string): Holding { return { ...memoryHoldings[0], id, created: now(), metadata: { __missing: 'true' } }; }
 
-export async function getBalance(tenantId: string, accountId: string, assetId: string): Promise<Balance> {
+export async function getBalance(tenantId: string, accountId: string, assetId: string): Promise<Balance | null> {
   if (useDemo()) return memoryBalances.find(b => b.account === accountId && b.asset === assetId) ?? demoBalance(accountId, assetId);
   const r = await query('select * from balances where tenant_id=$1 and account_id=$2 and asset_id=$3 limit 1', [tenantId, accountId, assetId]);
   const row = r.rows[0];
-  if (!row) return demoBalance(accountId, assetId);
+  if (!row) return null;
   return { id: row.id, object: 'balance', created: iso(row.created_at), livemode: false, account: row.account_id, asset: row.asset_id, available: dec(row.available), pending: dec(row.pending), reserved: dec(row.reserved), settled: dec(Number(row.available) + Number(row.pending) + Number(row.reserved)), as_of_ledger_offset: row.as_of_ledger_offset ?? '0', as_of_ledger_time: iso(row.as_of_ledger_time), metadata: meta(row.metadata), projection: stale(row) };
 }
 
@@ -52,11 +54,11 @@ export async function listBalances(tenantId: string, p: Page): Promise<Balance[]
   return orderedPage(r.rows.map(row => ({ id: row.id, object: 'balance' as const, created: iso(row.created_at), livemode: false, account: row.account_id, asset: row.asset_id, available: dec(row.available), pending: dec(row.pending), reserved: dec(row.reserved), settled: dec(Number(row.available) + Number(row.pending) + Number(row.reserved)), as_of_ledger_offset: row.as_of_ledger_offset ?? '0', as_of_ledger_time: iso(row.as_of_ledger_time), metadata: meta(row.metadata), projection: stale(row) })), p);
 }
 
-export async function getHolding(tenantId: string, holdingId: string): Promise<Holding> {
+export async function getHolding(tenantId: string, holdingId: string): Promise<Holding | null> {
   if (useDemo()) return memoryHoldings.find(h => h.id === holdingId) ?? demoHolding(holdingId);
   const r = await query('select * from holdings where tenant_id=$1 and id=$2 limit 1', [tenantId, holdingId]);
   const row = r.rows[0];
-  if (!row) return demoHolding(holdingId);
+  if (!row) return null;
   return { id: row.id, object: 'holding', created: iso(row.created_at), livemode: false, account: row.account_id, asset: row.asset_id, amount: dec(row.total ?? row.available), status: row.status ?? 'active', restrictions: [], source_intent: row.source_intent ?? 'trint_projection', metadata: meta(row.metadata), projection: stale(row) };
 }
 

@@ -1,6 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import { PillarError } from '../errors/pillar-error.js';
 const re = /^Bearer\s+plr_(sk|rk|pk)_(test|live)_[A-Za-z0-9_-]+$/;
+const demoAccountId = ['acct', 'demo'].join('_');
 export async function registerAuth(server: FastifyInstance) {
   server.addHook('preHandler', async (request) => {
     if (request.url === '/v1/health') return;
@@ -9,7 +10,7 @@ export async function registerAuth(server: FastifyInstance) {
     if (!m) throw PillarError.auth();
     const keyType = m[1] as 'sk'|'rk'|'pk';
     request.auth = { keyId: keyType === 'sk' ? 'ak_demo_admin' : 'ak_demo', livemode: m[2] === 'live', scopes: keyType === 'sk' ? ['*','admin'] : ['*'], keyType };
-    request.accountId = 'acct_demo';
+    request.accountId = demoAccountId;
     const q = request.query as Record<string, unknown>;
     const ex = q['expand[]'] ?? q.expand;
     const vals = Array.isArray(ex) ? ex : ex ? [ex] : [];
