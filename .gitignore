@@ -23,8 +23,5 @@ tmp/
 __pycache__/
 *.pyc
 
-# Design and operational docs live outside source control per repo owner directive (2026-05-26).
-# Architecture/Dev docs are maintained in a separate working set and may be added back later.
-docs/
 
 .tmp-gradle-dist/
