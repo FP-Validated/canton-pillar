@@ -1,0 +1,1 @@
+{"error":{"type":"projection_error","code":"search_stale","message":"Search index freshness exceeded the allowed lag.","request_id":"req_123"}}

@@ -1,50 +1,16 @@
-{{- $svc := index .Values "search-indexer" -}}
-{{- if $svc.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "pillar.fullname" . }}-search-indexer
-  labels:
-{{ include "pillar.componentLabels" (dict "root" . "component" "search-indexer") | indent 4 }}
 spec:
-  replicas: {{ $svc.replicas }}
-  selector:
-    matchLabels:
-{{ include "pillar.selectorLabels" (dict "root" . "component" "search-indexer") | indent 6 }}
+  replicas: 1
+  selector: { matchLabels: { app.kubernetes.io/name: search-indexer } }
   template:
-    metadata:
-      labels:
-{{ include "pillar.componentLabels" (dict "root" . "component" "search-indexer") | indent 8 }}
+    metadata: { labels: { app.kubernetes.io/name: search-indexer } }
     spec:
-      serviceAccountName: {{ include "pillar.fullname" . }}-search-indexer
-      securityContext:
-        runAsNonRoot: true
-        seccompProfile: { type: RuntimeDefault }
       containers:
         - name: search-indexer
-          image: {{ include "pillar.image" (dict "root" . "component" "search-indexer") }}
-          imagePullPolicy: IfNotPresent
-          ports:
-            - name: http
-              containerPort: {{ $svc.port }}
-          envFrom:
-            - configMapRef:
-                name: {{ include "pillar.fullname" . }}-config
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           env:
             - name: DATABASE_URL
-              valueFrom: { secretKeyRef: { name: {{ include "pillar.fullname" . }}-runtime, key: DATABASE_URL } }
-            - name: LEDGER_TOKEN
-              valueFrom: { secretKeyRef: { name: {{ include "pillar.fullname" . }}-runtime, key: LEDGER_TOKEN } }
-            - name: WEBHOOK_SIGNING_SECRET
-              valueFrom: { secretKeyRef: { name: {{ include "pillar.fullname" . }}-runtime, key: WEBHOOK_SIGNING_SECRET } }
-          readinessProbe:
-            httpGet: { path: /health/ready, port: http }
-          livenessProbe:
-            httpGet: { path: /health/live, port: http }
-          resources:
-{{ toYaml $svc.resources | indent 12 }}
-          securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
-            capabilities: { drop: ["ALL"] }
-{{- end }}
+              valueFrom: { secretKeyRef: { name: {{ include "pillar.fullname" . }}-db, key: url } }

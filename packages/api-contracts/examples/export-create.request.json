@@ -1,0 +1,1 @@
+{"resource":"transfer","query":{"status":"succeeded"},"format":"csv","columns":["id","amount"],"consistency_mode":"ledger_snapshot"}

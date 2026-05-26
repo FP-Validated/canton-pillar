@@ -1,0 +1,12 @@
+groups:
+  - name: search-export
+    rules:
+      - alert: SearchIndexLagHigh
+        expr: search_index_lag_seconds > 300
+        for: 5m
+        labels: { severity: warning }
+      - record: export:duration_seconds:p95
+        expr: histogram_quantile(0.95, sum(rate(export_duration_seconds_bucket[5m])) by (le))
+      - alert: ExportDeadlineMiss
+        expr: increase(export_deadline_miss_total[10m]) > 0
+        labels: { severity: warning }

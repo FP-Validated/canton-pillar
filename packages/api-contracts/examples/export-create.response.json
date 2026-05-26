@@ -1,0 +1,1 @@
+{"id":"exp_123","object":"export_job","livemode":false,"status":"queued","resource":"transfer","query":{"status":"succeeded"},"query_hash":"sha256:abc","format":"csv","columns":["id","amount"],"consistency_mode":"ledger_snapshot","created":"2026-05-26T00:00:00.000Z","updated":"2026-05-26T00:00:00.000Z","metadata":{}}

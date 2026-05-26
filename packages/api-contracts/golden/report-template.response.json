@@ -1,0 +1,1 @@
+{"id":"rpt_123","object":"report_template","livemode":false,"name":"Daily transfers","resource":"transfer","query":{},"columns":["id"],"format":"csv","consistency_mode":"eventual","schedule":{"interval":"daily"},"archived":false,"created":"2026-05-26T00:00:00.000Z","updated":"2026-05-26T00:00:00.000Z","metadata":{}}

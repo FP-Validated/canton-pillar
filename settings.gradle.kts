@@ -26,6 +26,7 @@ val kotlinServices = listOf(
     "reconciler",
     "compliance-adapter",
     "export-worker",
+    "search-indexer",
     "token-standard-adapter",
     "template-registry",
     "webhook-dispatcher",
