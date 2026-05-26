@@ -1,0 +1,1 @@
+export function Forbidden() { return <main className="forbidden"><p className="eyebrow">403</p><h1>Super admin access required</h1><p>Your session is authenticated but is not allowed to open Pillar admin operations.</p><a href="/dashboard">Back to dashboard</a></main>; }

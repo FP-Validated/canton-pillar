@@ -1,1 +1,2 @@
-export default function Page(){return <main><h1>Template Registry</h1><p>Sandbox-first Template Registry admin view with mock operational data.</p></main>}
+import { AdminListPage } from '../(admin)/admin-ui';
+export default function Page(){return <AdminListPage title="Template registry" description="DARs, package versions, and upgrade plans with dual-control transitions." path="/admin/template_registry/package_versions" columns={["id","package_id","version","status","created"]} actions={["publish","retire","revoke"]} dualAction={{label:'Cut over with dual control',path:(row)=>`/admin/template_registry/upgrade_plans/${row.id}/cutover`}}/>}

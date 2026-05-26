@@ -1,1 +1,2 @@
-export default function Page(){return <main><h1>Projection Health</h1><p>Sandbox-first Projection Health admin view with mock operational data.</p></main>}
+import { AdminListPage } from '../(admin)/admin-ui';
+export default function Page(){return <AdminListPage title="Projection health" description="Per-projector lag and checkpoints." path="/admin/projection/checkpoints" columns={["id","projector","lag_ms","ledger_offset","last_indexed_at"]}/>}

@@ -1,0 +1,1 @@
+module.exports = { extends: ['next/core-web-vitals'], plugins: ['import'], rules: { 'no-restricted-imports': ['error', { patterns: ['packages/db', 'packages/db/*', '@pillar/db', '@pillar/idempotency', 'services/*', 'pg', 'ioredis'] }] } };
