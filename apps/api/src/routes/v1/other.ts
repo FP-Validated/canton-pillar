@@ -48,29 +48,29 @@ export async function holdsRoutes(s:FastifyInstance){
   s.post('/holds/:id/cancel', async r=>presentHold({...hold(r.auth.livemode),id:(r.params as any).id,status:'released'}));
 }
 export async function eventsRoutes(s:FastifyInstance){
-  s.get('/events', async r=>renderList('/v1/events', await Events.listEvents({ types: (r.query as any)?.type ? String((r.query as any).type).split(',') : undefined, livemode:r.auth.livemode, mode:(r.query as any)?.payload_mode, apiVersion:r.apiVersion })));
-  s.get('/events/:id', async r=>presentEvent(await Events.getEvent((r.params as any).id, ((r.query as any)?.payload_mode === 'snapshot' ? 'snapshot' : 'thin'), r.apiVersion)));
-  s.post('/events/:id/resend', async r=>presentEvent(await Events.enqueueReplay((r.params as any).id,{ idempotencyKey: idem(r), apiVersion:r.apiVersion })));
-  s.post('/events/:id/replay', async r=>presentEvent(await Events.enqueueReplay((r.params as any).id,{ idempotencyKey: idem(r), apiVersion:r.apiVersion, ...(r.body as any) })));
+  s.get('/events', async r=>renderList('/v1/events', await Events.listEvents({ tenantId:r.accountId, types: (r.query as any)?.type ? String((r.query as any).type).split(',') : undefined, livemode:r.auth.livemode, mode:(r.query as any)?.payload_mode, apiVersion:r.apiVersion })));
+  s.get('/events/:id', async r=>presentEvent(await Events.getEvent((r.params as any).id, r.accountId, ((r.query as any)?.payload_mode === 'snapshot' ? 'snapshot' : 'thin'), r.apiVersion)));
+  s.post('/events/:id/resend', async r=>presentEvent(await Events.enqueueReplay((r.params as any).id,{ tenantId:r.accountId, idempotencyKey: idem(r), apiVersion:r.apiVersion })));
+  s.post('/events/:id/replay', async r=>presentEvent(await Events.enqueueReplay((r.params as any).id,{ tenantId:r.accountId, idempotencyKey: idem(r), apiVersion:r.apiVersion, ...(r.body as any) })));
 }
 export async function webhookEndpointsRoutes(s:FastifyInstance){
-  s.post('/webhook_endpoints', async r=>{ const created=await Webhooks.createEndpoint({ ...(r.body as any), livemode:r.auth.livemode, api_version:(r.body as any)?.api_version??r.apiVersion }); const {secret,...endpoint}=created; return { ...presentWebhookEndpoint(endpoint), secret }; });
-  s.get('/webhook_endpoints', async r=>renderList('/v1/webhook_endpoints',(await Webhooks.listEndpoints()).map(presentWebhookEndpoint)));
-  s.get('/webhook_endpoints/:id', async r=>presentWebhookEndpoint(await Webhooks.getEndpoint((r.params as any).id)));
-  s.post('/webhook_endpoints/:id', async r=>presentWebhookEndpoint(await Webhooks.updateEndpoint((r.params as any).id,r.body)));
-  s.delete('/webhook_endpoints/:id', async r=>presentWebhookEndpoint(await Webhooks.deleteEndpoint((r.params as any).id)));
-  s.post('/webhook_endpoints/:id/enable', async r=>presentWebhookEndpoint(await Webhooks.enableEndpoint((r.params as any).id)));
-  s.post('/webhook_endpoints/:id/disable', async r=>presentWebhookEndpoint(await Webhooks.disableEndpoint((r.params as any).id)));
-  s.post('/webhook_endpoints/:id/rotate_secret', async r=>presentWebhookSecret(await Webhooks.rotateSecret((r.params as any).id, (r.body as any)?.grace_hours ?? 24)));
-  s.post('/webhook_endpoints/:id/test', async r=>Webhooks.enqueueTestPing((r.params as any).id));
-  s.post('/webhook_endpoints/:id/test_ping', async r=>Webhooks.enqueueTestPing((r.params as any).id));
+  s.post('/webhook_endpoints', async r=>{ const created=await Webhooks.createEndpoint({ ...(r.body as any), tenantId:r.accountId, livemode:r.auth.livemode, api_version:(r.body as any)?.api_version??r.apiVersion }); const {secret,...endpoint}=created; return { ...presentWebhookEndpoint(endpoint), secret }; });
+  s.get('/webhook_endpoints', async r=>renderList('/v1/webhook_endpoints',(await Webhooks.listEndpoints({ tenantId:r.accountId })).map(presentWebhookEndpoint)));
+  s.get('/webhook_endpoints/:id', async r=>presentWebhookEndpoint(await Webhooks.getEndpoint((r.params as any).id, r.accountId)));
+  s.post('/webhook_endpoints/:id', async r=>presentWebhookEndpoint(await Webhooks.updateEndpoint((r.params as any).id,{ tenantId:r.accountId, ...(r.body as any) })));
+  s.delete('/webhook_endpoints/:id', async r=>presentWebhookEndpoint(await Webhooks.deleteEndpoint((r.params as any).id, { tenantId:r.accountId })));
+  s.post('/webhook_endpoints/:id/enable', async r=>presentWebhookEndpoint(await Webhooks.enableEndpoint((r.params as any).id, { tenantId:r.accountId })));
+  s.post('/webhook_endpoints/:id/disable', async r=>presentWebhookEndpoint(await Webhooks.disableEndpoint((r.params as any).id, { tenantId:r.accountId })));
+  s.post('/webhook_endpoints/:id/rotate_secret', async r=>presentWebhookSecret(await Webhooks.rotateSecret((r.params as any).id, { tenantId:r.accountId, graceHours:(r.body as any)?.grace_hours ?? 24 })));
+  s.post('/webhook_endpoints/:id/test', async r=>Webhooks.enqueueTestPing((r.params as any).id, { tenantId:r.accountId }));
+  s.post('/webhook_endpoints/:id/test_ping', async r=>Webhooks.enqueueTestPing((r.params as any).id, { tenantId:r.accountId }));
   s.post('/webhook_endpoints/:id/diagnostics', async r=>Webhooks.recordDiagnostic((r.params as any).id,{ ...(r.body as any), url:(r.body as any)?.url }));
-  s.get('/webhook_endpoints/:id/deliveries', async r=>renderList('/v1/webhook_endpoints/'+(r.params as any).id+'/deliveries', await Webhooks.listDeliveries((r.params as any).id)));
+  s.get('/webhook_endpoints/:id/deliveries', async r=>renderList('/v1/webhook_endpoints/'+(r.params as any).id+'/deliveries', await Webhooks.listDeliveries({ tenantId:r.accountId, endpointId:(r.params as any).id })));
 }
 export async function webhookDlqRoutes(s:FastifyInstance){
-  s.get('/webhook_dlq/:id', async r=>await Webhooks.getDelivery((r.params as any).id) ?? { id:(r.params as any).id, object:'webhook_delivery', status:'failed' });
-  s.post('/webhook_dlq/:id/requeue', async r=>Webhooks.requeueDelivery((r.params as any).id));
-  s.post('/webhook_dlq/:id/drop', async r=>Webhooks.dropDelivery((r.params as any).id));
-  s.post('/webhook_dlq/:id/replay', async r=>Webhooks.requeueDelivery((r.params as any).id));
+  s.get('/webhook_dlq/:id', async r=>await Webhooks.getDelivery((r.params as any).id, { tenantId:r.accountId }) ?? { id:(r.params as any).id, object:'webhook_delivery', status:'failed' });
+  s.post('/webhook_dlq/:id/requeue', async r=>Webhooks.requeueDelivery((r.params as any).id, { tenantId:r.accountId }));
+  s.post('/webhook_dlq/:id/drop', async r=>Webhooks.dropDelivery((r.params as any).id, { tenantId:r.accountId }));
+  s.post('/webhook_dlq/:id/replay', async r=>Webhooks.requeueDelivery((r.params as any).id, { tenantId:r.accountId }));
 }
 export async function apiKeysRoutes(s:FastifyInstance){ s.post('/api_keys', async r=>presentApiKeyCreate({...F.apiKeyCreate,id:nid('ak_'),secret:`plr_sk_test_${ulid()}`,created:now(),livemode:r.auth.livemode,...(r.body as any)})); s.get('/api_keys', async r=>renderList('/v1/api_keys',[presentApiKey({...F.apiKey,created:now(),livemode:r.auth.livemode})])); s.get('/api_keys/:id', async r=>presentApiKey({...F.apiKey,id:(r.params as any).id,created:now(),livemode:r.auth.livemode})); s.post('/api_keys/:id/rotate', async r=>presentApiKeyCreate({...F.apiKeyCreate,id:(r.params as any).id,secret:`plr_sk_test_${ulid()}`,created:now(),livemode:r.auth.livemode})); s.post('/api_keys/:id/revoke', async r=>presentApiKey({...F.apiKey,id:(r.params as any).id,status:'revoked'})); s.post('/api_keys/:id/expire', async r=>presentApiKey({...F.apiKey,id:(r.params as any).id,status:'expired'})); }

@@ -65,8 +65,11 @@ object ChannelPool : AutoCloseable {
     }
 
     override fun close() {
-        entries.values.forEach { it.channel.shutdown().awaitTermination(5, TimeUnit.SECONDS) }
-        closed.addAndGet(entries.size.toLong())
+        val openEntries = entries.values.filter { !it.channel.isShutdown && !it.channel.isTerminated }
+        openEntries.forEach { it.channel.shutdown().awaitTermination(5, TimeUnit.SECONDS) }
+        closed.addAndGet(openEntries.size.toLong())
         entries.clear()
+        created.set(0)
+        closed.set(0)
     }
 }

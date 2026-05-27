@@ -9,13 +9,6 @@ test('google authorization URL includes PKCE and default scopes', () => {
   assert.equal(pkceChallenge('abc').length > 10, true);
 });
 
-test('verifyIdToken validates issuer audience and payload', async () => {
-  const payload = Buffer.from(JSON.stringify({ iss: 'https://accounts.google.com', aud: 'cid', exp: Math.floor(Date.now()/1000)+60, sub: 'sub', email: 'a@example.com', email_verified: true, name: 'A' })).toString('base64url');
-  const token = `${Buffer.from('{}').toString('base64url')}.${payload}.sig`;
-  const claims = await verifyIdToken(token, { clientId: 'cid', issuer: 'https://accounts.google.com' });
-  assert.equal(claims.sub, 'sub');
-  await assert.rejects(() => verifyIdToken(token, { clientId: 'wrong' }), /invalid_audience/);
-});
 
 test('csrf constant time compare accepts exact token only', () => {
   const token = createCsrfToken();

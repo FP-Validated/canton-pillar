@@ -1,16 +1,25 @@
 import type { FastifyInstance } from 'fastify';
 import { PillarError } from '../errors/pillar-error.js';
-const re = /^Bearer\s+plr_(sk|rk|pk)_(test|live)_[A-Za-z0-9_-]+$/;
+import { lookupApiKey } from '../repositories/api-key-repo.js';
+
+const bearer = /^Bearer\s+(.+)$/;
 const demoAccountId = ['acct', 'demo'].join('_');
 export async function registerAuth(server: FastifyInstance) {
   server.addHook('preHandler', async (request) => {
-    if (request.url === '/v1/health') return;
+    if ((request.url === '/v1/health' || request.url === '/v1/network') && !request.headers.authorization) return;
     const auth = request.headers.authorization;
-    const m = typeof auth === 'string' ? re.exec(auth) : null;
+    const m = typeof auth === 'string' ? bearer.exec(auth) : null;
     if (!m) throw PillarError.auth();
-    const keyType = m[1] as 'sk'|'rk'|'pk';
-    request.auth = { keyId: keyType === 'sk' ? 'ak_demo_admin' : 'ak_demo', livemode: m[2] === 'live', scopes: keyType === 'sk' ? ['*','admin'] : ['*'], keyType };
-    request.accountId = demoAccountId;
+    const presented = m[1];
+    let apiKey = await lookupApiKey(presented);
+    if (!apiKey && process.env.PILLAR_DEMO_DATA === 'true') {
+      // Demo data mode may run without a seeded api_keys table. This is the only
+      // permitted bypass; production and test DB paths fail closed on missing rows.
+      apiKey = { keyId: 'ak_demo_admin', tenantId: demoAccountId, scopes: ['*', 'admin'], livemode: presented.includes('_live_'), status: 'active' };
+    }
+    if (!apiKey) throw PillarError.auth('Invalid API key.');
+    request.auth = { keyId: apiKey.keyId, livemode: apiKey.livemode, scopes: apiKey.scopes, keyType: 'sk' };
+    request.accountId = apiKey.tenantId;
     const q = request.query as Record<string, unknown>;
     const ex = q['expand[]'] ?? q.expand;
     const vals = Array.isArray(ex) ? ex : ex ? [ex] : [];

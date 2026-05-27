@@ -14,6 +14,16 @@ components:
         maxLength: 255
         minLength: 1
         type: string
+    PillarNetworkHeader:
+      in: header
+      name: Pillar-Network
+      required: false
+      schema:
+        enum:
+          - devnet
+          - testnet
+          - mainnet
+        type: string
   responses:
     "400":
       content:
@@ -839,6 +849,8 @@ components:
                 - missing_required_parameter
                 - unsupported_expand
                 - metadata_too_large
+                - network_invalid
+                - network_not_bound
                 - idempotency_key_required
                 - idempotency_key_reused
                 - insufficient_holding
@@ -2195,6 +2207,53 @@ components:
         - operation
         - latest_event
         - account
+      type: object
+    NetworkContext:
+      properties:
+        current:
+          enum:
+            - devnet
+            - testnet
+            - mainnet
+          type: string
+        livemode:
+          type: boolean
+        object:
+          enum:
+            - network_context
+          type: string
+        supported:
+          items:
+            enum:
+              - devnet
+              - testnet
+              - mainnet
+            type: string
+          type: array
+        validator:
+          nullable: true
+          properties:
+            provider_id:
+              type: string
+            status:
+              enum:
+                - active
+                - degraded
+                - down
+              type: string
+            validator_id:
+              type: string
+          required:
+            - provider_id
+            - validator_id
+            - status
+          type: object
+      required:
+        - object
+        - current
+        - supported
+        - validator
+        - livemode
       type: object
     NetworkListResponse:
       properties:
@@ -9177,6 +9236,77 @@ paths:
       summary: confirm issue_intents
       tags:
         - issue_intents
+  /v1/network:
+    get:
+      operationId: networkContextRetrieve
+      parameters:
+        - in: header
+          name: Pillar-Network
+          required: false
+          schema:
+            enum:
+              - devnet
+              - testnet
+              - mainnet
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NetworkContext"
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 400
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 401
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 403
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 404
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 409
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 422
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 429
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+          description: Error 500
+      summary: Retrieve network context
+      tags:
+        - Network
   /v1/network/bindings:
     get:
       operationId: networkBindingslist

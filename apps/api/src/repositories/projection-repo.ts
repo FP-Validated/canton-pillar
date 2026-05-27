@@ -1,5 +1,4 @@
 import { nid, now } from '../routes/v1/data.js';
-import { demoDataEnabled } from '../config/runtime-mode.js';
 import { ReadThroughCache } from '../cache/ReadThroughCache.js';
 import { balanceKey, holdingKey, operationKey } from '../cache/KeyBuilders.js';
 
@@ -17,7 +16,7 @@ const memoryHoldings: Holding[] = [
   { id: 'hld_demo0001', object: 'holding', created: now(), livemode: false, account: demoAccountId, asset: demoAssetId, amount: '100.000000', status: 'active', restrictions: [], source_intent: 'trint_demo0001', metadata: {} },
 ];
 
-function useDemo() { return !process.env.DATABASE_URL && (demoDataEnabled() || process.env.PILLAR_IDEMPOTENCY === 'memory'); }
+function useDemo() { return process.env.PILLAR_DEMO_DATA === 'true'; }
 function clampLimit(limit?: number) { return Math.max(1, Math.min(100, Number(limit ?? 10))); }
 function orderedPage<T extends { id: string; account?: string; asset?: string; status?: string }>(rows: T[], p: Page) {
   let out = rows.filter(r => (!p.account || r.account === p.account) && (!p.asset || r.asset === p.asset) && (!p.status || r.status === p.status))

@@ -6,7 +6,9 @@ import org.slf4j.LoggerFactory
 import pillar.ledgercommand.command.JsonCommandBuilder
 import pillar.ledgercommand.config.LedgerCommandConfig
 import pillar.ledgercommand.failure.FailureClassifier
-import pillar.ledgercommand.ledger.FakeLedgerCommandSubmitter
+import pillar.ledgercommand.ledger.CantonGrpcLedgerCommandSubmitter
+import pillar.ledgercommand.ledger.EmptyCompletionClient
+import pillar.ledgercommand.ledger.LedgerApiClient
 import pillar.ledgercommand.queue.CommandRequestPoller
 import pillar.ledgercommand.queue.CommandRequestRepository
 
@@ -43,13 +45,24 @@ internal fun resolveSubmitter(): pillar.ledgercommand.ledger.LedgerCommandSubmit
             pillar.ledgercommand.ledger.FakeLedgerCommandSubmitter()
         }
         "grpc" -> {
-            // Wire the real Canton gRPC submitter once the runtime client is finalized.
-            // Until then, refuse to silently fall through to the fake.
-            error("PILLAR_LEDGER_SUBMITTER=grpc requires the Canton gRPC submitter binding; set PILLAR_LEDGER_SUBMITTER=fake in dev or wire CantonGrpcLedgerCommandSubmitter")
+            val host = requiredEnv("PILLAR_LEDGER_HOST")
+            val port = requiredEnv("PILLAR_LEDGER_PORT").toIntOrNull() ?: error("PILLAR_LEDGER_PORT must be an integer")
+            requiredEnv("PILLAR_LEDGER_TLS").toBooleanStrictOrNull() ?: error("PILLAR_LEDGER_TLS must be true or false")
+            val actAs = requiredEnv("PILLAR_LEDGER_ACT_AS")
+            val applicationId = System.getenv("PILLAR_LEDGER_APPLICATION_ID") ?: "pillar-runtime"
+            CantonGrpcLedgerCommandSubmitter(
+                ledgerApiClient = LedgerApiClient(host, port),
+                completionClient = EmptyCompletionClient(),
+                actAs = actAs,
+                applicationId = applicationId,
+            )
         }
         else -> error("unsupported PILLAR_LEDGER_SUBMITTER=$mode")
     }
 }
+
+private fun requiredEnv(name: String): String =
+    System.getenv(name)?.takeIf { it.isNotBlank() } ?: error("$name is required when PILLAR_LEDGER_SUBMITTER=grpc")
 
 internal fun toJdbcUrl(url: String): String = when {
     url.startsWith("jdbc:") -> url

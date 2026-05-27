@@ -10,8 +10,11 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.slf4j.api)
     implementation(libs.micrometer.core)
+    implementation(libs.hikari)
+    implementation(libs.postgres)
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)
+    testImplementation(libs.h2)
 }
 
 tasks.test { useJUnitPlatform() }

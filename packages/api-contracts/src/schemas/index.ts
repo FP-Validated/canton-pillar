@@ -25,4 +25,5 @@ export * from './customer-billing.js';
 export * from './billing-portal.js';
 export * from './admin/template-registry/index.js';
 export * from './network/index.js';
+export * from './network-context.js';
 export * from './identity/index.js';

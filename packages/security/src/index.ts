@@ -11,6 +11,7 @@ export * from './crypto/envelope.js';
 export * from './rate-limit/buckets.js';
 export * from './rotation/runbook.js';
 export * from './oauth/google.js';
+export * from './oauth/jwks.js';
 export * from './sessions/csrf.js';
 export * from './sessions/session-manager.js';
 export * from './rbac/policy.js';
