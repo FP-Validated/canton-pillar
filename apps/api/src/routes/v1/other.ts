@@ -4,8 +4,7 @@ import * as F from '@pillar/api-contracts/fixtures';
 import { HoldCreateRequest, HoldReleaseRequest } from '@pillar/api-contracts/schemas';
 import { renderList } from '../../http/pagination.js';
 import { event, hold, operation, now, nid } from './data.js';
-import { presentApiKey, presentApiKeyCreate, presentEvent, presentHold, presentOperation, presentWebhookEndpoint, presentWebhookSecret } from '../../presenters/index.js';
-import { getOperationProjection } from '../../repositories/projection-repo.js';
+import { presentApiKey, presentApiKeyCreate, presentEvent, presentHold, presentWebhookEndpoint, presentWebhookSecret } from '../../presenters/index.js';
 import * as Webhooks from '../../repositories/webhook-repo.js';
 import * as Events from '../../repositories/event-repo.js';
 import { enqueueIntent } from '../../db/intent-enqueue.js';
@@ -48,7 +47,6 @@ export async function holdsRoutes(s:FastifyInstance){
   });
   s.post('/holds/:id/cancel', async r=>presentHold({...hold(r.auth.livemode),id:(r.params as any).id,status:'released'}));
 }
-export async function operationsRoutes(s:FastifyInstance){ s.get('/operations', async r=>renderList('/v1/operations',[presentOperation({ id:'op_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7ZG', object:'operation', livemode:r.auth.livemode, created:now(), intent:'trint_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7ZE', status:'projected', metadata:{} })])); s.get('/operations/:id', async r=>{ const op=await getOperationProjection(r.accountId,(r.params as any).id); const ex=(r.query as any)?.['expand[]']??(r.query as any)?.expand; const list:any[]=Array.isArray(ex)?ex:ex?[ex]:[]; const expanded=list.includes('ledger_trace'); const value:any={ id:'op_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7ZG', object:'operation', livemode:r.auth.livemode, created:op.projected_at, intent:'trint_01HY4Z7Z7Z7Z7Z7Z7Z7Z7Z7ZE', status:op.status, metadata:{} }; if(expanded && (r.auth.scopes.includes('*')||r.auth.scopes.includes('admin'))) value.ledger_trace={ update_id:op.update_id, ledger_offset:op.ledger_offset, participant_id:op.participant_id, synchronizer_id:op.synchronizer_id, ledger_record_time:op.ledger_record_time }; return presentOperation(value); }); }
 export async function eventsRoutes(s:FastifyInstance){
   s.get('/events', async r=>renderList('/v1/events', await Events.listEvents({ types: (r.query as any)?.type ? String((r.query as any).type).split(',') : undefined, livemode:r.auth.livemode, mode:(r.query as any)?.payload_mode, apiVersion:r.apiVersion })));
   s.get('/events/:id', async r=>presentEvent(await Events.getEvent((r.params as any).id, ((r.query as any)?.payload_mode === 'snapshot' ? 'snapshot' : 'thin'), r.apiVersion)));

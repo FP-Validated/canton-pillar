@@ -45,7 +45,7 @@ export class EventLogTailer {
     await client.connect();
     try {
       const res = await client.query(
-        'select id, type, payload, created_at from event_log where tenant_id=$1 and livemode=$2 and created_at>$3 order by created_at asc limit 512',
+        'select id, event_type as type, payload, created_at from event_log where tenant_id=$1 and livemode=$2 and created_at>$3 order by created_at asc limit 512',
         [this.options.tenantId, this.options.livemode, this.lastSeen]
       );
       for (const row of res.rows) {

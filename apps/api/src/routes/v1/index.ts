@@ -2,7 +2,7 @@ import type { FastifyInstance } from 'fastify';
 import openapi from '@pillar/api-contracts/openapi/pillar-v1.json' assert { type: 'json' };
 import { loadConfig } from '../../config.js';
 import { selectOne } from '../../db/client.js';
-import { accountsRoutes } from './accounts.js'; import { assetsRoutes } from './assets.js'; import { balancesRoutes, holdingsRoutes } from './projection.js'; import { issueIntentsRoutes, redeemIntentsRoutes, transferIntentsRoutes } from './intents.js'; import { eventsRoutes, holdsRoutes, operationsRoutes, webhookEndpointsRoutes, webhookDlqRoutes } from './other.js';
+import { accountsRoutes } from './accounts.js'; import { assetsRoutes } from './assets.js'; import { balancesRoutes, holdingsRoutes } from './projection.js'; import { issueIntentsRoutes, redeemIntentsRoutes, transferIntentsRoutes } from './intents.js'; import { eventsRoutes, holdsRoutes, webhookEndpointsRoutes, webhookDlqRoutes } from './other.js'; import { operationsRoutes } from './operations.js';
 import { p8ApiKeysRoutes } from './api_keys.js'; import { filesRoutes } from './files.js'; import { privacyRoutes } from './privacy.js'; import { authRoutes } from './auth.js'; import { requestLogsRoutes } from './request_logs.js';
 import { onboardingRoutes } from './onboarding/index.js';
 import { usageRoutes } from './usage.js';
