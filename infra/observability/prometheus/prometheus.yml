@@ -1,0 +1,104 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: local
+    project: canton-pillar
+
+rule_files:
+  - rules/*.yaml
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: [localhost:9090]
+
+  - job_name: otel-collector
+    static_configs:
+      - targets: [otel-collector:8889]
+
+  - job_name: pillar-api
+    metrics_path: /metrics
+    static_configs:
+      - targets: [api:3000]
+        labels: { service: api, network: devnet }
+
+  - job_name: pillar-ledger-command
+    static_configs:
+      - targets: [ledger-command:8081]
+        labels: { service: ledger-command, network: devnet }
+
+  - job_name: pillar-projection-worker
+    static_configs:
+      - targets: [projection-worker:8082]
+        labels: { service: projection-worker, network: devnet }
+
+  - job_name: pillar-webhook-dispatcher
+    static_configs:
+      - targets: [webhook-dispatcher:8083]
+        labels: { service: webhook-dispatcher, network: devnet }
+
+  - job_name: pillar-identity
+    static_configs:
+      - targets: [identity:8090]
+        labels: { service: identity, network: devnet }
+
+  - job_name: pillar-usage-meter
+    static_configs:
+      - targets: [usage-meter:8091]
+        labels: { service: usage-meter, network: devnet }
+
+  - job_name: pillar-billing-adapter
+    static_configs:
+      - targets: [billing-adapter:8092]
+        labels: { service: billing-adapter, network: devnet }
+
+  - job_name: pillar-template-registry
+    static_configs:
+      - targets: [template-registry:8093]
+        labels: { service: template-registry, network: devnet }
+
+  - job_name: pillar-validator-registry
+    static_configs:
+      - targets: [validator-registry:8094]
+        labels: { service: validator-registry, network: devnet }
+
+  - job_name: pillar-onboarding
+    static_configs:
+      - targets: [onboarding:8095]
+        labels: { service: onboarding, network: devnet }
+
+  - job_name: pillar-search-indexer
+    static_configs:
+      - targets: [search-indexer:8096]
+        labels: { service: search-indexer, network: devnet }
+
+  - job_name: pillar-export-worker
+    static_configs:
+      - targets: [export-worker:8097]
+        labels: { service: export-worker, network: devnet }
+
+  - job_name: pillar-compliance-adapter
+    static_configs:
+      - targets: [compliance-adapter:8098]
+        labels: { service: compliance-adapter, network: devnet }
+
+  - job_name: pillar-workflow-orchestrator
+    static_configs:
+      - targets: [workflow-orchestrator:8099]
+        labels: { service: workflow-orchestrator, network: devnet }
+
+  - job_name: pillar-token-standard-adapter
+    static_configs:
+      - targets: [token-standard-adapter:8100]
+        labels: { service: token-standard-adapter, network: devnet }
+
+  - job_name: pillar-networks
+    file_sd_configs:
+      - files: [file_sd/networks.yml]
+        refresh_interval: 30s
+
+  - job_name: pillar-validators
+    file_sd_configs:
+      - files: [file_sd/validator_providers.yml]
+        refresh_interval: 30s

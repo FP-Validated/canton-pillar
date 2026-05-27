@@ -1,1 +1,80 @@
-{"title":"Template Registry","panels":[{"title":"Stale registry seconds","targets":[{"expr":"pillar_registry_stale_seconds"}]},{"title":"Package mismatch by participant","targets":[{"expr":"pillar_registry_package_mismatch_total"}]},{"title":"Signature failure rate","targets":[{"expr":"rate(pillar_registry_signature_failure_total[5m])"}]},{"title":"Side-channel DAR events","targets":[{"expr":"pillar_registry_side_channel_total"}]}]}
+{
+  "title": "Template Registry",
+  "panels": [
+    {
+      "title": "Stale registry seconds",
+      "targets": [
+        {
+          "expr": "pillar_registry_stale_seconds{network=~\"$network\"}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "pillar-prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Package mismatch by participant",
+      "targets": [
+        {
+          "expr": "pillar_registry_package_mismatch_total{network=~\"$network\"}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "pillar-prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Signature failure rate",
+      "targets": [
+        {
+          "expr": "rate(pillar_registry_signature_failure_total{network=~\"$network\"}[5m])",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "pillar-prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Side-channel DAR events",
+      "targets": [
+        {
+          "expr": "pillar_registry_side_channel_total{network=~\"$network\"}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "pillar-prometheus"
+          }
+        }
+      ]
+    }
+  ],
+  "uid": "pillar-template-registry",
+  "schemaVersion": 39,
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "refresh": "30s",
+  "templating": {
+    "list": [
+      {
+        "name": "network",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "pillar-prometheus"
+        },
+        "query": "label_values(up, network)",
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        }
+      }
+    ]
+  }
+}

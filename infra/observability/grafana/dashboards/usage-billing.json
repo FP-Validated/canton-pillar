@@ -1,1 +1,97 @@
-{"title":"Usage Billing","panels":[{"type":"stat","title":"Usage emit failures","targets":[{"expr":"pillar_usage_emit_failed_total"}]},{"type":"stat","title":"Rollup lag","targets":[{"expr":"pillar_usage_rollup_lag_seconds"}]},{"type":"stat","title":"Provider outages","targets":[{"expr":"pillar_billing_provider_outage_total"}]},{"type":"stat","title":"Invoice mismatches","targets":[{"expr":"pillar_invoice_reconciliation_mismatch_total"}]},{"type":"stat","title":"Partition create failures","targets":[{"expr":"pillar_partition_create_failed_total"}]}]}
+{
+  "title": "Usage Billing",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Usage emit failures",
+      "targets": [
+        {
+          "expr": "pillar_usage_emit_failed_total{network=~\"$network\"}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "pillar-prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Rollup lag",
+      "targets": [
+        {
+          "expr": "pillar_usage_rollup_lag_seconds{network=~\"$network\"}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "pillar-prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Provider outages",
+      "targets": [
+        {
+          "expr": "pillar_billing_provider_outage_total{network=~\"$network\"}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "pillar-prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Invoice mismatches",
+      "targets": [
+        {
+          "expr": "pillar_invoice_reconciliation_mismatch_total{network=~\"$network\"}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "pillar-prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Partition create failures",
+      "targets": [
+        {
+          "expr": "pillar_partition_create_failed_total{network=~\"$network\"}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "pillar-prometheus"
+          }
+        }
+      ]
+    }
+  ],
+  "uid": "pillar-usage-billing",
+  "schemaVersion": 39,
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "refresh": "30s",
+  "templating": {
+    "list": [
+      {
+        "name": "network",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "pillar-prometheus"
+        },
+        "query": "label_values(up, network)",
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        }
+      }
+    ]
+  }
+}

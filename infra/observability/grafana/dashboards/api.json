@@ -8,10 +8,40 @@
       "title": "pillar_api_request_duration_seconds_bucket",
       "targets": [
         {
-          "expr": "sum(rate(pillar_api_request_duration_seconds_bucket[5m]))",
-          "refId": "A"
+          "expr": "sum(rate(pillar_api_request_duration_seconds_bucket{network=~\"$network\"}[5m]))",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "pillar-prometheus"
+          }
         }
       ]
     }
-  ]
+  ],
+  "uid": "pillar-api",
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "refresh": "30s",
+  "templating": {
+    "list": [
+      {
+        "name": "network",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "pillar-prometheus"
+        },
+        "query": "label_values(up, network)",
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        }
+      }
+    ]
+  }
 }

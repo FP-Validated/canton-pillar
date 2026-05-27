@@ -1,1 +1,123 @@
-{"title":"Search Export","panels":[{"title":"search_index_lag_seconds","type":"timeseries","targets":[{"expr":"search_index_lag_seconds"}]},{"title":"export_duration_seconds","type":"timeseries","targets":[{"expr":"export_duration_seconds"}]},{"title":"export_rows_written_total","type":"stat","targets":[{"expr":"export_rows_written_total"}]},{"title":"export_bytes_written_total","type":"stat","targets":[{"expr":"export_bytes_written_total"}]},{"title":"signed_url_created_total","type":"stat","targets":[{"expr":"signed_url_created_total"}]},{"title":"schedule_drift_seconds","type":"timeseries","targets":[{"expr":"schedule_drift_seconds"}]},{"title":"export_deadline_miss_total","type":"stat","targets":[{"expr":"export_deadline_miss_total"}]}]}
+{
+  "title": "Search Export",
+  "panels": [
+    {
+      "title": "search_index_lag_seconds",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "search_index_lag_seconds",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "pillar-prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "title": "export_duration_seconds",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "export_duration_seconds",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "pillar-prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "title": "export_rows_written_total",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "export_rows_written_total",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "pillar-prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "title": "export_bytes_written_total",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "export_bytes_written_total",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "pillar-prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "title": "signed_url_created_total",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "signed_url_created_total",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "pillar-prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "title": "schedule_drift_seconds",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "schedule_drift_seconds",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "pillar-prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "title": "export_deadline_miss_total",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "export_deadline_miss_total",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "pillar-prometheus"
+          }
+        }
+      ]
+    }
+  ],
+  "uid": "pillar-search-export",
+  "schemaVersion": 39,
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "refresh": "30s",
+  "templating": {
+    "list": [
+      {
+        "name": "network",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "pillar-prometheus"
+        },
+        "query": "label_values(up, network)",
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        }
+      }
+    ]
+  }
+}

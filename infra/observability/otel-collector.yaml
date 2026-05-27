@@ -14,6 +14,9 @@ processors:
       - key: pillar.service
         from_attribute: service.name
         action: upsert
+      - key: pillar.network
+        from_attribute: pillar.network
+        action: upsert
       - key: slo.window
         value: 30d
         action: insert
@@ -27,6 +30,10 @@ processors:
 exporters:
   debug:
     verbosity: basic
+  prometheus:
+    endpoint: 0.0.0.0:8889
+    resource_to_telemetry_conversion:
+      enabled: true
 
 extensions:
   health_check:
@@ -46,7 +53,7 @@ service:
     metrics:
       receivers: [otlp]
       processors: [memory_limiter, attributes/slo_normalize, batch]
-      exporters: [debug]
+      exporters: [debug, prometheus]
     logs:
       receivers: [otlp]
       processors: [memory_limiter, batch]

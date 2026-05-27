@@ -1,1 +1,87 @@
-{"title":"Network Validator Health","schemaVersion":39,"panels":[{"type":"stat","title":"Validator health","targets":[{"expr":"pillar_validator_health_status"}]},{"type":"timeseries","title":"Validator latency","targets":[{"expr":"pillar_validator_latency_ms"}]},{"type":"timeseries","title":"Sequencer lag","targets":[{"expr":"pillar_validator_sequencer_lag_seconds"}]}]}
+{
+  "title": "Network Validator Health",
+  "schemaVersion": 39,
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Validator health",
+      "targets": [
+        {
+          "expr": "pillar_validator_health_status{network=~\"$network\", provider_id=~\"$validator_provider\"}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "pillar-prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Validator latency",
+      "targets": [
+        {
+          "expr": "pillar_validator_latency_ms{network=~\"$network\", provider_id=~\"$validator_provider\"}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "pillar-prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Sequencer lag",
+      "targets": [
+        {
+          "expr": "pillar_validator_sequencer_lag_seconds{network=~\"$network\", provider_id=~\"$validator_provider\"}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "pillar-prometheus"
+          }
+        }
+      ]
+    }
+  ],
+  "uid": "pillar-network-validator-health",
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "refresh": "30s",
+  "templating": {
+    "list": [
+      {
+        "name": "network",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "pillar-prometheus"
+        },
+        "query": "label_values(up, network)",
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        }
+      },
+      {
+        "name": "validator_provider",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "pillar-prometheus"
+        },
+        "query": "label_values(up{network=~\"$network\"}, provider_id)",
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,18 @@
+- targets: [validator-registry:8094]
+  labels:
+    network: devnet
+    provider_id: prv_local_dev
+    validator_id: vld_local_001
+    role: validator
+- targets: [validator-registry:8094]
+  labels:
+    network: testnet
+    provider_id: prv_local_test
+    validator_id: vld_local_test_001
+    role: validator
+- targets: [validator-registry:8094]
+  labels:
+    network: mainnet
+    provider_id: prv_local_main
+    validator_id: vld_local_main_001
+    role: validator

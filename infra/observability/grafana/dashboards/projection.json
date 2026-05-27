@@ -8,10 +8,40 @@
       "title": "pillar_projection_lag_seconds",
       "targets": [
         {
-          "expr": "pillar_projection_lag_seconds",
-          "refId": "A"
+          "expr": "pillar_projection_lag_seconds{network=~\"$network\"}",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "pillar-prometheus"
+          }
         }
       ]
     }
-  ]
+  ],
+  "uid": "pillar-projection",
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "refresh": "30s",
+  "templating": {
+    "list": [
+      {
+        "name": "network",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "pillar-prometheus"
+        },
+        "query": "label_values(up, network)",
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        }
+      }
+    ]
+  }
 }

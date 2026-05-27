@@ -7,10 +7,14 @@ services:
     ports: ["6380:6379"]
   api:
     build: ../../apps/api
+    labels:
+      pillar.network: devnet
     environment:
       PILLAR_CACHE_REDIS_URL: redis://redis:6379/0
       DATABASE_URL: ${DATABASE_URL:-postgres://pillar:pillar@postgres:5432/pillar}
-    depends_on: [redis]
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      OTEL_RESOURCE_ATTRIBUTES: service.name=api,deployment.environment=local,pillar.network=devnet
+    depends_on: [redis, otel-collector]
   envoy:
     image: envoyproxy/envoy:v1.31-latest
     command: ["envoy", "-c", "/etc/envoy/local.envoy.yaml", "--service-cluster", "pillar-local"]
@@ -20,16 +24,68 @@ services:
     depends_on: [api]
   usage-meter:
     build: ../../services/usage-meter
+    labels:
+      pillar.network: devnet
     environment:
       STREAM_BACKEND: redis
       REDIS_URL: redis://redis-streams:6379
-    depends_on: [redis-streams]
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      OTEL_RESOURCE_ATTRIBUTES: service.name=usage-meter,deployment.environment=local,pillar.network=devnet
+    depends_on: [redis-streams, otel-collector]
   validator-registry:
     build: ../../services/validator-registry
     ports: ["8094:8094"]
+    labels:
+      pillar.network: devnet
     environment:
       PORT: "8094"
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      OTEL_RESOURCE_ATTRIBUTES: service.name=validator-registry,deployment.environment=local,pillar.network=devnet
+    depends_on: [otel-collector]
   billing-adapter:
     build: ../../services/billing-adapter
+    labels:
+      pillar.network: devnet
     environment:
       PROVIDER_ENDPOINT: http://provider.local
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      OTEL_RESOURCE_ATTRIBUTES: service.name=billing-adapter,deployment.environment=local,pillar.network=devnet
+    depends_on: [otel-collector]
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.enable-lifecycle
+    volumes:
+      - ../observability/prometheus:/etc/prometheus
+      - prometheus-data:/prometheus
+    ports: ["9090:9090"]
+    depends_on: [otel-collector]
+  grafana:
+    image: grafana/grafana:11.2.0
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_USERS_DEFAULT_THEME: dark
+    volumes:
+      - ../observability/grafana/provisioning:/etc/grafana/provisioning
+      - ../observability/grafana/dashboards:/var/lib/grafana/dashboards
+      - grafana-data:/var/lib/grafana
+    ports: ["3001:3000"]
+    depends_on: [prometheus]
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.108.0
+    command: ["--config=/etc/otel/otel-collector.yaml"]
+    volumes:
+      - ../observability/otel-collector.yaml:/etc/otel/otel-collector.yaml:ro
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+      - "8889:8889"
+
+volumes:
+  prometheus-data:
+  grafana-data:

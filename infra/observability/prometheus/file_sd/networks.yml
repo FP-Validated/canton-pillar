@@ -1,0 +1,18 @@
+- targets: [validator-registry:8094]
+  labels:
+    network: devnet
+    env: local
+    livemode: "false"
+    role: network-context
+- targets: [validator-registry:8094]
+  labels:
+    network: testnet
+    env: local
+    livemode: "false"
+    role: network-context
+- targets: [validator-registry:8094]
+  labels:
+    network: mainnet
+    env: local
+    livemode: "true"
+    role: network-context

@@ -80,3 +80,20 @@ Requires an external CN devnet validator endpoint, a JWT issuer trusted by that 
 Uses validator-registry providers; mTLS material reload; production JWT issuer; topology rights aligned with provider party rights.
 
 All PILLAR_DEPLOYMENT_MODE in {production, mainnet, testnet} refuses to boot when PILLAR_LEDGER_SUBMITTER=fake (Main.kt).
+
+## Observability Wave - Service /metrics gaps
+
+- api: expected `GET /metrics` on port 3000 in `apps/api/src/server.ts`; Fastify metrics plugin is not wired.
+- projection-worker: expected `GET /metrics` on port 8082 in `services/projection-worker/src/main/kotlin/pillar/projectionworker/Main.kt`; Micrometer metrics exist but no Prometheus HTTP scrape endpoint is exposed.
+- webhook-dispatcher: expected `GET /metrics` on port 8083 in `services/webhook-dispatcher/src/main/kotlin/pillar/webhookdispatcher/Main.kt`; Micrometer dependency/constants exist but no Prometheus HTTP scrape endpoint is exposed.
+- identity: expected `GET /metrics` on port 8090 in `services/identity/src/server.ts`; no Prometheus scrape endpoint is exposed.
+- usage-meter: expected `GET /metrics` on port 8091 in `services/usage-meter/src/server.ts`; no Prometheus scrape endpoint is exposed.
+- billing-adapter: expected `GET /metrics` on port 8092 in `services/billing-adapter/src/server.ts`; no Prometheus scrape endpoint is exposed.
+- template-registry: expected `GET /metrics` on port 8093 in `services/template-registry/src/main/kotlin/pillar/templateregistry/Main.kt`; Micrometer metrics exist but no Prometheus HTTP scrape endpoint is exposed.
+- validator-registry: expected `GET /metrics` on port 8094 in `services/validator-registry/src/server.ts`; no Prometheus scrape endpoint is exposed.
+- onboarding: expected `GET /metrics` on port 8095 in `services/onboarding/src/server.ts`; no Prometheus scrape endpoint is exposed.
+- search-indexer: expected `GET /metrics` on port 8096 in `services/search-indexer/src/main/kotlin/pillar/searchindexer/Main.kt`; no Prometheus scrape endpoint is exposed.
+- export-worker: expected `GET /metrics` on port 8097 in `services/export-worker/src/main/kotlin/pillar/exportworker/ExportWorker.kt`; no Prometheus scrape endpoint is exposed.
+- compliance-adapter: expected `GET /metrics` on port 8098 in `services/compliance-adapter/src/main/kotlin/pillar/complianceadapter/Main.kt`; no Prometheus scrape endpoint is exposed.
+- workflow-orchestrator: expected `GET /metrics` on port 8099 in `services/workflow-orchestrator/src/main/kotlin/pillar/workfloworchestrator/Main.kt`; Micrometer dependency exists but no Prometheus HTTP scrape endpoint is exposed.
+- token-standard-adapter: expected `GET /metrics` on port 8100 in `services/token-standard-adapter/src/main`; no Prometheus scrape endpoint is exposed.

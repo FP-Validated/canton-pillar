@@ -8,10 +8,56 @@
       "title": "pillar_participant_health",
       "targets": [
         {
-          "expr": "pillar_participant_health",
-          "refId": "A"
+          "expr": "pillar_participant_health{network=~\"$network\"}",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "pillar-prometheus"
+          }
         }
       ]
     }
-  ]
+  ],
+  "uid": "pillar-participant-health",
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "refresh": "30s",
+  "templating": {
+    "list": [
+      {
+        "name": "network",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "pillar-prometheus"
+        },
+        "query": "label_values(up, network)",
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        }
+      },
+      {
+        "name": "validator_provider",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "pillar-prometheus"
+        },
+        "query": "label_values(up{network=~\"$network\"}, provider_id)",
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        }
+      }
+    ]
+  }
 }
