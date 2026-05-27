@@ -37,8 +37,14 @@ This is a planning/development repository. The earlier per-phase 9.5 PASS verdic
 |P12 Template Registry|PASS|8.0|122-R6Rescoring @ 06b31e1|[evidence](EVIDENCE.md#p12-template-registry)|Compile and tests pass; no real DAR registry workflow evidence.|
 |P13 Dashboard / Docs / Onboarding|PASS|8.0|123-R7Cleanup|[evidence](EVIDENCE.md#p13-dashboard-docs-onboarding)|Dashboard/docs gates remain passing and onboarding test now exits 0.|
 |P14 Usage / Billing|PASS|8.0|122-R6Rescoring @ 06b31e1|[evidence](EVIDENCE.md#p14-usage-billing)|Usage and billing tests pass; no external billing provider evidence.|
-|M15.A Identity / Google OAuth|PASS|8.0|123-R7Cleanup|[evidence](EVIDENCE.md#m15-a-identity-google-oauth)|Identity/security pass and API test exits 0 with `PILLAR_OAUTH_VERIFIER=fake` / memory DB to avoid network JWKS and DB-claim hangs in route tests.|
-|M15.B Network / Validator registry|PASS|8.0|122-R6Rescoring @ 06b31e1|[evidence](EVIDENCE.md#m15-b-network-validator-registry)|Validator registry tests pass; no live validator probing evidence.|
+|M15.A Identity / Google OAuth|PARTIAL|7.5|131-M15HFinalDeploy|[evidence](EVIDENCE.md#m15-wave-final)|identity/security pass; API typecheck/build pass, but @pillar/api test timed out at 120s after one failing account happy-path test.|
+|M15.B Network / Validator registry|PASS|8.0|131-M15HFinalDeploy|[evidence](EVIDENCE.md#m15-wave-final)|validator-registry build/test exit 0 in M15 final gate matrix.|
+|M15.C Onboarding|PASS|8.0|131-M15HFinalDeploy|[evidence](EVIDENCE.md#m15-wave-final)|onboarding build/test exit 0 in M15 final gate matrix.|
+|M15.D Usage / Billing / Storage|PASS|8.0|131-M15HFinalDeploy|[evidence](EVIDENCE.md#m15-wave-final)|usage-meter, billing-adapter, and storage tests exit 0 in M15 final gate matrix.|
+|M15.E Web / Dashboard / Workbench / Docs / Status|PASS|8.0|131-M15HFinalDeploy|[evidence](EVIDENCE.md#m15-wave-final)|web/dashboard/workbench/docs/status typecheck/build/lint gates exit 0 in M15 final gate matrix.|
+|M15.F CLI / SDK / Helm / Compose|PASS|8.5|131-M15HFinalDeploy|[evidence](EVIDENCE.md#m15-wave-final)|cli/sdk-node build/test, helm lint/templates, and compose config exit 0 in M15 final gate matrix.|
+|M15.G Daml package gates|PASS|7.5|131-M15HFinalDeploy|[evidence](EVIDENCE.md#m15-wave-final)|dpm build --all and per-package dpm test exit 0; snippets still show zero exercised tests for packages.|
+|M15.H Final deployment verification|PARTIAL|7.5|131-M15HFinalDeploy|[evidence](EVIDENCE.md#m15-wave-final)|Full matrix captured on 2026-05-27: one failure, @pillar/api test timed out with failing accounts happy-path; Gradle skipped(host_limited); forbidden sweep clean.|
 |R0 reconcile + honesty pass|PARTIAL|6.5|122-R6Rescoring @ 06b31e1|[evidence](EVIDENCE.md#r0-reconcile-honesty-pass)|Preamble evidence exists; Makefile/README grep snippet is truncated and does not fully prove all R0 claims.|
 |R1 Daml lifecycle|PARTIAL|7.0|122-R6Rescoring @ 06b31e1|[evidence](EVIDENCE.md#r1-daml-lifecycle)|Same as P1: build passes, but captured test snippets do not show scripts passed.|
 |R2 API correctness|PASS|9.0|122-R6Rescoring @ 06b31e1|[evidence](EVIDENCE.md#r2-api-correctness)|Fallback grep returned OK no fallback.|
@@ -49,4 +55,4 @@ This is a planning/development repository. The earlier per-phase 9.5 PASS verdic
 
 ## Mission completion
 
-Lowest row after R7 cleanup: **P1/R1 Daml lifecycle** remains **PARTIAL 7.0/10** because captured Daml test snippets do not show meaningful lifecycle tests; the R6-surfaced failures for P2, P3, P10, P13, M15.A, and R5 are corrected in docs/Dev/EVIDENCE.md.
+Lowest row after M15.H final verification: **P1/R1 Daml lifecycle** remains **PARTIAL 7.0/10** because captured Daml test snippets do not show meaningful lifecycle tests. M15.H is **PARTIAL** because `@pillar/api test` timed out at 120s after an accounts happy-path failure; all other non-skipped final matrix gates passed, Gradle was skipped as host-limited, and the forbidden sweep was clean.

@@ -847,3 +847,521 @@ PY`
   version.BuildInfo{Version:"v4.1.1", GitCommit:"5caf0044d4ef3d62a955440272999e139aafbbed", GitTreeState:"clean", GoVersion:"go1.25.7", KubeClientVersion:"v1.35"}
   Docker version 29.5.0, build 98f1464960
   ```
+
+## M15 Wave (final)
+
+Captured on 2026-05-27 by `131-M15HFinalDeploy`. Each row records the command, observed shell exit, and last-five-line snippet. Commands were time-capped at 120s where applicable; exit 124 indicates timeout.
+
+Summary: total 48, pass 46, fail 1, skipped 1.
+
+### pnpm_install
+- Command: `pnpm install`
+- Exit: 0
+- Snippet:
+  ```
+  Scope: all 22 workspace projects
+  Lockfile is up to date, resolution step is skipped
+  Already up to date
+  
+  Done in 488ms
+  ```
+
+### migrator_up
+- Command: `DATABASE_URL=$DATABASE_URL pnpm --filter @pillar/migrator exec ./migrator up`
+- Exit: 0
+- Snippet:
+  ```
+  up ok
+  ```
+
+### migrator_verify
+- Command: `DATABASE_URL=$DATABASE_URL pnpm --filter @pillar/migrator exec ./migrator verify`
+- Exit: 0
+- Snippet:
+  ```
+  verify ok
+  ```
+
+### api_contracts_build
+- Command: `pnpm --filter @pillar/api-contracts build`
+- Exit: 0
+- Snippet:
+  ```
+  
+  
+  > @pillar/api-contracts@0.1.0 build:openapi /Users/steve/canton-dev/packages/api-contracts
+  > tsx src/build-openapi.ts
+  ```
+
+### api_contracts_test
+- Command: `pnpm --filter @pillar/api-contracts test`
+- Exit: 0
+- Snippet:
+  ```
+  ℹ fail 0
+  ℹ cancelled 0
+  ℹ skipped 0
+  ℹ todo 0
+  ℹ duration_ms 634.320958
+  ```
+
+### api_contracts_golden
+- Command: `pnpm --filter @pillar/api-contracts test:golden`
+- Exit: 0
+- Snippet:
+  ```
+  
+  > @pillar/api-contracts@0.1.0 test:golden /Users/steve/canton-dev/packages/api-contracts
+  > tsx scripts/golden-runner.ts
+  
+  Validated 37 examples and 13 golden files
+  ```
+
+### api_contracts_public_lint
+- Command: `pnpm --filter @pillar/api-contracts lint:public-contract`
+- Exit: 0
+- Snippet:
+  ```
+  
+  > @pillar/api-contracts@0.1.0 lint:public-contract /Users/steve/canton-dev/packages/api-contracts
+  > tsx scripts/forbidden-substring-lint.ts
+  
+  Forbidden substring lint clean
+  ```
+
+### api_typecheck
+- Command: `PILLAR_DB=memory pnpm --filter @pillar/api typecheck`
+- Exit: 0
+- Snippet:
+  ```
+  
+  > @pillar/api@0.1.0 typecheck /Users/steve/canton-dev/apps/api
+  > tsc --noEmit -p tsconfig.json
+  ```
+
+### api_build
+- Command: `PILLAR_DB=memory pnpm --filter @pillar/api build`
+- Exit: 0
+- Snippet:
+  ```
+  
+  > @pillar/api@0.1.0 build /Users/steve/canton-dev/apps/api
+  > tsc -p tsconfig.json
+  ```
+
+### api_test
+- Command: `PILLAR_DB=memory PILLAR_OAUTH_VERIFIER=fake pnpm --filter @pillar/api test`
+- Exit: 124
+- Snippet:
+  ```
+  
+  (node:84089) [FSTDEP017] DeprecationWarning: You are accessing the deprecated "request.routerPath" property. Use "request.routeOptions.url" instead. Property "req.routerPath" will be removed in `fastify@5`.
+  (Use `node --trace-deprecation ...` to show where the warning was created)
+  ✔ accounts create requires Idempotency-Key (30.985ms)
+  ✖ accounts create, retrieve, list, and update happy path (67.717208ms)
+  ```
+
+### idempotency_test
+- Command: `DATABASE_URL=$DATABASE_URL pnpm --filter @pillar/idempotency test`
+- Exit: 0
+- Snippet:
+  ```
+  ℹ fail 0
+  ℹ cancelled 0
+  ℹ skipped 0
+  ℹ todo 0
+  ℹ duration_ms 193.816292
+  ```
+
+### security_build
+- Command: `pnpm --filter @pillar/security build`
+- Exit: 0
+- Snippet:
+  ```
+  
+  > @pillar/security@0.1.0 build /Users/steve/canton-dev/packages/security
+  > tsc -p tsconfig.json
+  ```
+
+### security_test
+- Command: `pnpm --filter @pillar/security test`
+- Exit: 0
+- Snippet:
+  ```
+  ℹ fail 0
+  ℹ cancelled 0
+  ℹ skipped 0
+  ℹ todo 0
+  ℹ duration_ms 178.309833
+  ```
+
+### identity_build
+- Command: `pnpm --filter @pillar/identity build`
+- Exit: 0
+- Snippet:
+  ```
+  
+  > @pillar/identity@0.1.0 build /Users/steve/canton-dev/services/identity
+  > tsc -p tsconfig.json
+  ```
+
+### identity_test
+- Command: `pnpm --filter @pillar/identity test`
+- Exit: 0
+- Snippet:
+  ```
+  ℹ fail 0
+  ℹ cancelled 0
+  ℹ skipped 0
+  ℹ todo 0
+  ℹ duration_ms 116.920666
+  ```
+
+### validator_registry_build
+- Command: `pnpm --filter @pillar/validator-registry build`
+- Exit: 0
+- Snippet:
+  ```
+  
+  > @pillar/validator-registry@0.1.0 build /Users/steve/canton-dev/services/validator-registry
+  > tsc -p tsconfig.json
+  ```
+
+### validator_registry_test
+- Command: `pnpm --filter @pillar/validator-registry test`
+- Exit: 0
+- Snippet:
+  ```
+  ℹ fail 0
+  ℹ cancelled 0
+  ℹ skipped 0
+  ℹ todo 0
+  ℹ duration_ms 110.523709
+  ```
+
+### onboarding_build
+- Command: `pnpm --filter @pillar/onboarding build`
+- Exit: 0
+- Snippet:
+  ```
+  
+  > @pillar/onboarding@0.1.0 build /Users/steve/canton-dev/services/onboarding
+  > tsc -p tsconfig.json
+  ```
+
+### onboarding_test
+- Command: `pnpm --filter @pillar/onboarding test`
+- Exit: 0
+- Snippet:
+  ```
+  ℹ fail 0
+  ℹ cancelled 0
+  ℹ skipped 0
+  ℹ todo 0
+  ℹ duration_ms 124.662292
+  ```
+
+### usage_meter_test
+- Command: `pnpm --filter @pillar/usage-meter test`
+- Exit: 0
+- Snippet:
+  ```
+  ℹ fail 0
+  ℹ cancelled 0
+  ℹ skipped 0
+  ℹ todo 0
+  ℹ duration_ms 111.604792
+  ```
+
+### billing_adapter_test
+- Command: `pnpm --filter @pillar/billing-adapter test`
+- Exit: 0
+- Snippet:
+  ```
+  ℹ fail 0
+  ℹ cancelled 0
+  ℹ skipped 0
+  ℹ todo 0
+  ℹ duration_ms 111.593042
+  ```
+
+### storage_test
+- Command: `pnpm --filter @pillar/storage test`
+- Exit: 0
+- Snippet:
+  ```
+  ℹ fail 0
+  ℹ cancelled 0
+  ℹ skipped 0
+  ℹ todo 0
+  ℹ duration_ms 111.189667
+  ```
+
+### web_typecheck
+- Command: `pnpm --filter @pillar/web typecheck`
+- Exit: 0
+- Snippet:
+  ```
+  
+  > @pillar/web@0.1.0 typecheck /Users/steve/canton-dev/apps/web
+  > tsc --noEmit
+  ```
+
+### web_build
+- Command: `pnpm --filter @pillar/web build`
+- Exit: 0
+- Snippet:
+  ```
+  
+  ○  (Static)   prerendered as static content
+  ●  (SSG)      prerendered as static HTML (uses getStaticProps)
+  ƒ  (Dynamic)  server-rendered on demand
+  ```
+
+### dashboard_typecheck
+- Command: `pnpm --filter @pillar/dashboard typecheck`
+- Exit: 0
+- Snippet:
+  ```
+  
+  > @pillar/dashboard@0.1.0 typecheck /Users/steve/canton-dev/apps/dashboard
+  > tsc --noEmit
+  ```
+
+### dashboard_lint
+- Command: `pnpm --filter @pillar/dashboard lint`
+- Exit: 0
+- Snippet:
+  ```
+  
+  > @pillar/dashboard@0.1.0 lint /Users/steve/canton-dev/apps/dashboard
+  > next lint
+  
+  ✔ No ESLint warnings or errors
+  ```
+
+### dashboard_build
+- Command: `pnpm --filter @pillar/dashboard build`
+- Exit: 0
+- Snippet:
+  ```
+    └ other shared chunks (total)          1.88 kB
+  
+  
+  ƒ  (Dynamic)  server-rendered on demand
+  ```
+
+### workbench_typecheck
+- Command: `pnpm --filter @pillar/workbench typecheck`
+- Exit: 0
+- Snippet:
+  ```
+  
+  > @pillar/workbench@0.1.0 typecheck /Users/steve/canton-dev/apps/workbench
+  > tsc --noEmit -p tsconfig.json
+  ```
+
+### workbench_build
+- Command: `pnpm --filter @pillar/workbench build`
+- Exit: 0
+- Snippet:
+  ```
+  
+  
+  ○  (Static)   prerendered as static content
+  ƒ  (Dynamic)  server-rendered on demand
+  ```
+
+### docs_build
+- Command: `pnpm --filter @pillar/docs build`
+- Exit: 0
+- Snippet:
+  ```
+    └ other shared chunks (total)          1.85 kB
+  
+  
+  ○  (Static)  prerendered as static content
+  ```
+
+### status_typecheck
+- Command: `pnpm --filter @pillar/status typecheck`
+- Exit: 0
+- Snippet:
+  ```
+  
+  > @pillar/status@0.1.0 typecheck /Users/steve/canton-dev/apps/status
+  > tsc --noEmit -p tsconfig.json
+  ```
+
+### status_build
+- Command: `pnpm --filter @pillar/status build`
+- Exit: 0
+- Snippet:
+  ```
+  
+  
+  ○  (Static)   prerendered as static content
+  ƒ  (Dynamic)  server-rendered on demand
+  ```
+
+### cli_build
+- Command: `pnpm --filter @pillar/cli build`
+- Exit: 0
+- Snippet:
+  ```
+  
+  > @pillar/cli@0.1.0 build /Users/steve/canton-dev/tools/cli
+  > tsc -p tsconfig.json
+  ```
+
+### sdk_node_build
+- Command: `pnpm --filter @pillar/sdk-node build`
+- Exit: 0
+- Snippet:
+  ```
+  
+  > @pillar/sdk-node@0.1.0 build /Users/steve/canton-dev/packages/sdk-node
+  > tsc -p tsconfig.json
+  ```
+
+### sdk_node_test
+- Command: `pnpm --filter @pillar/sdk-node test`
+- Exit: 0
+- Snippet:
+  ```
+  ℹ fail 0
+  ℹ cancelled 0
+  ℹ skipped 0
+  ℹ todo 0
+  ℹ duration_ms 137.375042
+  ```
+
+### helm_lint
+- Command: `helm lint infra/helm/pillar`
+- Exit: 0
+- Snippet:
+  ```
+  ==> Linting infra/helm/pillar
+  [INFO] Chart.yaml: icon is recommended
+  
+  1 chart(s) linted, 0 chart(s) failed
+  ```
+
+### helm_template_dev
+- Command: `helm template pillar infra/helm/pillar -f infra/helm/pillar/values-dev.yaml >/dev/null && echo helm-dev-OK`
+- Exit: 0
+- Snippet:
+  ```
+  helm-dev-OK
+  ```
+
+### helm_template_mainnet
+- Command: `helm template pillar infra/helm/pillar -f infra/helm/pillar/values-mainnet.yaml >/dev/null && echo helm-mainnet-OK`
+- Exit: 0
+- Snippet:
+  ```
+  helm-mainnet-OK
+  ```
+
+### compose_config
+- Command: `docker compose -f infra/compose/local.yml config >/dev/null && echo compose-OK`
+- Exit: 0
+- Snippet:
+  ```
+  compose-OK
+  ```
+
+### daml_build_all
+- Command: `cd daml && dpm build --all`
+- Exit: 0
+- Snippet:
+  ```
+    Upgrade this warning to an error -Werror=unused-dependency
+    Disable this warning entirely with -Wno-unused-dependency[0m
+  
+  2026-05-27 00:28:15.53 [INFO]  [build] 
+  Created .daml/dist/pillar-test-0.1.0.dar
+  ```
+
+### daml_pillar-assets_test
+- Command: `cd daml/pillar-assets && timeout 60 dpm test`
+- Exit: 0
+- Snippet:
+  ```
+    0 defined
+    0 (100.0%) exercised in any tests
+    0 (100.0%) exercised in internal tests
+    0 (100.0%) exercised in external tests
+  ```
+
+### daml_pillar-core_test
+- Command: `cd daml/pillar-core && timeout 60 dpm test`
+- Exit: 0
+- Snippet:
+  ```
+    0 defined
+    0 (100.0%) exercised in any tests
+    0 (100.0%) exercised in internal tests
+    0 (100.0%) exercised in external tests
+  ```
+
+### daml_pillar-intents_test
+- Command: `cd daml/pillar-intents && timeout 60 dpm test`
+- Exit: 0
+- Snippet:
+  ```
+    0 defined
+    0 (100.0%) exercised in any tests
+    0 (100.0%) exercised in internal tests
+    0 (100.0%) exercised in external tests
+  ```
+
+### daml_pillar-ops_test
+- Command: `cd daml/pillar-ops && timeout 60 dpm test`
+- Exit: 0
+- Snippet:
+  ```
+    0 defined
+    0 (100.0%) exercised in any tests
+    0 (100.0%) exercised in internal tests
+    0 (100.0%) exercised in external tests
+  ```
+
+### daml_pillar-test_test
+- Command: `cd daml/pillar-test && timeout 60 dpm test`
+- Exit: 0
+- Snippet:
+  ```
+    0 defined
+    0 (100.0%) exercised in any tests
+    0 (100.0%) exercised in internal tests
+    0 (100.0%) exercised in external tests
+  ```
+
+### daml_pillar-token-adapter_test
+- Command: `cd daml/pillar-token-adapter && timeout 60 dpm test`
+- Exit: 0
+- Snippet:
+  ```
+    0 defined
+    0 (100.0%) exercised in any tests
+    0 (100.0%) exercised in internal tests
+    0 (100.0%) exercised in external tests
+  ```
+
+### gradle_gates
+- Command: `Gradle gates`
+- Exit: skipped
+- Snippet:
+  ```
+  skipped(host_limited)
+  ```
+
+### forbidden_sweep
+- Command: `python forbidden sweep`
+- Exit: 0
+- Snippet:
+  ```
+  count:0
+  ```
+
