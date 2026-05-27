@@ -25,6 +25,7 @@
 | [ADR-0017](#adr-0017-asset-standard-timing)                                                                           | Accepted | Asset standard timing                                                                                 | -          | [P1](./Phase_01_Daml_Model.md), [P4](./Phase_04_Ledger_Command_Runtime.md), [P9](./Phase_09_CICD_Helm_Deployment.md)                                                                                                                                                                                                                                                                                                                   |
 | [ADR-0018](#adr-0018-metadata-pii-policy)                                                                             | Accepted | Metadata PII policy                                                                                   | -          | [P2](./Phase_02_API_Contract.md), [P7](./Phase_07_SDK_CLI_Workbench.md), [P8](./Phase_08_Security_Compliance.md), [P13](./Phase_13_Dashboard_Docs_Onboarding.md)                                                                                                                                                                                                                                                                       |
 | [ADR-0019](#adr-0019-strong-read-consistency-semantics)                                                               | Accepted | Strong-read consistency semantics                                                                     | -          | [P2](./Phase_02_API_Contract.md), [P5](./Phase_05_Projection_Reconciliation.md), [P7](./Phase_07_SDK_CLI_Workbench.md)                                                                                                                                                                                                                                                                                                                 |
+| [ADR-0020](#adr-0020-honest-scoring--remediation-cycle-r0r7-supersedes-scaffold-pass-scoring)                         | Accepted | Honest scoring + remediation cycle (R0..R7) supersedes scaffold-PASS scoring                                                   | -          | P0-P14, M15.A-H |
 
 ## Format
 
@@ -385,3 +386,36 @@ This log is append-only. To change a decision, add a new ADR with `Status: Accep
   - [ADR-0003](#adr-0003-intent-first-write-path)
   - [Phase 02 — API Contract](./Phase_02_API_Contract.md)
   - [Phase 05 — Projection / Reconciliation](./Phase_05_Projection_Reconciliation.md)
+
+### ADR-0020 — Honest scoring + remediation cycle (R0..R7) supersedes scaffold-PASS scoring
+
+- Status: Accepted
+- Date: 2026-05-26
+- Phases affected: P0-P14, M15.A-H
+
+### Context
+
+Between 2026-05-25 and 2026-05-26 the repository was scored P0..P14 PASS by phase subagents whose evidence was scaffold completeness (typecheck/lint/build exit 0 on placeholder/fixture code), not Canton-backed end-to-end correctness. An external reviewer audit identified eight blocker/high-severity gaps: ledger-command runtime missing real submission worker; Daml lifecycle Hold/Holding atomicity bug; arithmetic Script tests; projection fallback fabricating demo rows on miss; in-memory idempotency competing with DB store; Makefile `|| true` swallowing gate failures; SCORING vs README inconsistency; route handlers returning fixture objects.
+
+### Decision
+
+1. SCORING.md is reset against executable evidence with PARTIAL/PROTOTYPE/SCAFFOLD/STUB grades. PASS requires concrete command exit 0 plus the captured snippet in `docs/Dev/EVIDENCE.md`.
+2. README Status section reflects actual maturity, not aspirational.
+3. Makefile gate targets remove `|| true`; failures surface.
+4. `apps/api` idempotency converges to DB-only via `@pillar/idempotency`; in-memory path lives only under `PILLAR_IDEMPOTENCY=memory` for tests.
+5. Projection fallback removed; demo data gated behind `PILLAR_DEMO_DATA=true`; missing rows return 404; strong-consistency stale returns `projection_stale_error`.
+6. Daml Hold/Holding lifecycle made atomic: `Holding.ReleaseHold/ConsumeHold/ExpireHold` archive the Hold companion and return a new Holding with `activeHolds` (and `amount` for consume) decremented in one transaction. Intent confirm/fail/succeed choices exercise real Holding choices.
+7. `services/ledger-command` becomes a real submission worker (poll → attempt → ADR-0011 command_id derivation → gRPC submit → completion correlation → OperationTrace write-back) with an in-process gRPC harness for tests.
+8. Performance + network hardening: Redis read-through cache, Envoy sidecar, pg pool tuning, gRPC ChannelPool, ETag/Cache-Control middleware.
+9. New evidence file `docs/Dev/EVIDENCE.md` records exit codes + last-5-line snippets per gate.
+10. Honest remediation cycle published as R0..R7 in `docs/Dev/REMEDIATION.md`; M15.H final verification snapshot recorded.
+
+### Consequences
+
+- Future phase scoring must reference `docs/Dev/EVIDENCE.md` anchors; PASS claims without executable evidence are rejected.
+- Any new in-memory shortcut requires explicit `PILLAR_*=memory|fake` env guard and may not be the default.
+- Projection rebuildability invariant verified: every public read fails closed on missing or stale projection rather than fabricating.
+
+### Supersedes
+
+The phase-by-phase 9.5 PASS verdicts recorded before commit `cd4346d` (R0 reconcile) for P0..P14 are superseded by this ADR and the R6/M15.H evidence runs.

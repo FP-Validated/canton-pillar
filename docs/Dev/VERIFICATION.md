@@ -294,3 +294,38 @@ Result: **113% parity.** Mission criterion satisfied with operational margin.
 ### Closing note
 
 Further iteration is improvement and operational hardening, not parity completion. Implementation-time gates (Build/Verify/Invariant) become evidence-bearing only when code lands. The next verification verdict (V-005) is expected after P0 implementation closes its Build gate against the real repository.
+
+## V-005 — M15.H final verification snapshot
+
+- Date: 2026-05-26
+- Scope: full gate matrix after R0..R7 + M15.A..H push (commit 06379db).
+- Method: per-command exit-code capture (no `| tail` shadowing), forbidden-substring sweep, LAN web smoke.
+- Verdict: **PARTIAL** — implementation slice complete and pushed; one routes test timeout outstanding for follow-up.
+
+### Gate matrix
+
+- Total gates: 48
+- PASS: 46 — api-contract (build/test/golden/lint:public-contract), security build+test, identity build+test, validator-registry build+test, onboarding build+test, usage-meter test, billing-adapter test, storage test, web typecheck+build, dashboard typecheck+lint+build, workbench typecheck+build, docs build, status typecheck+build, cli build, sdk-node build+test, helm lint, helm template (values-dev + values-mainnet), docker compose config, daml dpm build --all + per-package dpm test.
+- FAIL: 1 — `pnpm --filter @pillar/api test` timed out at 120s on `accounts create/retrieve/list/update happy path` (exit 124). Identified as the next follow-up slice.
+- SKIPPED: 1 — Gradle gates marked `skipped(host_limited)` per assignment.
+
+### Forbidden sweep
+
+Clean. Zero `stripe` literal hits across apps/, services/, packages/, infra/envoy, infra/helm/pillar, tools/cli, tools/e2e, tests/e2e, README, SCORING, REMEDIATION, EVIDENCE.
+
+### LAN smoke
+
+- Restart pid: 85927
+- LAN URL: http://219.255.103.226:3000
+- HTTP 200: `/`, `/signup`, `/login`, `/docs`, `/api`, `/dashboard`.
+
+### Cross-references
+
+- `docs/Dev/EVIDENCE.md` § M15 Wave (final)
+- `docs/Dev/REMEDIATION.md` R0..R7 closed
+- `docs/Dev/SCORING.md` updated
+- Commit https://github.com/FP-Validated/canton-pillar/commit/06379db8943a25fc2a3c0873483e3f4d1cc1cfe9
+
+### Outstanding
+
+- Resolve `@pillar/api accounts` test timeout (likely DB-claim or HTTPS-out network in the test harness). Track as a follow-up slice prior to declaring full M15 PASS.
