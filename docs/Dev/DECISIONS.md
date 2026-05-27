@@ -26,6 +26,7 @@
 | [ADR-0018](#adr-0018-metadata-pii-policy)                                                                             | Accepted | Metadata PII policy                                                                                   | -          | [P2](./Phase_02_API_Contract.md), [P7](./Phase_07_SDK_CLI_Workbench.md), [P8](./Phase_08_Security_Compliance.md), [P13](./Phase_13_Dashboard_Docs_Onboarding.md)                                                                                                                                                                                                                                                                       |
 | [ADR-0019](#adr-0019-strong-read-consistency-semantics)                                                               | Accepted | Strong-read consistency semantics                                                                     | -          | [P2](./Phase_02_API_Contract.md), [P5](./Phase_05_Projection_Reconciliation.md), [P7](./Phase_07_SDK_CLI_Workbench.md)                                                                                                                                                                                                                                                                                                                 |
 | [ADR-0020](#adr-0020-honest-scoring--remediation-cycle-r0r7-supersedes-scaffold-pass-scoring)                         | Accepted | Honest scoring + remediation cycle (R0..R7) supersedes scaffold-PASS scoring                                                   | -          | P0-P14, M15.A-H |
+| [ADR-0021](#adr-0021-network-toggle-and-substrate-hardening)                                                               | Accepted | Network toggle and substrate hardening (gRPC submitter, durable webhooks, JWK auth) | ADR-0020 | P1, P4, P6, P8, M15.B, M15.F |
 
 ## Format
 
@@ -419,3 +420,31 @@ Between 2026-05-25 and 2026-05-26 the repository was scored P0..P14 PASS by phas
 ### Supersedes
 
 The phase-by-phase 9.5 PASS verdicts recorded before commit `cd4346d` (R0 reconcile) for P0..P14 are superseded by this ADR and the R6/M15.H evidence runs.
+
+### ADR-0021: Network toggle and substrate hardening (gRPC submitter, durable webhooks, JWK auth)
+
+- Status: Accepted
+- Date: 2026-05-26
+- Phases affected: P1, P4, P6, P8, M15.B, M15.F
+
+### Context
+
+Reviewer audit on commit 6ffa5df identified the runtime as a scaffold-heavy prototype with five blockers (now fixed in 6ffa5df itself) plus a longer follow-up list: fake ledger submitter, in-memory event/webhook repos, regex-only API auth, OAuth without signature verification, projection demo coupled to PILLAR_IDEMPOTENCY.
+
+### Decision
+
+1. The ledger submitter binding is environment-driven (ADR-0020 already gated PILLAR_LEDGER_SUBMITTER). The grpc binding is now an actual CantonGrpcLedgerCommandSubmitter that takes a LedgerApiClient, CompletionClient, default actAs party, and applicationId. Required envs: PILLAR_LEDGER_HOST, PILLAR_LEDGER_PORT, PILLAR_LEDGER_TLS, PILLAR_LEDGER_JWT, PILLAR_LEDGER_ACT_AS, PILLAR_LEDGER_APPLICATION_ID. Missing env triggers fail-fast.
+2. event-repo and webhook-repo are Postgres-backed. Webhook delivery is a real worker (services/webhook-dispatcher) polling webhook_deliveries with attempt counter, RetrySchedule (1s,2s,5s,15s,1m,5m,15m,1h,3h), DLQ at attempt 10. Signature header format is t=<unix>,v1=<hmac-sha256-hex> against endpoint signing_secret (new migration 0150_webhook_dispatcher/0150_signing_secret.sql).
+3. Google ID tokens are verified against cached JWKs from accounts.google.com with explicit OAuth error codes (jwk_not_found, signature_invalid, audience_mismatch, issuer_mismatch, token_expired, token_not_yet_valid). API keys are looked up by sha256 hash from the api_keys table; demo is gated by PILLAR_DEMO_DATA=true ONLY.
+4. The pillar-network header and pillar-network cookie are the public switches. Fallback order: header > cookie > tenant default binding > devnet. GET /v1/network is reachable without auth. Authed paths reject networks the tenant has no active tenant_network_bindings row for with 403 network_not_bound.
+5. The web prototype and authed dashboard both mount a NetworkSwitcher that persists the cookie and reloads SSR. Colors: zinc=devnet, blue=testnet, emerald=mainnet.
+
+### Consequences
+
+- Real validator testing is required as soon as PILLAR_LEDGER_SUBMITTER=grpc is enabled with a real PILLAR_LEDGER_HOST. Until then the fake submitter is a permitted dev-only fallback.
+- Webhook delivery now blocks on a working signing_secret column; the migration backfills NULL and the dispatcher emits configuration_error rather than silently delivering unsigned bodies.
+- /v1/network is a new public endpoint and counts in OpenAPI golden; any reshaping requires regenerating the golden.
+
+### Supersedes
+
+N/A (extends ADR-0020).

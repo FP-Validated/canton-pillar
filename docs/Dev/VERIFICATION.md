@@ -329,3 +329,34 @@ Clean. Zero `stripe` literal hits across apps/, services/, packages/, infra/envo
 ### Outstanding
 
 - Resolve `@pillar/api accounts` test timeout (likely DB-claim or HTTPS-out network in the test harness). Track as a follow-up slice prior to declaring full M15 PASS.
+
+## V-006 — Wave 1 substrate hardening + network toggle
+
+- Date: 2026-05-26
+- Scope: commits 6ffa5df (coherence repairs), b5a9c40 (substrate hardening + network toggle).
+- Method: per-package typecheck/build/test exit-code capture, ./gradlew :services:ledger-command:test :services:webhook-dispatcher:test, migrator up + verify on fresh postgres, LAN web smoke (HTTP 200 for /, /signup, /login, /docs, /api, /dashboard), forbidden-substring sweep.
+- Verdict: PASS for the implementation slice. Real Canton validator testing not yet performed; gated on a configured PILLAR_LEDGER_HOST (see Validator Readiness Gate below).
+
+### Gate matrix
+
+- api_typecheck: 0
+- security_typecheck: 0
+- security_test: 0
+- api_contracts_typecheck/build: 0
+- web_typecheck/build: 0
+- dashboard_typecheck/build: 0
+- gradle_ledger_command: 0
+- gradle_webhook_dispatcher: 0
+- migrate_up + verify: 0
+- forbidden sweep: clean on runtime/source; design-doc references in CHANGELOG and docs/Architecture only.
+
+### LAN smoke
+
+- pid 17813, http://127.0.0.1:3000
+- HTTP 200: /, /signup, /login, /docs, /api, /dashboard.
+
+### Cross-references
+
+- ADR-0020 honest-scoring remediation
+- ADR-0021 network toggle + substrate hardening
+- docs/Dev/REMEDIATION.md (wave 1 follow-ups)

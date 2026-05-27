@@ -49,3 +49,34 @@ Exit condition: the repeatable command and dashboard live spec are present; CI e
 Scope: re-score P0..P14 and M15.A/B against executable evidence produced by R1..R5, linking each claim to logs, tests, commits, or runbooks.
 
 Exit condition: `docs/Dev/SCORING.md` contains evidence-linked statuses, no PASS is claimed without an executable command or artifact, and `make state` reports the same status table.
+
+## Validator Readiness Gate
+
+Real Canton validator testing is sequenced into three tiers. Each tier names the env config the runtime requires.
+
+### Tier 0 - Unit and contract (no validator)
+
+Daml unit tests, API contract tests, idempotency tests, projection rebuild logic. Works under PILLAR_LEDGER_SUBMITTER=fake.
+
+### Tier 1 - Local sandbox (single-node dpm sandbox)
+
+Required envs:
+- PILLAR_LEDGER_SUBMITTER=grpc
+- PILLAR_LEDGER_HOST=127.0.0.1
+- PILLAR_LEDGER_PORT=6865
+- PILLAR_LEDGER_TLS=false
+- PILLAR_LEDGER_JWT=<sandbox dev token>
+- PILLAR_LEDGER_ACT_AS=<tenant party allocated on sandbox boot>
+- PILLAR_LEDGER_APPLICATION_ID=pillar-runtime
+
+First real validator test happens here. Vertical slice E2E (`tools/e2e/run-vertical-slice.sh`) should run against this configuration with PILLAR_DEMO_DATA=false and PILLAR_E2E_ALLOW_SYNTHETIC_WEBHOOK=false.
+
+### Tier 2 - Devnet validator
+
+Requires an external CN devnet validator endpoint, a JWT issuer trusted by that participant, and an allocated tenant party on the devnet topology.
+
+### Tier 3 - Testnet/Mainnet
+
+Uses validator-registry providers; mTLS material reload; production JWT issuer; topology rights aligned with provider party rights.
+
+All PILLAR_DEPLOYMENT_MODE in {production, mainnet, testnet} refuses to boot when PILLAR_LEDGER_SUBMITTER=fake (Main.kt).
